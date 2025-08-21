@@ -1,0 +1,122 @@
+{
+  "SCHEMA_VERSION": "2.0",
+  "APP_NAME": "Paddock Parser Toolkit",
+  "INPUT_DIR": "html_input",
+  "DEFAULT_OUTPUT_DIR": "output",
+  "LOG_FILE": "app.log",
+  "TEMPLATE_SCANNER": "template_scanner.html",
+  "TEMPLATE_PADDOCK": "template_paddock.html",
+  "HTTP": {
+    "REQUEST_TIMEOUT": 30,
+    "VERIFY_SSL": true,
+    "follow_redirects": true,
+    "min_delay_sec": 0.8,
+    "max_delay_sec": 2.5,
+    "http2": true,
+    "biz_hours_local_tz": "UTC",
+    "biz_hours_start": 8,
+    "biz_hours_end": 22
+  },
+  "ScraperFeatures": {
+    "enable_breadcrumbs": true,
+    "enable_stealth_headers": true,
+    "enable_cache_bust": true,
+    "enable_fingerprint_rotation": true,
+    "enable_favicon_prefetch": false,
+    "enable_rss_discovery": true,
+    "enable_js_endpoint_scan": true,
+    "enable_ws_collection": true,
+    "enable_dns_multi_resolver": true,
+    "enable_timing_content_fingerprints": true,
+    "enable_error_code_psychology": true
+  },
+  "Proxies": {
+    "enabled": false,
+    "pool": []
+  },
+  "DATA_SOURCES_V2": {
+    "timeform": {
+      "enabled": true,
+      "url": "https://www.timeform.com/horse-racing/racecards"
+    },
+    "sportinglife": {
+      "enabled": false,
+      "url": "https://www.sportinglife.com/api/horse-racing/race?date={date_str_iso}",
+      "reason": "API endpoint is defunct"
+    },
+    "racingpost": {
+      "enabled": true
+    },
+    "attheraces": {
+      "enabled": true
+    },
+    "equibase": {
+      "enabled": true
+    }
+  },
+  "LEGACY_DATA_SOURCES": [],
+  "Fingerprints": [
+    {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/123 Safari/537.36",
+      "Viewport-Width": "1366"
+    },
+    {
+      "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/17.1 Safari/605.1.15",
+      "Viewport-Width": "1440"
+    },
+    {
+      "User-Agent": "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 Chrome/121 Mobile Safari/537.36",
+      "Viewport-Width": "412"
+    }
+  ],
+  "StealthHeaders": {
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-User": "?1",
+    "Sec-Fetch-Dest": "document"
+  },
+  "CacheBustHeaders": {
+    "Cache-Control": "no-cache",
+    "Pragma": "no-cache",
+    "If-Modified-Since": "Thu, 01 Jan 1970 00:00:00 GMT"
+  },
+  "SpectralScheduler": {
+    "enabled": true,
+    "windows": [
+      {
+        "tz": "Australia/Sydney",
+        "start_hour": 9,
+        "end_hour": 12
+      },
+      {
+        "tz": "Europe/London",
+        "start_hour": 9,
+        "end_hour": 12
+      },
+      {
+        "tz": "America/New_York",
+        "start_hour": 9,
+        "end_hour": 12
+      }
+    ],
+    "burst_concurrency": 3,
+    "burst_period_sec": 900
+  },
+  "Webhook": {
+    "enabled": false,
+    "host": "0.0.0.0",
+    "port": 8765,
+    "path": "/trigger"
+  },
+  "DNSResolvers": [
+    "8.8.8.8",
+    "1.1.1.1",
+    "208.67.222.222"
+  ],
+  "SCORER_WEIGHTS": {
+    "FIELD_SIZE": 0.25,
+    "FAVORITE_ODDS": 0.35,
+    "ODDS_SPREAD": 0.10,
+    "VALUE_VS_SP": 0.30
+  }
+}
