@@ -1,0 +1,19 @@
+WARNING:root:No FINGERPRINTS found in config, using a single default fingerprint.
+WARNING:root:[attheraces] The adapter for At The Races is not yet implemented. Skipping fetch.
+WARNING:root:[equibase] The adapter for Equibase is not yet implemented. Skipping fetch.
+WARNING:root:[racingpost] The adapter for Racing Post is not yet implemented. Skipping fetch.
+WARNING:root:Fetch attempt 1 for https://www.sportinglife.com/api/horse-racing/race?date_start=2025-08-21&date_end=2025-08-21 failed: Client error '400 Bad Request' for url 'https://www.sportinglife.com/api/horse-racing/race?date_start=2025-08-21&date_end=2025-08-21'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
+WARNING:root:Fetch attempt 2 for https://www.sportinglife.com/api/horse-racing/race?date_start=2025-08-21&date_end=2025-08-21 failed: Client error '400 Bad Request' for url 'https://www.sportinglife.com/api/horse-racing/race?date_start=2025-08-21&date_end=2025-08-21'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
+WARNING:root:Fetch attempt 3 for https://www.sportinglife.com/api/horse-racing/race?date_start=2025-08-21&date_end=2025-08-21 failed: Cannot send a request, as the client has been closed.
+ERROR:root:[sportinglife] An error occurred during fetch or parse: Failed to fetch https://www.sportinglife.com/api/horse-racing/race?date_start=2025-08-21&date_end=2025-08-21 after 3 attempts. Last error: Cannot send a request, as the client has been closed.
+Traceback (most recent call last):
+  File "/app/paddock_parser/adapters/sportinglife.py", line 80, in fetch
+    response = await resilient_get(target_url, config=self.config)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/paddock_parser/fetching.py", line 129, in resilient_get
+    raise FetchingError(f"Failed to fetch {url} after {attempts} attempts. Last error: {last_error}")
+paddock_parser.fetching.FetchingError: Failed to fetch https://www.sportinglife.com/api/horse-racing/race?date_start=2025-08-21&date_end=2025-08-21 after 3 attempts. Last error: Cannot send a request, as the client has been closed.
+WARNING:root:No raw documents collected from V2 adapters.
+WARNING:root:No HTML files found in 'html_input'.
