@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from typing import Optional
 
 from .base_v3 import BaseAdapterV3
-from ..fetching import resilient_get
+from ..fetching import resilient_get, breadcrumb_get
 from ..normalizer import canonical_track_key, canonical_race_key
 from ..sources import (
     FieldConfidence,
@@ -56,8 +56,15 @@ class TimeformAdapter(BaseAdapterV3):
         # with advanced anti-bot measures.
 
         try:
-            config = self.config_manager.get_config()
-            list_response = await resilient_get(target_url, config)
+            # Define the breadcrumb trail to mimic user navigation
+            breadcrumb_urls = [
+                self._base_url,      # 1. Visit the homepage
+                target_url           # 2. Visit the main racecards page
+            ]
+            logging.info(f"[{self.source_id}] Navigating breadcrumb trail: {breadcrumb_urls}")
+
+            # Use breadcrumb_get to fetch the final page in the sequence
+            list_response = await breadcrumb_get(breadcrumb_urls)
             race_urls = self._parse_race_list(list_response.text)
         except Exception as e:
             logging.error(f"[{self.source_id}] Failed to fetch or parse race list: {e}")
