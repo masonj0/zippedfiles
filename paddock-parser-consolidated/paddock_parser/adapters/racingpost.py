@@ -32,12 +32,18 @@ class RacingPostAdapter(BaseAdapterV3):
             logging.error(f"Adapter {self.source_id} is not initialized. Cannot fetch.")
             return []
 
-        # The __NEXT_DATA__ object is on the main racecards page, not the API endpoint from the config.
         target_url = f"{self.base_url}/racecards"
 
         try:
             config = self.config_manager.get_config()
-            response = await resilient_get(target_url, config)
+            # Correctly pass the headers dictionary, not the whole config
+            headers = config.get("StealthHeaders")
+            response = await resilient_get(target_url, extra_headers=headers)
+
+            if not response:
+                logging.error(f"[{self.source_id}] No response received from {target_url}")
+                return []
+
             soup = BeautifulSoup(response.text, "html.parser")
             return self._parse_races_from_json(soup)
         except Exception as e:
