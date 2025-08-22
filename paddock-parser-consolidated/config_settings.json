@@ -97,5 +97,9 @@
     "FAVORITE_ODDS": 0.35,
     "ODDS_SPREAD": 0.10,
     "VALUE_VS_SP": 0.30
+  },
+  "RACE_FILTERS": {
+    "MIN_RUNNERS": 4,
+    "MAX_RUNNERS": 6
   }
 }

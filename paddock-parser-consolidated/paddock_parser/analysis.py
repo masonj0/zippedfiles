@@ -287,9 +287,10 @@ class V2Scorer:
             best_value_reason=best_value_reason
         )
 
-def score_races(races: List[NormalizedRace]) -> List[ScoreResult]:
+def score_races(races: List[NormalizedRace]) -> tuple[List[ScoreResult], int, int]:
     """
     Filters and scores a list of normalized races using the V2Scorer.
+    Returns the scored results, the initial count, and the final count after filtering.
     """
     # --- Filter races based on runner count ---
     config = config_manager.get_config()
@@ -302,34 +303,45 @@ def score_races(races: List[NormalizedRace]) -> List[ScoreResult]:
         race for race in races
         if min_runners <= len(race.runners) <= max_runners
     ]
+    final_race_count = len(filtered_races)
 
-    if len(filtered_races) < initial_race_count:
+    if final_race_count < initial_race_count:
         logging.info(
             f"Filtered races by runner count ({min_runners}-{max_runners}). "
-            f"Kept {len(filtered_races)} of {initial_race_count} races."
+            f"Kept {final_race_count} of {initial_race_count} races."
         )
 
     if not filtered_races:
-        return []
+        return [], initial_race_count, 0
 
     scorer = V2Scorer()
     scored_races = [scorer.score_race(race) for race in filtered_races]
 
     logging.info(f"Scored {len(scored_races)} races.")
-    return sorted(scored_races, key=lambda r: r.score, reverse=True)
+    sorted_results = sorted(scored_races, key=lambda r: r.score, reverse=True)
+    return sorted_results, initial_race_count, final_race_count
 
 # --- Reporting ---
 
-def display_results_console(scored_results: List[ScoreResult]):
+def display_results_console(scored_results: List[ScoreResult], initial_count: int, final_count: int):
     """
     Displays the final scored results in a user-friendly format on the console.
     """
     logging.info("--- V2 PIPELINE RESULTS ---")
+
+    config = config_manager.get_config()
+    filter_config = config.get("RACE_FILTERS", {})
+    min_runners = filter_config.get("MIN_RUNNERS", 0)
+    max_runners = filter_config.get("MAX_RUNNERS", 99)
+
+    if final_count < initial_count:
+        print(f"\nFiltered {initial_count - final_count} of {initial_count} races to meet criteria (Runners: {min_runners}-{max_runners}).")
+
     if not scored_results:
-        print("No races to display.")
+        print("No races matching the criteria were found.")
         return
 
-    print(f"Displaying top {len(scored_results)} scored races:")
+    print(f"Displaying top {len(scored_results)} scored and filtered races:")
     for result in scored_results:
         print("-" * 50)
         print(f"Race: {result.race.race_key} (Score: {result.score})")
