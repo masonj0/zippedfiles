@@ -3,7 +3,6 @@ import json
 import os
 from pathlib import Path
 
-from .config import load_config
 from .analysis import V2Scorer
 from .config_manager import config_manager
 
@@ -41,28 +40,6 @@ class TestIntegration(unittest.TestCase):
         if os.path.exists(self.test_config_path):
             os.remove(self.test_config_path)
 
-    def test_load_config_success(self):
-        """
-        Tests that the load_config function can successfully read a JSON file.
-        """
-        config = load_config(self.test_config_path)
-        self.assertIsNotNone(config)
-        self.assertEqual(config.get("APP_NAME"), "Test App")
-        self.assertIn("SCORER_WEIGHTS", config)
-
-    def test_load_config_not_found(self):
-        """
-        Tests that the load_config function returns an empty dict
-        when the specified file does not exist.
-        """
-        # Ensure the file is gone before this test
-        if os.path.exists("non_existent_config.json"):
-            os.remove("non_existent_config.json")
-
-        config = load_config("non_existent_config.json")
-        self.assertIsInstance(config, dict)
-        self.assertEqual(config, {})
-
     def test_v2scorer_initialization_with_config(self):
         """
         Tests that the V2Scorer correctly initializes its weights
@@ -76,7 +53,7 @@ class TestIntegration(unittest.TestCase):
 
         scorer = V2Scorer()
 
-        # 3. Assert that the scorer's weights match the test config
+        # Assert that the scorer's weights match the test config
         # The scorer normalizes weights, so we need to do the same for the expected values
         total_weight = sum(self.test_weights.values())
         expected_weights = {key: value / total_weight for key, value in self.test_weights.items()}

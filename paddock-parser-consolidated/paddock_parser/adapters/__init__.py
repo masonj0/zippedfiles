@@ -16,11 +16,12 @@ def load_all_adapters():
     if not ADAPTERS:
         logging.info("Loading all source adapters from 'adapters' package...")
         for _, name, _ in pkgutil.iter_modules(__path__):
-            try:
-                importlib.import_module(f".{name}", __name__)
-                logging.debug(f"Successfully loaded adapter module: {name}")
-            except Exception as e:
-                logging.error(f"Failed to load adapter module {name}: {e}", exc_info=True)
+            if not name.startswith('_'):
+                try:
+                    importlib.import_module(f".{name}", __name__)
+                    logging.debug(f"Successfully loaded adapter module: {name}")
+                except Exception as e:
+                    logging.error(f"Failed to load adapter module {name}: {e}", exc_info=True)
         logging.info(f"Finished loading adapters. Found {len(ADAPTERS)} registered adapters.")
 
 # Call the function to load adapters when this package is imported.
