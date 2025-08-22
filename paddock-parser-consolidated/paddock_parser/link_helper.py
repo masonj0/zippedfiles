@@ -13,14 +13,15 @@ from datetime import date
 from urllib.parse import quote
 import sys
 
-# Use the canonical config loader
-from .config import load_config
+# Use the canonical config manager
+from .config_manager import config_manager
 
-def create_and_launch_link_helper(config: Dict):
+def create_and_launch_link_helper():
     """
     Generates and opens the interactive `collector.html` dashboard,
     populating it with all enabled V2 and Legacy data sources.
     """
+    config = config_manager.get_config()
     print("Generating the Integrated Collector dashboard...")
 
     output_dir = Path(config.get("DEFAULT_OUTPUT_DIR", "output"))
@@ -126,8 +127,4 @@ def create_and_launch_link_helper(config: Dict):
         print(f"❌ Could not create or open the Integrated Collector file: {e}", file=sys.stderr)
 
 if __name__ == "__main__":
-    config = load_config()
-    if config:
-        create_and_launch_link_helper(config)
-    else:
-        print("Failed to load config_settings.json. Exiting.", file=sys.stderr)
+    create_and_launch_link_helper()
