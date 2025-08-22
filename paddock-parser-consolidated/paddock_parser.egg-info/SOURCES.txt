@@ -26,14 +26,15 @@ paddock_parser.egg-info/SOURCES.txt
 paddock_parser.egg-info/dependency_links.txt
 paddock_parser.egg-info/top_level.txt
 paddock_parser/adapters/__init__.py
+paddock_parser/adapters/_betfairdatascientistadapter.py
+paddock_parser/adapters/_hkjc.py
 paddock_parser/adapters/attheraces.py
 paddock_parser/adapters/base.py
 paddock_parser/adapters/base_v3.py
 paddock_parser/adapters/betfair.py
-paddock_parser/adapters/betfairdatascientistadapter.py
 paddock_parser/adapters/equibase.py
-paddock_parser/adapters/hkjc.py
 paddock_parser/adapters/racingpost.py
 paddock_parser/adapters/skysports.py
 paddock_parser/adapters/sportinglife.py
 paddock_parser/adapters/timeform.py
+paddock_parser/tools/find_rss.py
