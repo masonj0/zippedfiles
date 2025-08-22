@@ -110,11 +110,11 @@ async def run_unified_pipeline(args: Optional[argparse.Namespace]):
     print(f"Found {len(final_races)} unique races across all sources.")
 
     # 4. Score and generate reports (V3 compliant)
-    print("Scoring races...")
-    scored_results = score_races(final_races)
+    print("Scoring and filtering races...")
+    scored_results, initial_count, final_count = score_races(final_races)
 
     # 5. Display and save reports
-    display_results_console(scored_results)
+    display_results_console(scored_results, initial_count, final_count)
     generate_paddock_reports(scored_results, config) # V1 report generator still needs config
     print("✅ Unified analysis pipeline complete.")
 
