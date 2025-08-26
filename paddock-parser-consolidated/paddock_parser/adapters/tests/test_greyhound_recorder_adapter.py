@@ -6,15 +6,15 @@ import sys
 # Add the project root to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
 
-from paddock_parser.adapters.racingpost import RacingPostAdapter
+from paddock_parser.adapters.greyhound_recorder import GreyhoundRecorderAdapter
 
-class TestRacingPostAdapter(unittest.TestCase):
+class TestGreyhoundRecorderAdapter(unittest.TestCase):
 
     def setUp(self):
         mock_config_manager = Mock()
-        self.adapter = RacingPostAdapter(config_manager=mock_config_manager)
+        self.adapter = GreyhoundRecorderAdapter(config_manager=mock_config_manager)
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
-        self.sample_html_path = os.path.join(self.current_dir, 'racingpost_sample.html')
+        self.sample_html_path = os.path.join(self.current_dir, 'greyhound_recorder_sample.html')
 
         try:
             with open(self.sample_html_path, 'r', encoding='utf-8') as f:
@@ -23,7 +23,7 @@ class TestRacingPostAdapter(unittest.TestCase):
             self.html_content = None
 
     def test_parse_and_normalize_racecard(self):
-        self.assertIsNotNone(self.html_content, "racingpost_sample.html could not be found or read.")
+        self.assertIsNotNone(self.html_content, "greyhound_recorder_sample.html could not be found or read.")
 
         races = self.adapter._parse_and_normalize_racecard(self.html_content)
 
