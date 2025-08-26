@@ -28,9 +28,23 @@ The application is a racing intelligence toolkit that gathers data from various 
 ### The `adapters` Package
 
 -   **Purpose:** The `adapters/` directory is for all V2 live data source integrations. Each adapter is responsible for fetching and parsing data from a single web source (API or HTML).
+
+#### **Primary Strategic Approach: API-First, GraphQL Priority**
+
+Our reconnaissance has revealed a critical strategic insight: the most valuable and reliable data sources are modern web applications that power their front-ends using internal APIs. HTML scraping is a viable fallback, but **our primary approach should always be to find and leverage these APIs.**
+
+**Our highest priority targets are sites that use GraphQL.**
+
+*   **What is GraphQL?** It is a modern, flexible API technology used by major platforms like FanDuel Racing. Unlike traditional APIs, it uses a single endpoint (e.g., `/graphql`) and receives complex queries in the body of a `POST` request.
+*   **Why is it our Priority?** A single GraphQL endpoint can be a gateway to the platform's entire data model, offering a rich, stable, and comprehensive source for thoroughbred, harness, and greyhound data, often all in one place.
+*   **Discovery Method:** GraphQL endpoints are discovered using the browser's Developer Tools (Network tab, filtering for Fetch/XHR), identifying `POST` requests to a `/graphql` endpoint, and capturing the request's JSON `body`. This "human-in-the-loop" reconnaissance is the essential first step before an adapter can be built.
+
+**Our goal is to prioritize the discovery and implementation of adapters for GraphQL-powered sites before falling back on traditional REST APIs or HTML scraping.**
+
 -   **Creating a New Adapter:**
-    1.  **Discover Data Sources:** Before writing code, use the `find_rss.py` tool (`paddock_parser/tools/find_rss.py`) to automatically scan websites for potential RSS/XML data feeds. This is a standard first step.
-    2.  Create a new file in the `adapters/` directory (e.g., `my_adapter.py`).
+    1.  **Perform API-First Reconnaissance:** Before writing any code, the first step is to investigate the target site for a GraphQL or REST API using browser developer tools. This is now the standard first step, preceding any other discovery method.
+    2.  **Fallback to RSS/HTML:** If and only if no usable API is found, fall back to other discovery methods like using the `find_rss.py` tool (`paddock_parser/tools/find_rss.py`).
+    3.  Create a new file in the `adapters/` directory (e.g., `my_adapter.py`).
     3.  Create a new class that inherits from `BaseAdapterV3`.
     4.  Set a unique `source_id` class attribute.
     5.  Implement the `async def fetch(self)` method. This method must return a `list[RawRaceDocument]`.

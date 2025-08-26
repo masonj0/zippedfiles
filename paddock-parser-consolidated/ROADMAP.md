@@ -75,6 +75,18 @@ This phase focuses on the end-user delivery of the toolkit's intelligence.
 
 ---
 
+### **Primary Strategic Approach: API-First, GraphQL Priority**
+
+Our reconnaissance has revealed a critical strategic insight: the most valuable and reliable data sources are modern web applications that power their front-ends using internal APIs. HTML scraping is a viable fallback, but our primary approach should always be to find and leverage these APIs.
+
+**Our highest priority targets are sites that use GraphQL.**
+
+*   **What is GraphQL?** It is a modern, flexible API technology used by major platforms like FanDuel Racing. Unlike traditional APIs, it uses a single endpoint (e.g., `/graphql`) and receives complex queries in the body of a `POST` request.
+*   **Why is it our Priority?** A single GraphQL endpoint can be a gateway to the platform's entire data model, offering a rich, stable, and comprehensive source for thoroughbred, harness, and greyhound data, often all in one place.
+*   **Discovery Method:** GraphQL endpoints are discovered using the browser's Developer Tools (Network tab, filtering for Fetch/XHR), identifying `POST` requests to a `/graphql` endpoint, and capturing the request's JSON `body`. This "human-in-the-loop" reconnaissance is the essential first step before an adapter can be built.
+
+**Our goal is to prioritize the discovery and implementation of adapters for GraphQL-powered sites before falling back on traditional REST APIs or HTML scraping.**
+
 ## 3. Data Source Discovery Leads
 This section contains a backlog of promising open-source projects and resources for finding and scraping new data feeds.
 
