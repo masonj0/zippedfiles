@@ -58,6 +58,22 @@ Our reconnaissance has revealed a critical strategic insight: the most valuable 
 -   **Standardized Core Utilities:** Core, shared functions (like `resilient_get` in `fetching.py`) must have clear, stable, and well-documented function signatures to prevent errors as more adapters are built. Avoid passing the entire config dictionary when only specific values are needed.
 -   **Proactive Scraper Defense:** When building HTML-based adapters, use the `remove_honeypots` utility to strip out invisible scraper traps from the HTML before parsing. This is a critical step for long-term viability.
 
+### **Data Acquisition Protocols**
+
+To align with our API-First strategy, all agents tasked with creating new adapters must follow these protocols.
+
+**1. The Reconnaissance Protocol (Human-Assisted):**
+*   The first step for any new data source is a "human-in-the-loop" reconnaissance mission.
+*   The primary method is to use a browser's **Developer Tools** (Network tab, filtering for **Fetch/XHR**) to find internal API calls.
+*   The highest priority is to identify **GraphQL (`/graphql`) endpoints**.
+*   The required intelligence to be gathered is the **Request URL**, all necessary **Headers**, and the complete **Request Body (JSON)** for both the "list" and "detail" stages of the process.
+
+**2. The Archeology Protocol (Handling Old Libraries):**
+*   If an agent discovers an old, unmaintained open-source library for a target site (an "archeological map"), it must **NOT** attempt to install or fix the old library.
+*   Instead, the agent's task is to **analyze the old library's source code** to understand the old API's logic.
+*   The agent will then use this knowledge to assist the human researcher in performing the **Reconnaissance Protocol** on the *modern* website.
+*   This protocol ensures we learn from past work without getting bogged down by outdated technology.
+
 ## 5. Testing
 
 -   The project has a test suite. The main test file is `test_v2_scorer.py`.
