@@ -13,7 +13,7 @@
     <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
     <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
-    
+
     <script type="application/ld+json">
         {
             "@context"  : "http://schema.org/",
@@ -29,67 +29,67 @@
             ]
         }
     </script>
-    
+
     <!-- Init RP -->
     <script>
         'use strict';
         !function initRp(global_)
         {
             var RP_CONFIG_NAME = window.RP_CONFIG_NAME || 'rp_config';
-        
+
             initRpConfig();
             initConsole();
-        
+
             console.info('[INIT].initRp() -> RP_CONFIG_NAME: "' + RP_CONFIG_NAME + '"');
-        
+
             function initRpConfig()
             {
                 var rp_config_ = window[RP_CONFIG_NAME] = window[RP_CONFIG_NAME] || {};
-        
+
                 rp_config_.setPropertyValue         = setPropertyValue;
                 rp_config_.getPropertyValue         = getPropertyValue;
                 rp_config_.getRequiredPropertyValue = getRequiredPropertyValue;
-        
+
                 window.getRpConfig = getRpConfig;
-        
+
                 function getRpConfig()
                 {
                     var rp_config_ = window[RP_CONFIG_NAME];
-        
+
                     if (rp_config_ === undefined) console.error('.getRpConfig() -> window.' + RP_CONFIG_NAME + ' is not defined!');
-        
+
                     return rp_config_;
                 }
-        
+
                 function setPropertyValue(property_path_, value_)
                 {
                     var path_ = property_path_.split('.');
-        
+
                     var property_       = getRpConfig();
                     var sub_property_   = undefined;
-        
+
                     var property_name_;
-        
+
                     var index_;
                     var length_ = path_.length - 1;
-        
+
                     for(index_ = 0; index_ < length_; index_++)
                     {
                         property_name_  = path_[index_];
                         sub_property_   = property_[property_name_];
-        
-                        if (sub_property_ instanceof Object) 
+
+                        if (sub_property_ instanceof Object)
                         {
                             property_ = sub_property_;
                             continue;
                         }
-        
+
                         if (sub_property_ === undefined)
                         {
                             property_ = sub_property_ = property_[property_name_] = {};
                             continue;
                         }
-        
+
                         throw new Error(
                             '.setPropertyValue("' + property_path_ + '"', value_, ')' +
                             path_.slice(0, index_ + 1).join('.') +
@@ -97,9 +97,9 @@
                             property_
                         );
                     }
-        
+
                     property_name_ = path_.pop();
-        
+
                     if (property_.hasOwnProperty(property_name_)) console.warn(
                         '.setPropertyValue("' + property_path_ + '")', '\n',
                         'to value', value_, '\n',
@@ -107,68 +107,68 @@
                         property_[property_name_], '\n',
                         'and will be overridden!'
                     );
-        
+
                     property_[property_name_] = value_;
                 }
-        
+
                 function getPropertyValue(property_path_, default_value_, is_required_)
                 {
                     var path_ = property_path_.split('.');
-        
+
                     var property_       = getRpConfig();
                     var sub_property_   = undefined;
-        
+
                     var property_name_;
-        
+
                     var index_;
                     var length_ = path_.length;
-        
+
                     for(index_ = 0; index_ < length_; index_++)
                     {
                         if (property_ === undefined) break;
-        
+
                         property_name_  = path_[index_];
                         sub_property_   = property_[property_name_];
-        
+
                         if (!is_required_)
                         {
                             property_ = sub_property_;
                             continue;
                         }
-        
+
                         if (property_.hasOwnProperty(property_name_))
                         {
                             property_ = sub_property_;
                             continue;
                         }
-        
+
                         throw new Error(
                             'undefined configuration property "' + path_[index_] + '" in "' + path_.slice(0, index_).join('.') + '"\n' +
                             '.getRequiredPropertyValue("' + property_path_ + '") \n' +
                             'window.getRpConfig() === window.' + RP_CONFIG_NAME + '\n'
                         );
                     }
-        
+
                     var value_ = property_;
-        
+
                     if (value_ === undefined) value_ = default_value_;
-        
+
                     return value_;
                 }
-        
+
                 function getRequiredPropertyValue(property_path_)
                 {
                     var is_required_    = true;
                     var value_          = getPropertyValue(property_path_, undefined, is_required_);
-        
+
                     return value_;
                 }
             }
-        
+
             function initConsole()
             {
                 function doNothing() {}
-        
+
                 /* in IE console is not present and breaks unless dev tools are open */
                 var browser_console_ = global_.console = global_.console || {
                     log         : doNothing,
@@ -177,99 +177,99 @@
                     error       : doNothing,
                     is_debug    : false
                 };
-        
+
                 browser_console_.is_debug = browser_console_.is_debug || getRpConfig().is_debug;
-        
+
                 function logIfDebug()
                 {
                     if (!browser_console_.is_debug) return;
-        
+
                     var arguments_ = Array.prototype.slice.call(arguments);
-        
+
                     browser_console_.log.apply(null, arguments_);
                 }
-        
+
                 function infoIfDebug()
                 {
                     if (!browser_console_.is_debug) return;
-        
+
                     var arguments_ = Array.prototype.slice.call(arguments);
-        
+
                     browser_console_.info.apply( null, arguments_);
                 }
-        
+
                 var debug_console_ = { /* disable log and info messages unless is_debug */
                     log     : logIfDebug,
                     info    : infoIfDebug,
                     warn    : browser_console_.warn,
                     error   : browser_console_.error
                 };
-        
+
                 browser_console_.getCustom = getCustom;
-        
+
                 var custom_consoles_ = {};
-        
+
                 function getCustom(console_name_, is_debug_)
                 {
                     if (!console_name_)     return debug_console_;
-        
+
                     var custom_console_ = custom_consoles_[console_name_];
-        
+
                     if (custom_console_)
                     {
                         custom_console_.is_debug = custom_console_;
-        
+
                         return custom_console_;
                     }
-        
+
                     function isConsoleDebug()
                     {
                         var is_console_debug_ = custom_console_.is_debug && browser_console_.is_debug;
-        
+
                         return is_console_debug_;
                     }
-        
+
                     function constructCustomConsoleArguments(arguments_)
                     {
                         arguments_ = Array.prototype.slice.call(arguments_);
-        
+
                         arguments_ = ['[' + console_name_ + ']'].concat(arguments_);
-        
+
                         return arguments_;
                     }
-        
+
                     function logIfDebugCustom()
                     {
                         if (!isConsoleDebug()) return;
-        
+
                         var arguments_ = constructCustomConsoleArguments(arguments);
-        
+
                         browser_console_.log.apply(null, arguments_);
                     }
-        
+
                     function infoIfDebugCustom()
                     {
                         if (!isConsoleDebug()) return;
-        
+
                         var arguments_ = constructCustomConsoleArguments(arguments);
-        
+
                         browser_console_.info.apply(null, arguments_);
                     }
-        
+
                     function warnCustom()
                     {
                         var arguments_ = constructCustomConsoleArguments(arguments);
-            
+
                         browser_console_.warn.apply(null, arguments_);
                     }
-        
+
                     function errorCustom()
                     {
                         var arguments_ = constructCustomConsoleArguments(arguments);
-        
+
                         browser_console_.error.apply(null, arguments_);
                     }
-        
+
                     var custom_console_ = {
                         log         : logIfDebugCustom,
                         info        : infoIfDebugCustom,
@@ -277,46 +277,46 @@
                         error       : errorCustom,
                         is_debug    : is_debug_
                     };
-        
+
                     custom_consoles_[console_name_] = custom_console_;
-        
+
                     return custom_console_;
                 }
             }
-        
+
         }(window);
-        
+
     </script>
     <!-- Init RP End -->
-    
+
     <!-- TrustArc -->
     <script type="text/javascript" crossorigin>
-    	const environmentName = window.location.origin;
-    	const isStagingEnvironment =
-    		environmentName.includes("test1") ||
-    		environmentName.includes("uat") ||
-    		environmentName.includes("localhost") ||
-    		environmentName.includes("dev-beta");
-    
-    	const script = document.createElement("script");
-    	let trustArcSrc = null;
-    
-    	if (isStagingEnvironment) {
-    		trustArcSrc =
-    			"//consent.trustarc.com/notice?domain=racingpost-iabtest.com&c=teconsent&js=nj&noticeType=bb&text=true&gtm=1&language=en";
-    	} else {
-    		trustArcSrc =
-    			"//consent.trustarc.com/notice?domain=racingpost-iab.com&c=teconsent&js=nj&noticeType=bb&text=true&gtm=1&language=en";
-    	}
-    
-    	script.setAttribute("src", trustArcSrc);
-    	document.head.appendChild(script);
+	const environmentName = window.location.origin;
+	const isStagingEnvironment =
+		environmentName.includes("test1") ||
+		environmentName.includes("uat") ||
+		environmentName.includes("localhost") ||
+		environmentName.includes("dev-beta");
+
+	const script = document.createElement("script");
+	let trustArcSrc = null;
+
+	if (isStagingEnvironment) {
+		trustArcSrc =
+			"//consent.trustarc.com/notice?domain=racingpost-iabtest.com&c=teconsent&js=nj&noticeType=bb&text=true&gtm=1&language=en";
+	} else {
+		trustArcSrc =
+			"//consent.trustarc.com/notice?domain=racingpost-iab.com&c=teconsent&js=nj&noticeType=bb&text=true&gtm=1&language=en";
+	}
+
+	script.setAttribute("src", trustArcSrc);
+	document.head.appendChild(script);
     </script>
     <!-- TrustArc End -->
     <!-- GTM Event Listener script /trustarc/ -->
     <script>
       var __dispatched__ = {};
-    
+
       var __i__ = self.postMessage && setInterval(function() {
           if (self.PrivacyManagerAPI && __i__) {
               var apiObject = {
@@ -330,7 +330,7 @@
               __i__ = clearInterval(__i__);
           }
       }, 50);
-    
+
       self.addEventListener("message", function(e, d) {
           try {
               if (e.data && (d = JSON.parse(e.data)) && (d = d.PrivacyManagerAPI) && d.capabilities && d.action == "getConsentDecision") {
@@ -348,7 +348,7 @@
       });
     </script>
     <!-- GTM Event Listener script /trustarc/ End -->
-    
+
     <!-- Segement Init -->
     <script>
       !function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on","addSourceMiddleware","addIntegrationMiddleware","setAnonymousId","addDestinationMiddleware"];analytics.factory=function(e){return function(){var t=Array.prototype.slice.call(arguments);t.unshift(e);analytics.push(t);return analytics}};for(var e=0;e<analytics.methods.length;e++){var key=analytics.methods[e];analytics[key]=analytics.factory(key)}analytics.load=function(key,e){var t=document.createElement("script");t.type="text/javascript";t.async=!0;t.src="https://cdn.segment.com/analytics.js/v1/" + key + "/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n);analytics._loadOptions=e};analytics.SNIPPET_VERSION="4.13.1";
@@ -365,20 +365,20 @@
         !async function loadSegmentAnalytics(global_)
         {
             var console_ = global_.console.getCustom('segment', global_.getRpConfig().getPropertyValue('analytics.segment.is_debug'));
-        
+
             var segment_key_ = getSegmentKey();
-        
+
             console_.log('.loadSegmentAnalytics() -> segment_key: ' + segment_key_);
-        
+
             if (!segment_key_) return console_.error('.loadSegmentAnalytics() -> no segment_key configured in window.getRpConfig().analytics.segment.segment_key');
-        
+
             // segment trustarc
             const OPT_IN = false; // false = only disable after opt out, can replace with a function such as inEU above
             const DOMAIN = "racingpost.com"; // the hostname of your website
             const WEBSITE_WRITE_KEY = segment_key_; // your segment website source write key
             // const SEGMENT_MAPPING = 2;
             const OTHER_WRITE_KEYS = []; // any other sources w destinations that you want to include in config
-        
+
             // gets enabled destination configurations from across your source (and optionally other sources in workspace)
             // promise wait for truste.cma.callapi to be available
             await new Promise((resolve, reject) => {
@@ -394,7 +394,7 @@
               .then((destinations) => {
                 const getTrustarcDecision = truste.cma.callApi("getConsentDecision", DOMAIN);
                 let setSegmentTrustarcPref = getTrustarcPrefs();
-        
+
                 const destinationPreferences = destinations
                   .map(function(dest) {
                     if(setSegmentTrustarcPref){
@@ -413,9 +413,9 @@
                         ...acc
                       };
                     },
-                    { 
+                    {
                       "Segment.io": setSegmentTrustarcPref,
-                       "All": false 
+                       "All": false
                     }
                   );
                 conditionallyLoadAnalytics({
@@ -426,33 +426,33 @@
                 });
               })
               .then(() => global_.analytics.ready(onAnalyticsReady));
-        
+
             function getTrustarcPrefs(){
               let getTrustarcPrefs_ = getCookie('notice_gdpr_prefs');
-        
+
               return getTrustarcPrefs_ ? getTrustarcPrefs_.includes('1') : true;
             }
-        
+
             function getCookie(name) {
               const value = `; ${document.cookie}`;
               const parts = value.split(`; ${name}=`);
               if (parts.length === 2) return parts.pop().split(';').shift();
             }
-        
+
             // @prefs array
             // @return array
             function modifyTrustarcPrefs(prefs){
               let modifiedPrefs = new Array;
-        
-              prefs.forEach((pref) =>{ 
+
+              prefs.forEach((pref) =>{
                 // .replace is intentional
                 let modPref = pref.replace(':', '').replace(':implied', '');
                 modifiedPrefs.push(modPref);
               });
-        
+
               return modifiedPrefs;
             }
-        
+
             function conditionallyLoadAnalytics({
               writeKey,
               destinations,
@@ -461,26 +461,26 @@
               shouldReload = true // change if you dont want to reload on consent changes
             }) {
               let isAnythingEnabled = false;
-        
+
               if (!destinationPreferences) {
                 if (isConsentRequired) {
                   return;
                 }
-        
+
                 // Load a.js normally when consent isn't required and there's no preferences
                 if (!global_.analytics.initialized) {
                   global_.analytics.load(writeKey);
                 }
                 return;
               }
-        
+
               for (const destination in destinationPreferences) {
                 const isEnabled = destinationPreferences[destination];
                 if (isEnabled) {
                   isAnythingEnabled = true;
                 }
               }
-        
+
               // Reload the page if the trackers have already been initialised so that
               // the user's new preferences can take affect
               if (global_.analytics.initialized) {
@@ -489,19 +489,19 @@
                 }
                 return;
               }
-        
+
               // Don't load a.js at all if nothing has been enabled
               if (isAnythingEnabled) {
                 console.log("Segment Integrations Object:", destinationPreferences);
                 global_.analytics.load(writeKey, { integrations: destinationPreferences });
               }
             }
-        
+
             async function fetchDestinationForWriteKey(writeKey) {
               const res = await global_.fetch(
                 `https://cdn.segment.com/v1/projects/${writeKey}/integrations`
               );
-        
+
               if (!res.ok) {
                 throw new Error(
                   `Failed to fetch integrations for write key ${writeKey}: HTTP ${
@@ -509,26 +509,26 @@
                   } ${res.statusText}`
                 );
               }
-        
+
               const destinations = await res.json();
-        
+
               // Rename creationName to id to abstract the weird data model
               for (const destination of destinations) {
                 destination.id = destination.creationName;
                 delete destination.creationName;
               }
-        
+
               return destinations;
             }
-        
+
             async function fetchDestinations(...writeKeys) {
               const destinationsRequests = [];
               for (const writeKey of writeKeys) {
                 destinationsRequests.push(fetchDestinationForWriteKey(writeKey));
               }
-        
+
               let destinations = await Promise.all(destinationsRequests);
-        
+
               // unique list of destination across all sources
               destinations = [
                 ...destinations
@@ -540,85 +540,85 @@
                   }, new Map())
                   .values()
               ];
-        
+
               return destinations;
             }
-        
+
             function onAnalyticsReady()
             {
                 console_.log('.onAnalyticsReady()');
-        
+
                 if (!global_.mixpanel) return;
-        
+
                 console_.info('.onAnalyticsReady() -> Mixpanel integration (window.mixpanel) available, will use campaign parameters.');
-        
+
                 campaignParams();
-        
+
                 function getQueryParam(url_, param_)
                 {
                     param_ = param_.replace(/[[]/, '\[').replace(/[]]/, '\]');
-        
+
                     var regex_query_string_param_ = '[\?&]' + param_ + '=([^&#]*)';
-        
+
                     var regex_      = new RegExp(regex_query_string_param_);
                     var results_    = regex_.exec(url_);
-        
+
                     if (results_ === null)                              return '';
-        
+
                     var value_ = results_[1];
-        
+
                     if (typeof(value_) !== 'string' && value_.length)   return '';
-        
+
                     value_ = decodeURIComponent(value_).replace(/\W/gi, ' ');
-        
+
                     return value_;
                 }
-        
+
                 function campaignParams()
                 {
                     var campaign_keywords_  = 'utm_source utm_medium utm_campaign utm_content utm_term'.split(' ');
                     var key_words_          = '';
                     var params_             = {};
                     var first_params_       = {};
-        
+
                     var index_;
                     var length_ = campaign_keywords_.length;
-        
+
                     for (index_ = 0; index_ < length_; index_++)
                     {
                         key_words_ = getQueryParam(document_.URL, campaign_keywords_[index_]);
-        
+
                         if (!key_words_.length) continue;
-        
+
                         params_[campaign_keywords_[index_] + ' [last touch]'] = key_words_;
                     }
-        
+
                     for (index_ = 0; index_ < length_; index_++)
                     {
                         key_words_ = getQueryParam(document_.URL, campaign_keywords_[index_]);
-        
+
                         if (!key_words_.length) continue;
-        
+
                         first_params_[campaign_keywords_[index_] + ' [first touch]'] = key_words_;
                     }
-        
+
                     mixpanel.people.set(params_);
                     mixpanel.people.set_once(first_params_);
                     mixpanel.register(params_);
                 }
             }
-        
+
             function getSegmentKey()
             {
                 var rp_config_      = global_.getRpConfig();
-        
+
                 var segment_key_    = rp_config_.getRequiredPropertyValue('analytics.segment.segment_key');
-        
+
                 return segment_key_;
             }
-        
+
         }(window);
-        
+
     </script>
     <!-- Segement Load End -->
     <!-- Google Analytics -->
@@ -631,113 +631,113 @@
         !function initTrustarcCallbacks(window_)
         {
             var console_ = window_.console.getCustom('trustarc', window_.getRpConfig().getPropertyValue('trustarc.is_debug'));
-            
+
             console_.log('.initTrustarcCallbacks()');
-        
+
             window_.enableGoogleAnalytics = enableGoogleAnalytics;
             window_.enableAdvertising     = enableAdvertising;
             window_.addEventListener('RP_PAGE_VIEW', enableAdvertising);
-        
+
             function initGoogleAnalytics()
             {
                 console_.log('.initGoogleAnalytics()');
-        
+
                 window_.GoogleAnalyticsObject = 'ga';
-        
+
                 var ga_     = window_.ga = window_.ga || googleAnalytics;
                 var queue_  = ga_.q = ga_.q || [];
                 queue_;
-        
+
                 ga_.l  = 1*new Date();
-        
+
                 function googleAnalytics()
                 {
                     console_.log('.googleAnalytics() -> ', arguments);
-        
+
                     window_.ga.q.push(arguments);
                 };
             }
-        
+
             function enableGoogleAnalytics()
             {
                 console_.warn('.enableGoogleAnalytics() -> when segment is disabled');
-        
+
                 var google_analytics_ua_    = getGoogleAnalyticsUA();
-        
+
                 if (!google_analytics_ua_)  return console_.warn('.enableGoogleAnalytics() -> no google_analytics_ua is configured, will not use GA');
-        
+
                 initGoogleAnalytics();
                 loadGoogleAnalytics();
-        
+
                 console_.warn('.enableGoogleAnalytics() -> google_analytics_ua: "' + google_analytics_ua_ + '"');
-        
+
                 ga('create' , google_analytics_ua_, 'auto');
                 ga('send'   , 'pageview');
-        
+
                 function getGoogleAnalyticsUA()
                 {
                     var google_analytics_ua_ = window_.getRpConfig().getRequiredPropertyValue('analytics.google.google_analytics_ua');
-        
+
                     return google_analytics_ua_;
                 }
-        
+
                 function loadGoogleAnalytics()
                 {
                     console_.log('.loadGoogleAnalytics()');
-        
+
                     var script_ = window_.document.createElement('script');
-        
+
                     script_.async = true;
                     script_.src   = 'https://www.google-analytics.com/analytics.js';
-        
+
                     var first_script_ = window_.document.getElementsByTagName('script')[0];
-        
+
                     first_script_.parentNode.insertBefore(script_, first_script_);
                 }
             }
-        
+
             function enableAdvertising()
             {
                 if(!getTrustarcPrefs()) return;
-        
+
                 console_.log('.enableAdvertising()');
                 console.log('.enableAdvertising()');
                 /*window_.dispatchEvent(new Event('RP_ADVERTISING_ALLOWED')); / / IE does not work with this */
                 var event_ = window_.document.createEvent('Event');
                 event_.initEvent('RP_ADVERTISING_ALLOWED', false, true);
-        
+
                 window_.removeEventListener('RP_PAGE_VIEW', enableAdvertising);
                 window_.dispatchEvent(event_);
             }
-        
+
             function getTrustarcPrefs(){
                 let getTrustarcPrefs_ = getCookie('notice_gdpr_prefs');
-          
+
                 return getTrustarcPrefs_ ? getTrustarcPrefs_.includes('1') : true;
             }
-          
+
             function getCookie(name) {
                 const value = `; ${document.cookie}`;
                 const parts = value.split(`; ${name}=`);
                 if (parts.length === 2) return parts.pop().split(';').shift();
             }
-        
+
         /*
             function trackPageTime()
             {
-        
+
                 console_.log('.trackPageTime()');
-        
+
                 var has_ga_         = window_.ga;
                 var has_analytics_  = window_.analytics;
-        
+
                 if (!has_ga_ && !has_analytics_)
                 {
                     console_.warn('.trackPageTime() -> globals "window.ga" for GA or "window.analytics" for Segment are missing, there will be no page view duration tracking!');
-        
+
                     return;
                 }
-        
+
                 var timers_data_ = [
                     { time: 0       , event: '0-10 seconds'     },
                     { time: 11000   , event: '11-30 seconds'    },
@@ -747,88 +747,88 @@
                     { time: 601000  , event: '601-1800 seconds' },
                     { time: 1801000 , event: '1801+ seconds'    }
                 ];
-        
+
                 function onPageViewDurationTimer(timer_index_, event_name_, time_)
                 {
                     console_.log('.onPageViewDurationTimer() -> timer_index: ' + timer_index_+ ' event_name: ' + event_name_ + ' time: ' + time_ + ' ms');
-        
+
                     if (has_ga_)
                     {
                         window_.ga('send', 'event', 'TimeOnPage', timer_index_, event_name_, { 'nonInteraction': 1 });
-        
+
                         return;
                     }
-        
+
                     window_.analytics.track('TimeOnPage', {
                         'index'         : timer_index_,
                         'event_name'    : event_name_
                     })
                 }
-        
+
                 function setPageViewDurationTimer(timer_index_)
                 {
                     var timer_data_ = timers_data_[timer_index_];
                     var event_name_ = timer_data_.event;
                     var time_       = timer_data_.time;
-        
+
                     console_.log('.setPageViewDurationTimer() -> timer_index: '+ timer_index_ + ' time: ' + time_);
-        
+
                     setTimeout(
                         function () {
                             onPageViewDurationTimer(timer_index_, event_name_, time_);
-                        }, 
+                        },
                         time_
                     );
                 }
-        
+
                 var timer_index_;
-        
+
                 for( timer_index_= 0; timer_index_ < timers_data_.length; timer_index_++)
                 {
                     setPageViewDurationTimer(timer_index_);
                 }
             }
         */
-        
+
         }(window);
-        
+
     </script>
     <!-- Google Analytics End -->
-    
+
     <!-- Braze -->
     <script>
         'use strict';
         !function initBrazeIntegation(window)
         {
             analytics.ready(onAnalyticsReady);
-        
+
             const BRAZE_PAGE_VIEWS = 'braze_page_views'
             const BRAZE_SOFT_PUSH_DAYS_DELAY = 'braze_soft_push_days_delay'
             const BRAZE_STAGE = 'braze_stage'
-        
+
             const BRAZE_STAGES = {
                 FIRST: 'first',
                 SECOND: 'second',
                 THIRD: 'third',
                 MORE_THAN_THREE: 'more_than_three'
             }
-        
+
             const getBrazeInstance = () => {
                 return typeof window !== 'undefined' ? window.braze : null
             }
-        
+
             const initializeBraze = () => {
                 const braze = getBrazeInstance()
                 if (braze) {
                     console.info('Braze is ready')
-        
+
                     braze.subscribeToInAppMessage(handleBrazeMessage)
                     braze.openSession()
-        
+
                     if (!getAppCookie(BRAZE_STAGE)) {
                         setAppCookie(BRAZE_STAGE, BRAZE_STAGES.FIRST)
                     }
-        
+
                     if (!getAppCookie(BRAZE_PAGE_VIEWS)) {
                         setAppCookie(BRAZE_PAGE_VIEWS, 1)
                     }
@@ -836,83 +836,83 @@
                     console.log('Braze not loaded')
                 }
             }
-        
+
             const handleBrazeMessage = (inAppMessage) => {
                 const braze = getBrazeInstance()
-        
+
                 if (inAppMessage instanceof braze.InAppMessage) {
                     const keyValuePairs = inAppMessage.extras || {}
-        
+
                     const shouldHandlePushMessage =
                         braze.isPushSupported() && !braze.isPushPermissionGranted() && !braze.isPushBlocked()
-        
+
                     // push-primer is the push notification prompt
                     if (keyValuePairs['msg-id'] === 'push-primer' && shouldHandlePushMessage) {
                         handlePushMessagePermissions(inAppMessage)
                     }
-        
+
                     // show the in-app message now
                     braze.showInAppMessage(inAppMessage)
                 }
             }
-        
+
             const getCurrentStagePageViews = () => {
                 const currentStage = getAppCookie(BRAZE_STAGE)
-        
+
                 const stagePageViewsMapping = {
                     [BRAZE_STAGES.FIRST]: 8,
                     [BRAZE_STAGES.SECOND]: 4,
                     [BRAZE_STAGES.THIRD]: 4
                 }
-        
+
                 return stagePageViewsMapping[currentStage] || 4
             }
-        
+
             const getCurrentStageDaysDelay = () => {
                 const currentStage = getAppCookie(BRAZE_STAGE)
-        
+
                 const stageDaysDelayMapping = {
                     [BRAZE_STAGES.FIRST]: 7,
                     [BRAZE_STAGES.SECOND]: 5,
                     [BRAZE_STAGES.THIRD]: 5
                 }
-        
+
                 const currentStageDaysDelay = stageDaysDelayMapping[currentStage] || 7
-        
+
                 const date = new Date()
                 date.setDate(date.getDate() + currentStageDaysDelay)
                 return date
             }
-        
+
             const shouldRequestPushPermissions = () => {
                 const braze = getBrazeInstance()
-        
+
                 if (!getAppCookie(BRAZE_STAGE)) {
                     setAppCookie(BRAZE_STAGE, BRAZE_STAGES.FIRST)
                 }
-        
+
                 if (!getAppCookie(BRAZE_PAGE_VIEWS)) {
                     setAppCookie(BRAZE_PAGE_VIEWS, 0)
                 }
-        
+
                 if (new Date(getAppCookie(BRAZE_SOFT_PUSH_DAYS_DELAY)) > new Date()) {
                     return false
                 }
-        
+
                 if (parseInt(getAppCookie(BRAZE_PAGE_VIEWS)) < getCurrentStagePageViews()) {
                     return false
                 }
-        
+
                 if (braze.isPushPermissionGranted()) {
                     return false
                 }
-        
+
                 return true
             }
-        
+
             const getNextStage = () => {
                 const currentStage = getAppCookie(BRAZE_STAGE)
-        
+
                 switch (currentStage) {
                     case BRAZE_STAGES.FIRST:
                         return BRAZE_STAGES.SECOND
@@ -923,151 +923,151 @@
                         return BRAZE_STAGES.MORE_THAN_THREE
                 }
             }
-        
+
             const deleteCookies = () => {
                 setAppCookie(BRAZE_STAGE, '')
                 setAppCookie(BRAZE_SOFT_PUSH_DAYS_DELAY, '')
                 setAppCookie(BRAZE_PAGE_VIEWS, 0)
             }
-        
+
             const handlePushMessagePermissions = (message) => {
                 const onMaybeLater = () => {
                     setAppCookie(BRAZE_STAGE, getNextStage())
                     setAppCookie(BRAZE_SOFT_PUSH_DAYS_DELAY, getCurrentStageDaysDelay())
                     setAppCookie(BRAZE_PAGE_VIEWS, 0)
                 }
-        
+
                 const onAccept = () => {
                     const braze = getBrazeInstance()
                     deleteCookies()
                     braze.requestPushPermission()
                 }
-        
+
                 // execute always - whether the user click the 'Maybe Later' button
                 // or the X or clicks away from the prompt
                 // to execute only on the Maybe Later button click:
                 // message.buttons[0].subscribeToClickedEvent(onMaybeLater);
                 onMaybeLater()
-        
+
                 // buttons[1] is the Accept button
                 message.buttons[1].subscribeToClickedEvent(onAccept)
             }
-        
+
             const incrementPageViewsCookie = () => {
-        
+
                 if (new Date(getAppCookie(BRAZE_SOFT_PUSH_DAYS_DELAY)) > new Date()) {
                     return
                 }
-        
+
                 const currentPageViews = parseInt(getAppCookie(BRAZE_PAGE_VIEWS))
                 setAppCookie(BRAZE_PAGE_VIEWS, !isNaN(currentPageViews) ? currentPageViews + 1 : 0)
             }
-        
-        
+
+
             const logBrazePushNotificationEvent = () => {
                 const braze = getBrazeInstance()
                 const isMobileDevice =
                     (/iPad|iPhone|iPod/.test(window.navigator.userAgent) && !window.MSStream) ||
                     /android/i.test(window.navigator.userAgent)
-        
+
                 if (braze && shouldRequestPushPermissions() && !isMobileDevice) {
                     braze.logCustomEvent('prime-for-push')
                 }
             }
-        
+
             const setAppCookie = (cookieName, value) => {
                 if (typeof window !== 'undefined') {
                     document.cookie = `${cookieName}=${value}; path=/`
                 }
             }
-        
+
             const getAppCookie = (cookieName) => {
                 if (typeof window !== 'undefined') {
                     const cookies = document.cookie.split(';')
                     const cookie = cookies.find((c) => c.includes(cookieName))
-        
+
                     if (!cookie) {
                         return null
                     }
-        
+
                     return cookie.split('=')[1]
                 }
             }
-        
+
             function onAnalyticsReady()
             {
                 const braze = getBrazeInstance();
-        
+
                 if (!braze)
                 {
                     console.log('.onAnalyticsReady() -> Braze integration (window.appboy) not present.', window.braze);
                     return;
                 }
-        
+
                 initializeBraze();
-        
+
                 if(!braze.isPushPermissionGranted()){
                     incrementPageViewsCookie();
                     logBrazePushNotificationEvent();
                 }
             }
-        
+
         }(window);
-        
+
     </script>
     <!-- Braze End -->
-    
+
     <!-- Segmentify -->
     <script type="text/javascript" id="" charset="UTF-8" src="//sgmcdn.racingpost.com/3331e89e-fade-4ec2-8662-99174bdd2b69/sgmrp.js"></script>
     <!-- Segmentify End -->
-    
+
     <!-- AB Tasty (with GDPR check) -->
     <script type="text/javascript" crossorigin>
-    	(function () {
-    		// ---- 1. Parse cookies into a key→value map ----
-    		function getCookies() {
-    			return document.cookie.split(';').reduce(function (map, pair) {
-    			var parts = pair.split('=');
-    			var key = parts.shift().trim();
-    			var val = parts.join('=').trim();
-    
-    			if (key) {
-    				try {
-    					map[key] = decodeURIComponent(val);
-    				} catch (e) {
-    					map[key] = val;
-    				}
-    			}
-    			
-    			return map;
-    			}, {});
-    		}
-    
-    		// ---- 2. Read the GDPR prefs cookie ----
-    		var cookies = getCookies();
-    		var prefs = cookies.notice_gdpr_prefs || '';
-    
-    		// ---- 3. Consent logic ----
-    		// “1” = Functional/Analytics
-    		// “2” = Marketing/AB Tasty, default: allow if missing
-    		// (change `: false` to `: true` if you prefer to allow by default)
-    		var isAbTastyAllowed  = prefs ? prefs.includes('2') : true;
-    
-    		// ---- 4. Inject only if Marketing consent is true ----
-    		if (!isAbTastyAllowed) {
-    			// consent denied → do nothing (or add your fallback logic here)
-    			return;
-    		}
-    
-    		var script = document.createElement("script");
-    
-    		script.type = "text/javascript";
-    		script.async = true;
-    
-    		script.src = `//try.abtasty.com/efa71c7ee8e392f99b43bdc68b8ddba8.js`;
-    
-    		document.head.appendChild(script);
-    	})();
+	(function () {
+		// ---- 1. Parse cookies into a key→value map ----
+		function getCookies() {
+			return document.cookie.split(';').reduce(function (map, pair) {
+			var parts = pair.split('=');
+			var key = parts.shift().trim();
+			var val = parts.join('=').trim();
+
+			if (key) {
+				try {
+					map[key] = decodeURIComponent(val);
+				} catch (e) {
+					map[key] = val;
+				}
+			}
+
+			return map;
+			}, {});
+		}
+
+		// ---- 2. Read the GDPR prefs cookie ----
+		var cookies = getCookies();
+		var prefs = cookies.notice_gdpr_prefs || '';
+
+		// ---- 3. Consent logic ----
+		// “1” = Functional/Analytics
+		// “2” = Marketing/AB Tasty, default: allow if missing
+		// (change `: false` to `: true` if you prefer to allow by default)
+		var isAbTastyAllowed  = prefs ? prefs.includes('2') : true;
+
+		// ---- 4. Inject only if Marketing consent is true ----
+		if (!isAbTastyAllowed) {
+			// consent denied → do nothing (or add your fallback logic here)
+			return;
+		}
+
+		var script = document.createElement("script");
+
+		script.type = "text/javascript";
+		script.async = true;
+
+		script.src = `//try.abtasty.com/efa71c7ee8e392f99b43bdc68b8ddba8.js`;
+
+		document.head.appendChild(script);
+	})();
     </script>
     <!-- AB Tasty End -->
     </head>
@@ -1086,39 +1086,39 @@
     {
         window_.googletag       = window_.googletag     || {};
         window_.googletag.cmd   = window_.googletag.cmd || [];
-    
+
         window_.googletag.cmd.push(collapseEmptyAds);
-        
+
         function collapseEmptyAds()
         {
             var pubads_ = window_.googletag.pubads();
-    
+
             pubads_.collapseEmptyDivs();
-    
+
             var not_to_folow_ = true;
-    
+
             if (not_to_folow_) return;
-    
+
             pubads_.setTargeting('to_follow', "");
             pubads_.enableSingleRequest();
         }
-    
+
     }(window);
-    
+
 </script>
 <script>
     'use strict';
     !function waitForAllowHeaderAdvertisement(window_)
     {
         window_.addEventListener('RP_ADVERTISING_ALLOWED', allowHeaderAdvertisement);
-    
+
         function allowHeaderAdvertisement()
         {
             window_.removeEventListener('RP_ADVERTISING_ALLOWED', allowHeaderAdvertisement);
-    
+
             $('.ui-advertising_position1').removeAttr('style');
         }
-    
+
     }(window);
 </script>
 <!-- Advertising End -->
@@ -1126,7 +1126,7 @@
             <aside class="ui-advertising__container ui-advertising_position1 js-advertising__placeholder1"
        data-test-selector="block-advertising_position1" >
 </aside>
-    
+
 <div style="display: none;">
     <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="display: none;">
     <symbol id="icon-down" viewBox="0 0 100 100">
@@ -1170,7 +1170,7 @@
     <symbol id="icon-audio" viewBox="0 0 100 100">
         <title>audio</title>
         <path d="M43.2,9.7l-24,21.9H4c-2.2,0-4,1.8-4,4v28.8c0,2.2,1.8,4,4,4h15.2l24,21.9c1.6,1.5,3,0.9,3-1.3V11
-        			C46.2,8.8,44.8,8.2,43.2,9.7z"/>
+				C46.2,8.8,44.8,8.2,43.2,9.7z"/>
         <path d="M61.8,30.5c-1.4-2.1-4.3-2.4-6.1-0.6L55.6,30c-1.3,1.3-1.5,3.4-0.4,5c2.7,4,4.3,8.9,4.3,14.1c0,5.8-2,11.1-5.3,15.3
             c-1.2,1.6-1.1,3.8,0.3,5.3l0.1,0.1c1.7,1.7,4.5,1.5,6-0.4c4.4-5.6,7-12.6,7-20.3C67.5,42.2,65.4,35.8,61.8,30.5z"/>
         <path d="M72.8,18.9c-1.5-1.9-4.2-2-5.9-0.3l-0.1,0.1c-1.4,1.4-1.6,3.6-0.3,5.2c5.5,7,8.8,15.7,8.8,25.3c0,10.1-3.7,19.3-9.8,26.5
@@ -1224,13 +1224,13 @@
     </symbol>
     <symbol id="icon-hot" viewBox="0 0 100 100">
         <title>hot</title>
-    	<path d="M34.3,67.6c-7.7,6.8-8.3,16.4-1.4,23.6c0.4,0.4,0.9,0.8,1.2,1.2c0.5,0.8,1.7,1.5,0.8,2.6c-0.6,0.7-1.6,0.2-2.4-0.1
-    		C23.8,92.5,14.9,81.4,14,72.2c-1.3-12.6,2.4-23.6,10-33.6c5.5-7.2,12.6-13,18.4-19.9c3.3-3.9,5.7-8,5.6-13.2c0-1-0.2-2.2,1-2.6
-    		c1.3-0.5,2.1,0.6,2.8,1.5c5.4,6.9,8.5,14.4,5.4,23.3c-1.1,3-1.7,6.2-1.2,9.4c0.5,2.9,1.8,5.4,5.1,5.5c2.7,0.2,4.5-0.9,4.8-4.2
-    		c0.2-2.3,2.2-1.7,3.7-0.8c16.9,10,22.4,31.6,9.4,46.8c-3.3,3.9-7.4,6.8-11.9,9.2c-1.9,1-3.8,2-6.2,1.4c0-2,1.6-2.7,2.8-3.6
-    		c7.2-5.8,8.7-15.1,3.6-22.8c-2.9-4.4-7-7.7-11.3-10.6c-4.5-3-9.1-5.7-12-10.4c-0.4-0.6-0.8-1.4-1.6-1c-0.5,0.3-1,1.1-1,1.8
-    		c-0.1,3.4-0.5,6.9,1.9,9.9c1.2,1.5,2.3,3,3.3,4.6c1.9,3,1.8,6,0,9c-1.4,2.3-3.7,2.8-6.1,2.5c-3.3-0.4-4.9-2.7-5.7-5.7
-    		C34.8,68.3,34.5,68,34.3,67.6z"/>
+	<path d="M34.3,67.6c-7.7,6.8-8.3,16.4-1.4,23.6c0.4,0.4,0.9,0.8,1.2,1.2c0.5,0.8,1.7,1.5,0.8,2.6c-0.6,0.7-1.6,0.2-2.4-0.1
+		C23.8,92.5,14.9,81.4,14,72.2c-1.3-12.6,2.4-23.6,10-33.6c5.5-7.2,12.6-13,18.4-19.9c3.3-3.9,5.7-8,5.6-13.2c0-1-0.2-2.2,1-2.6
+		c1.3-0.5,2.1,0.6,2.8,1.5c5.4,6.9,8.5,14.4,5.4,23.3c-1.1,3-1.7,6.2-1.2,9.4c0.5,2.9,1.8,5.4,5.1,5.5c2.7,0.2,4.5-0.9,4.8-4.2
+		c0.2-2.3,2.2-1.7,3.7-0.8c16.9,10,22.4,31.6,9.4,46.8c-3.3,3.9-7.4,6.8-11.9,9.2c-1.9,1-3.8,2-6.2,1.4c0-2,1.6-2.7,2.8-3.6
+		c7.2-5.8,8.7-15.1,3.6-22.8c-2.9-4.4-7-7.7-11.3-10.6c-4.5-3-9.1-5.7-12-10.4c-0.4-0.6-0.8-1.4-1.6-1c-0.5,0.3-1,1.1-1,1.8
+		c-0.1,3.4-0.5,6.9,1.9,9.9c1.2,1.5,2.3,3,3.3,4.6c1.9,3,1.8,6,0,9c-1.4,2.3-3.7,2.8-6.1,2.5c-3.3-0.4-4.9-2.7-5.7-5.7
+		C34.8,68.3,34.5,68,34.3,67.6z"/>
     </symbol>
     <symbol id="icon-liveCommentary" viewBox="0 0 100 100">
         <title>icon-liveCommentary</title>
@@ -1267,7 +1267,7 @@
 <header class="js-diffusionTopicSettings" data-auth-prefs-url="/json/authPrefs" data-diffusion-host="diffusion-v6-fanout.racingpost.com" data-diffusion-port="443" data-diffusion-secure="true" data-diffusion-principal="DiffusionRP1User1" data-diffusion-credentials="swd4AsFd2Jnfsvy63AF7" data-esuitejs-endpoint="payments.mppglobal.com" data-esuitejs-version="v8" data-esuitejs-rest-endpoint="https://live.mppglobal.com" data-esuitejs-rest-version="11.0.0" data-esuitejs-token="3C44FB9CD5B54D3686F4B5FFE71E316E" data-diffusion-feed-ppwr="PADDYPOWER" >
 
     <div class="rn-menuBar rn-wrapper">
-        
+
 <div style = "display: none;">
     <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="display: none;">
     <symbol id="icon-menu" viewBox="0 0 24 24">
@@ -1470,7 +1470,7 @@
                     <svg class = "rn-menuBar__logo__img" data-test-selector = "img-navigationRpLogo">
             <svg id="racing_post_logo_footer" class="racing_post_logo_footer" enable-background="new 0 0 350.1 38.2" version="1.1" viewBox="0 0 350.1 38.2" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
     <style>
-        .racing_post_logo_footer .letters_color{fill:#000000;} 
+        .racing_post_logo_footer .letters_color{fill:#000000;}
         .racing_post_logo_footer .o_color{      fill:#ED1C24;}
         .racing_post_logo_footer .o_fill_color{ fill:#ffffff;}
     </style>
@@ -1557,7 +1557,7 @@
                     <svg class = "rn-menuBar__logo__img" data-test-selector = "img-navigationRpLogo">
             <svg id="racing_post_logo_footer" class="racing_post_logo_footer" enable-background="new 0 0 350.1 38.2" version="1.1" viewBox="0 0 350.1 38.2" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
     <style>
-        .racing_post_logo_footer .letters_color{fill:#000000;} 
+        .racing_post_logo_footer .letters_color{fill:#000000;}
         .racing_post_logo_footer .o_color{      fill:#ED1C24;}
         .racing_post_logo_footer .o_fill_color{ fill:#ffffff;}
     </style>
@@ -1580,7 +1580,7 @@
     </div>
 
     <div class="rn-navigation rn-wrapper " id="navigationContainer">
-        
+
 <nav class="rn-canvas" style="display: flex; flex-wrap: wrap">
     <ul class="rn-primaryNav"
         id="primaryNav">
@@ -2149,7 +2149,7 @@
                 <div class="ui-canvas js-contentWrapper ui-advertising__skinsWrp_secNav">
             <div class="ui-content ui-content_marginless js-ui-content RC-phone RC-tablet RC-desktop">
                 <main class="js-RC-mainContent RC-content-wrapper ui-mainContent">
-                    
+
     <section class="js-RC-meetingDay
                     js-diffusionTopicSettingsRace"
              data-site-sub-section-1="Races"
@@ -2533,7 +2533,7 @@
                                    data-test-selector="RC-meetingDay__raceTitle">
                                     Irish Stallion Farms EBF Median Auction Maiden                                </a>
                                                                 <span data-test-selector="RC-meetingDay__raceAgesAllowed">
-                                    
+
                                     (3yo+)
                                 </span>
                                                                     <span data-test-selector="RC-meetingDay__racePrize">Winner €8,850</span>
@@ -2551,10 +2551,10 @@
      <span data-test-selector="RC-raceCondition__stakes">€15,000 guaranteed</span>
             <span class="RC-raceCondition__label">For&nbsp;</span>
      <span data-test-selector="RC-raceCondition__types">3yo+ that are EBF eligible and whose sire established one or more yearling sales in the relevant year with a median price of not more than 30,000euros</span>
-    
+
             <span class="RC-raceCondition__label">Weights&nbsp;</span>
      <span data-test-selector="RC-raceCondition__weight">3yo 9st 8lbs; 4yo+ 10st</span>
-    
+
                         <span class="RC-raceCondition__label">Weight for age&nbsp;</span>
      <span data-test-selector="RC-raceCondition__weightForAge">3yo from 4yo+ 6lb</span>
                 <span class="RC-raceCondition__label">Allowances&nbsp;</span>
@@ -2839,7 +2839,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -3025,7 +3025,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -3200,7 +3200,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -3378,7 +3378,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -3556,7 +3556,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -3731,7 +3731,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -3913,7 +3913,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -4088,7 +4088,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -4266,7 +4266,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -4444,7 +4444,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -4619,7 +4619,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -4797,7 +4797,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -4972,7 +4972,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -5150,7 +5150,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -5328,7 +5328,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
             RC-runnerRow_disabled
         js-runnerNonRunner
@@ -5508,7 +5508,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
             RC-runnerRow_disabled
         js-runnerNonRunner
@@ -5688,7 +5688,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
         <div class="RC-runnerFloater js-RC-runnerLoader">
     <div class="js-RC-runnerLoader_floating" >
         <svg class="ui-icon
@@ -5719,8 +5719,8 @@
         </div>
     </div>
 </div>
-</div>                                                    
-                                                
+</div>
+
                                                                                     <div class="RC-raceFooterInfo
                 RC-raceFooterInfo_bettingForecast
                 RC-phone
@@ -5823,7 +5823,7 @@
                                    data-test-selector="RC-meetingDay__raceTitle">
                                     Gibneys Malahide Handicap (Div I)                                </a>
                                                                 <span data-test-selector="RC-meetingDay__raceAgesAllowed">
-                                    
+
                                     (4yo+ 0-60)
                                 </span>
                                                                     <span data-test-selector="RC-meetingDay__racePrize">Winner €5,900</span>
@@ -5841,8 +5841,8 @@
      <span data-test-selector="RC-raceCondition__stakes">€10,000 guaranteed</span>
             <span class="RC-raceCondition__label">For&nbsp;</span>
      <span data-test-selector="RC-raceCondition__types">4yo+ rated 0-60</span>
-    
-    
+
+
                 <span class="RC-raceCondition__label">Minimum weights:</span>
         <span data-test-selector="RC-raceCondition__minWeight">8-7;</span>
                                 <span class="RC-raceCondition__label">Penalties&nbsp;</span>
@@ -6135,7 +6135,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -6313,7 +6313,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -6494,7 +6494,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -6679,7 +6679,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -6861,7 +6861,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -7047,7 +7047,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -7225,7 +7225,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -7411,7 +7411,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -7592,7 +7592,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -7774,7 +7774,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -7959,7 +7959,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -8137,7 +8137,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -8319,7 +8319,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -8497,7 +8497,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -8675,7 +8675,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
         <div class="RC-runnerFloater js-RC-runnerLoader">
     <div class="js-RC-runnerLoader_floating" >
         <svg class="ui-icon
@@ -8706,7 +8706,7 @@
         </div>
     </div>
 </div>
-</div>                                                    
+</div>
                                                     <div class="RC-raceFooterInfo
                 RC-phone
     "
@@ -8817,7 +8817,7 @@
                                    data-test-selector="RC-meetingDay__raceTitle">
                                     Gibneys Malahide Handicap (Div II)                                </a>
                                                                 <span data-test-selector="RC-meetingDay__raceAgesAllowed">
-                                    
+
                                     (4yo+ 0-60)
                                 </span>
                                                                     <span data-test-selector="RC-meetingDay__racePrize">Winner €5,900</span>
@@ -8835,8 +8835,8 @@
      <span data-test-selector="RC-raceCondition__stakes">€10,000 guaranteed</span>
             <span class="RC-raceCondition__label">For&nbsp;</span>
      <span data-test-selector="RC-raceCondition__types">4yo+ rated 0-60</span>
-    
-    
+
+
                 <span class="RC-raceCondition__label">Minimum weights:</span>
         <span data-test-selector="RC-raceCondition__minWeight">8-7;</span>
                                 <span class="RC-raceCondition__label">Penalties&nbsp;</span>
@@ -9129,7 +9129,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -9311,7 +9311,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -9493,7 +9493,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -9675,7 +9675,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -9853,7 +9853,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -10035,7 +10035,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -10217,7 +10217,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -10395,7 +10395,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -10573,7 +10573,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -10759,7 +10759,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -10949,7 +10949,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -11131,7 +11131,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -11312,7 +11312,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -11501,7 +11501,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -11679,7 +11679,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
         <div class="RC-runnerFloater js-RC-runnerLoader">
     <div class="js-RC-runnerLoader_floating" >
         <svg class="ui-icon
@@ -11710,8 +11710,8 @@
         </div>
     </div>
 </div>
-</div>                                                    
-                                                
+</div>
+
                                                                                     <div class="RC-raceFooterInfo
                 RC-raceFooterInfo_bettingForecast
                 RC-phone
@@ -11809,7 +11809,7 @@
                                    data-test-selector="RC-meetingDay__raceTitle">
                                     Peadar Kearney's Pub Handicap                                </a>
                                                                 <span data-test-selector="RC-meetingDay__raceAgesAllowed">
-                                    
+
                                     (3yo)
                                 </span>
                                                                     <span data-test-selector="RC-meetingDay__racePrize">Winner €7,670</span>
@@ -11827,8 +11827,8 @@
      <span data-test-selector="RC-raceCondition__stakes">€13,000 guaranteed</span>
             <span class="RC-raceCondition__label">For&nbsp;</span>
      <span data-test-selector="RC-raceCondition__types">3yo only (80 = 10st)</span>
-    
-    
+
+
                 <span class="RC-raceCondition__label">Minimum weights:</span>
         <span data-test-selector="RC-raceCondition__minWeight">8-7;</span>
                                 <span class="RC-raceCondition__label">Penalties&nbsp;</span>
@@ -12125,7 +12125,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -12307,7 +12307,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -12485,7 +12485,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -12667,7 +12667,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -12853,7 +12853,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -13035,7 +13035,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -13217,7 +13217,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -13395,7 +13395,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
         <div class="RC-runnerFloater js-RC-runnerLoader">
     <div class="js-RC-runnerLoader_floating" >
         <svg class="ui-icon
@@ -13426,8 +13426,8 @@
         </div>
     </div>
 </div>
-</div>                                                    
-                                                
+</div>
+
                                                                                     <div class="RC-raceFooterInfo
                 RC-raceFooterInfo_bettingForecast
                 RC-phone
@@ -13496,7 +13496,7 @@
                                    data-test-selector="RC-meetingDay__raceTitle">
                                     Irish EBF Auction Series Maiden                                </a>
                                                                 <span data-test-selector="RC-meetingDay__raceAgesAllowed">
-                                    
+
                                     (2yo)
                                 </span>
                                                                     <span data-test-selector="RC-meetingDay__racePrize">Winner €11,800</span>
@@ -13514,10 +13514,10 @@
      <span data-test-selector="RC-raceCondition__stakes">€20,000 guaranteed</span>
             <span class="RC-raceCondition__label">For&nbsp;</span>
      <span data-test-selector="RC-raceCondition__types">2yo only that are EBF eligible and which had been purchased as yearlings or as two year olds at Public Auction under the hammer after 1st July, 2024 for 48,000euros or less at a designated or specified sale</span>
-    
+
             <span class="RC-raceCondition__label">Weights&nbsp;</span>
      <span data-test-selector="RC-raceCondition__weight">9st 9lbs</span>
-    
+
                             <span class="RC-raceCondition__label">Allowances&nbsp;</span>
      <span data-test-selector="RC-raceCondition__allowances">fillies 5lbs - (which are not cumulative) - If price determining allowances is not more than 40,000euros allowed 2lb; not more than 32,000euros 4lb; not more than 24,000euros 6lb; not more than 16,000euros 8lb; not more than 8,000euros 10lb</span>
                                         <span class="RC-raceCondition__label">Penalty&nbsp;value&nbsp;</span>
@@ -13800,7 +13800,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -13978,7 +13978,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -14156,7 +14156,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -14334,7 +14334,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -14512,7 +14512,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -14687,7 +14687,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -14865,7 +14865,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -15043,7 +15043,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -15218,7 +15218,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -15400,7 +15400,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -15578,7 +15578,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -15756,7 +15756,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -15934,7 +15934,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
         <div class="RC-runnerFloater js-RC-runnerLoader">
     <div class="js-RC-runnerLoader_floating" >
         <svg class="ui-icon
@@ -15965,8 +15965,8 @@
         </div>
     </div>
 </div>
-</div>                                                    
-                                                
+</div>
+
                                                                                     <div class="RC-raceFooterInfo
                 RC-raceFooterInfo_bettingForecast
                 RC-phone
@@ -16060,7 +16060,7 @@
                                    data-test-selector="RC-meetingDay__raceTitle">
                                     Dolly's Bar & Pantry Handicap                                </a>
                                                                 <span data-test-selector="RC-meetingDay__raceAgesAllowed">
-                                    
+
                                     (3yo+)
                                 </span>
                                                                     <span data-test-selector="RC-meetingDay__racePrize">Winner €7,670</span>
@@ -16078,8 +16078,8 @@
      <span data-test-selector="RC-raceCondition__stakes">€13,000 guaranteed</span>
             <span class="RC-raceCondition__label">For&nbsp;</span>
      <span data-test-selector="RC-raceCondition__types">3yo+ (80 = 10st)</span>
-    
-    
+
+
                 <span class="RC-raceCondition__label">Minimum weights:</span>
         <span data-test-selector="RC-raceCondition__minWeight">8-7;</span>
                                 <span class="RC-raceCondition__label">Penalties&nbsp;</span>
@@ -16378,7 +16378,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -16560,7 +16560,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -16742,7 +16742,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -16924,7 +16924,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -17106,7 +17106,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -17288,7 +17288,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -17470,7 +17470,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -17648,7 +17648,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -17833,7 +17833,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
         <div class="RC-runnerFloater js-RC-runnerLoader">
     <div class="js-RC-runnerLoader_floating" >
         <svg class="ui-icon
@@ -17864,8 +17864,8 @@
         </div>
     </div>
 </div>
-</div>                                                    
-                                                
+</div>
+
                                                                                     <div class="RC-raceFooterInfo
                 RC-raceFooterInfo_bettingForecast
                 RC-phone
@@ -17939,7 +17939,7 @@
                                    data-test-selector="RC-meetingDay__raceTitle">
                                     Gibneys Gormanston Fillies & Mares Maiden                                </a>
                                                                 <span data-test-selector="RC-meetingDay__raceAgesAllowed">
-                                    
+
                                     (3yo+)
                                 </span>
                                                                     <span data-test-selector="RC-meetingDay__racePrize">Winner €7,080</span>
@@ -17957,10 +17957,10 @@
      <span data-test-selector="RC-raceCondition__stakes">€12,000 guaranteed</span>
             <span class="RC-raceCondition__label">For&nbsp;</span>
      <span data-test-selector="RC-raceCondition__types">3yo+ fillies & mares only</span>
-    
+
             <span class="RC-raceCondition__label">Weights&nbsp;</span>
      <span data-test-selector="RC-raceCondition__weight">3yo 9st 3lbs; 4yo+ 9st 12lbs</span>
-    
+
                         <span class="RC-raceCondition__label">Weight for age&nbsp;</span>
      <span data-test-selector="RC-raceCondition__weightForAge">3yo from 4yo+ 9lb</span>
                                             <span class="RC-raceCondition__label">Penalty&nbsp;value&nbsp;</span>
@@ -18243,7 +18243,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -18421,7 +18421,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -18599,7 +18599,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -18777,7 +18777,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -18955,7 +18955,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -19133,7 +19133,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -19311,7 +19311,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -19496,7 +19496,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -19678,7 +19678,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -19864,7 +19864,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
         <div class="RC-runnerFloater js-RC-runnerLoader">
     <div class="js-RC-runnerLoader_floating" >
         <svg class="ui-icon
@@ -19895,8 +19895,8 @@
         </div>
     </div>
 </div>
-</div>                                                    
-                                                
+</div>
+
                                                                                     <div class="RC-raceFooterInfo
                 RC-raceFooterInfo_bettingForecast
                 RC-phone
@@ -19975,7 +19975,7 @@
                                    data-test-selector="RC-meetingDay__raceTitle">
                                     Ploughman Bar & Grill (Q.R.) Handicap                                </a>
                                                                 <span data-test-selector="RC-meetingDay__raceAgesAllowed">
-                                    
+
                                     (4yo+)
                                 </span>
                                                                     <span data-test-selector="RC-meetingDay__racePrize">Winner €9,440</span>
@@ -19993,8 +19993,8 @@
      <span data-test-selector="RC-raceCondition__stakes">€16,000 guaranteed</span>
             <span class="RC-raceCondition__label">For&nbsp;</span>
      <span data-test-selector="RC-raceCondition__types">4yo+ (90 = 12st 2lbs)</span>
-    
-    
+
+
             <span class="RC-raceCondition__label">Weight&nbsp;raised&nbsp;</span>
      <span data-test-selector="RC-raceCondition__weightRaised">1</span>
                 <span class="RC-raceCondition__label">Minimum weights:</span>
@@ -20285,7 +20285,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -20467,7 +20467,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -20645,7 +20645,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -20823,7 +20823,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -21005,7 +21005,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -21187,7 +21187,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -21369,7 +21369,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -21551,7 +21551,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
             <div class="RC-runnerRow
         js-RC-runnerRow
         js-PC-runnerRow
@@ -21733,7 +21733,7 @@
         </a>
     </div>            </div>
 </div>
- 
+
         <div class="RC-runnerFloater js-RC-runnerLoader">
     <div class="js-RC-runnerLoader_floating" >
         <svg class="ui-icon
@@ -21764,8 +21764,8 @@
         </div>
     </div>
 </div>
-</div>                                                    
-                                                
+</div>
+
                                                                                     <div class="RC-raceFooterInfo
                 RC-raceFooterInfo_bettingForecast
                 RC-phone
@@ -21825,7 +21825,7 @@
                                     </div>
     </section>
 
-    
+
 <div class="PC-bestOdds js-PC-bestOdds"
    data-test-selector="RC-bestOdds__container">
 
@@ -21833,7 +21833,7 @@
   <div class="PC-bestOdds__horseName
               js-bestOddsHorseName"
        data-test-selector="RC-bestOdds__horseName">
-      
+
   </div>
 
   <div class="PC-bestOdds__headers"
@@ -22237,7 +22237,7 @@
 
             </div>
             <aside class="ui-sidebar ui-sidebar_marginless">
-                
+
     <div class="RC-sidebar"
         data-test-selector="RC-sidebarContainer">
     <aside class="RC-betSlipContainer js-betSlipContainer"
@@ -22791,7 +22791,7 @@
        <path d="M32.9876 16.8906H1V32.8906H32.9876V16.8906Z" fill="url(#paint2_linear_15060_72694)"/>
        <path opacity="0.4" d="M1.94923 26.6594C1.94923 26.6594 1.98643 26.6594 2.06082 26.6469C5.55714 26.5281 31.9841 22.4719 31.9841 22.4719C32.4242 22.4531 32.8644 22.1156 32.8644 21.5594V16.9531H1.09375V27.5781C1.09375 27.5031 1.12475 26.7406 1.94923 26.6594Z" fill="url(#paint3_linear_15060_72694)"/>
        <path d="M14.9559 24.8625C14.9559 26.3813 13.9021 27.2875 12.7366 27.2875C12.0485 27.2875 11.4782 26.9563 11.1372 26.4938V26.9375C11.1372 27.1312 11.0319 27.2375 10.7095 27.2375C10.5793 27.2375 10.4243 27.2125 10.3438 27.2V21.175C10.3438 20.9938 10.4491 20.875 10.7715 20.875C10.9017 20.875 11.0567 20.9 11.1372 20.9125V23.2438C11.472 22.7813 12.0361 22.45 12.7366 22.45C13.9021 22.45 14.9559 23.3438 14.9559 24.8625ZM14.1562 24.8625C14.1562 23.8438 13.4805 23.1438 12.5816 23.1438C11.9679 23.1438 11.3976 23.5 11.1372 24.025V25.7C11.3976 26.225 11.9679 26.5813 12.5816 26.5813C13.4867 26.5813 14.1562 25.8875 14.1562 24.8625ZM20.0826 25.15H16.5057C16.6111 26.05 17.2248 26.5563 18.1423 26.5563C18.5328 26.5563 18.8428 26.4813 19.1341 26.3813C19.3325 26.3125 19.4193 26.2875 19.4999 26.2875C19.7231 26.2875 19.8656 26.4688 19.8284 26.9C19.4131 27.0813 18.7808 27.2875 18.1175 27.2875C16.6731 27.2875 15.706 26.3063 15.706 24.8563C15.706 23.4625 16.7351 22.4563 17.9935 22.4563C19.4131 22.4563 20.1136 23.5688 20.1136 24.6938C20.1074 24.825 20.1012 24.9813 20.0826 25.15ZM16.5057 24.5312H19.3387C19.3139 23.7375 18.8056 23.1188 17.9873 23.1188C17.2744 23.1125 16.6297 23.6063 16.5057 24.5312ZM23.8579 26.9625C23.4549 27.1563 22.99 27.2812 22.5313 27.2812C21.62 27.2812 21.0683 26.7438 21.0683 25.8375V21.8313C21.0683 21.6313 21.1861 21.4938 21.496 21.4938C21.6262 21.4938 21.7812 21.5188 21.8618 21.5438V22.55H23.6595C23.6719 22.6188 23.6843 22.75 23.6843 22.8688C23.6843 23.15 23.5665 23.25 23.3992 23.25H21.8618V25.7812C21.8618 26.3187 22.1097 26.5813 22.6181 26.5813C23.0768 26.5813 23.3372 26.3813 23.5603 26.3813C23.7835 26.3813 23.9013 26.575 23.8579 26.9625Z" fill="white"/>
-  
+
        <defs>
           <linearGradient id="paint0_linear_15060_72694" x1="17.0518" y1="3.56133" x2="17.0518" y2="15.1722" gradientUnits="userSpaceOnUse">
             <stop stop-color="#002A91"/>
@@ -23071,7 +23071,7 @@
             </a>
         </div>
     </div>
-</section>   
+</section>
 <footer class="rn-footer theme-light " data-auth-prefs-url="/json/authPrefs">
     <div class="rn-footer horse-image-wrapper">
         <!--
@@ -23126,7 +23126,7 @@
                 <use xlink:href="#racing_post_logo_footer"/>
             </svg>
         </a>
-        
+
 <div style="display: none;">
 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="display: none;">
     <symbol id="icon-facebook"  viewBox="0 0 24 24">
@@ -23154,7 +23154,7 @@
     <symbol id="icon-twitter"   viewBox="0 0 24 24">
         <title>twitter</title>
         <rect x="0.237305" width="24" height="24" rx="12" fill="#1DA1F2"/>
-        <path d="M6.2666 6.66669L10.8995 12.8627L6.2373 17.8981H7.28658L11.3685 13.4887L14.6675 17.8983H18.2373L13.3435 11.355L17.6831 6.66669H16.6338L12.8747 10.7269L9.83716 6.66669H6.2666ZM7.80975 7.43974H9.45014L16.6934 17.125H15.0535L7.80975 7.43974Z" fill="white"/>    
+        <path d="M6.2666 6.66669L10.8995 12.8627L6.2373 17.8981H7.28658L11.3685 13.4887L14.6675 17.8983H18.2373L13.3435 11.355L17.6831 6.66669H16.6338L12.8747 10.7269L9.83716 6.66669H6.2666ZM7.80975 7.43974H9.45014L16.6934 17.125H15.0535L7.80975 7.43974Z" fill="white"/>
     </symbol>
     <symbol id="icon-youtube"   viewBox="0 0 24 24">
         <title>youtube</title>
@@ -23187,12 +23187,12 @@
 
 <ul class="rn-social rn-footerSocial">
             <li class="rn-social__item">
-            <a 
-                href="https://instagram.com/racingpost/" 
+            <a
+                href="https://instagram.com/racingpost/"
                 alt="Instagram"
-                target="_blank" 
-                title="Instagram" 
-                class="rn-social__link rn-social__link_instagram" 
+                target="_blank"
+                title="Instagram"
+                class="rn-social__link rn-social__link_instagram"
                 data-test-selector="link-footerInstagram"
             >
                                     <svg class="ui-icon social-icons">
@@ -23201,12 +23201,12 @@
                             </a>
         </li>
             <li class="rn-social__item">
-            <a 
-                href="https://twitter.com/racingpost" 
+            <a
+                href="https://twitter.com/racingpost"
                 alt="X/Twitter"
-                target="_blank" 
-                title="Twitter" 
-                class="rn-social__link rn-social__link_twitter" 
+                target="_blank"
+                title="Twitter"
+                class="rn-social__link rn-social__link_twitter"
                 data-test-selector="link-footerTwitter"
             >
                                     <svg class="ui-icon social-icons">
@@ -23215,12 +23215,12 @@
                             </a>
         </li>
             <li class="rn-social__item">
-            <a 
-                href="https://www.youtube.com/user/racingpostdotcom" 
+            <a
+                href="https://www.youtube.com/user/racingpostdotcom"
                 alt="YouTube"
-                target="_blank" 
-                title="Youtube" 
-                class="rn-social__link rn-social__link_youtube" 
+                target="_blank"
+                title="Youtube"
+                class="rn-social__link rn-social__link_youtube"
                 data-test-selector="link-footerYoutube"
             >
                                     <svg class="ui-icon social-icons">
@@ -23229,12 +23229,12 @@
                             </a>
         </li>
             <li class="rn-social__item">
-            <a 
-                href="https://spoti.fi/2UVhZwh" 
+            <a
+                href="https://spoti.fi/2UVhZwh"
                 alt="Spotify"
-                target="_blank" 
-                title="Spotify" 
-                class="rn-social__link rn-social__link_spotify" 
+                target="_blank"
+                title="Spotify"
+                class="rn-social__link rn-social__link_spotify"
                 data-test-selector="link-footerSpotify"
             >
                                     <svg class="ui-icon social-icons">
@@ -23243,21 +23243,21 @@
                             </a>
         </li>
             <li class="rn-social__item">
-            <a 
-                href="https://www.tiktok.com/@racingpost" 
+            <a
+                href="https://www.tiktok.com/@racingpost"
                 alt="TikTok"
-                target="_blank" 
-                title="TikTok" 
-                class="rn-social__link rn-social__link_tiktok" 
+                target="_blank"
+                title="TikTok"
+                class="rn-social__link rn-social__link_tiktok"
                 data-test-selector="link-footerTiktok"
             >
-                                    <svg 
-                        width="24" 
-                        height="24" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
+                                    <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        class="ui-icon social-icons"    
+                        class="ui-icon social-icons"
                     >
                         <rect width="24" height="24" rx="12" fill="#0C0C0C"/>
                         <path d="M15.3638 7.6774C15.4022 7.71573 15.435 7.74859 15.4733 7.78692C15.5007 7.82525 15.5226 7.86358 15.55 7.90192C16.0045 8.41118 16.5795 8.72879 17.2421 8.88212C17.2421 9.42971 17.2421 9.98279 17.2421 10.5468C16.1797 10.5359 15.2269 10.2347 14.3179 9.64328C14.3179 9.76922 14.3179 9.85136 14.3179 9.9335C14.3179 11.2915 14.3234 12.6551 14.3179 14.0131C14.3015 16.9592 11.1966 18.9251 8.52432 17.6875C8.30528 17.5889 8.0972 17.4685 7.88363 17.3644C7.86721 17.348 7.85078 17.3316 7.83435 17.3151H7.83983C7.81792 17.2987 7.79602 17.2768 7.76864 17.2604C7.69745 17.1892 7.62079 17.1125 7.5496 17.0413C7.50579 16.992 7.45651 16.9428 7.4127 16.888V16.8935C7.36889 16.8059 7.33056 16.7128 7.28128 16.6306C6.06013 14.5771 6.8432 11.9377 8.97335 10.8699C9.54286 10.5851 10.1507 10.4647 10.775 10.4318C10.7859 10.4373 10.7914 10.4482 10.8023 10.4592C10.8023 11.0451 10.8023 11.6365 10.8023 12.2389C10.6873 12.217 10.6271 12.206 10.5669 12.1951C9.77285 12.0472 9.00621 12.4141 8.62837 13.115C8.25052 13.8214 8.37647 14.6867 8.95145 15.2507C9.00621 15.3054 9.08835 15.3438 9.15406 15.3876C9.17049 15.4095 9.19239 15.4314 9.20882 15.4533C9.2362 15.4807 9.26906 15.5081 9.29644 15.5354C9.31286 15.5464 9.32929 15.5628 9.34572 15.5738H9.34024C9.63047 16.1268 10.4628 16.4609 11.1528 16.3075C12.018 16.1159 12.5875 15.404 12.5875 14.495C12.5875 11.7132 12.593 8.9314 12.582 6.1496C12.582 5.91961 12.6477 5.85937 12.8723 5.86485C13.3322 5.88128 13.7922 5.86485 14.2577 5.85938C14.2686 5.86485 14.2796 5.8758 14.2851 5.88675C14.411 6.58768 14.7286 7.17361 15.3036 7.60621L15.2981 7.60074C15.3255 7.62812 15.3474 7.6555 15.3638 7.6774Z" fill="#FCFCFC"/>
@@ -23277,12 +23277,12 @@
                             </a>
         </li>
             <li class="rn-social__item">
-            <a 
-                href="https://www.facebook.com/racingpost" 
+            <a
+                href="https://www.facebook.com/racingpost"
                 alt="Facebook"
-                target="_blank" 
-                title="Facebook" 
-                class="rn-social__link rn-social__link_facebook" 
+                target="_blank"
+                title="Facebook"
+                class="rn-social__link rn-social__link_facebook"
                 data-test-selector="link-footerFacebook"
             >
                                     <svg class="ui-icon social-icons">
@@ -23291,12 +23291,12 @@
                             </a>
         </li>
             <li class="rn-social__item">
-            <a 
-                href="https://whatsapp.com/channel/0029VadQhfwF6sn80DtXPg16" 
+            <a
+                href="https://whatsapp.com/channel/0029VadQhfwF6sn80DtXPg16"
                 alt="WhatsApp"
-                target="_blank" 
-                title="WhatsApp" 
-                class="rn-social__link rn-social__link_whatsapp" 
+                target="_blank"
+                title="WhatsApp"
+                class="rn-social__link rn-social__link_whatsapp"
                 data-test-selector="link-footerWhatsapp"
             >
                                     <svg class="ui-icon social-icons">
@@ -23306,10 +23306,10 @@
         </li>
     </ul>
     </div>
-    
+
 <div style="display: none;">
 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="display: none;">
-    
+
     <symbol id="icon-down"          viewBox="0 0 100 100">
         <title>down</title>
         <rect opacity="0" width="100" height="100"/>
@@ -23318,8 +23318,8 @@
     </symbol>
     <symbol id="icon-downFull"      viewBox="0 0 100 100">
         <title>downFull</title>
-    	<rect x="0" opacity="0" width="100" height="100"/>
-    	<path d="M98.6,29.7L49.8,78.1L1.3,29.7c-2.9-2.9-0.8-7.8,3.2-7.8h90.9C99.5,21.9,101.5,26.8,98.6,29.7z"/>
+	<rect x="0" opacity="0" width="100" height="100"/>
+	<path d="M98.6,29.7L49.8,78.1L1.3,29.7c-2.9-2.9-0.8-7.8,3.2-7.8h90.9C99.5,21.9,101.5,26.8,98.6,29.7z"/>
     </symbol>
 
     <symbol id="icon-up"            viewBox="0 0 100 100">
@@ -23331,7 +23331,7 @@
         <title>upFull</title>
         <path d="M98.6,70.3L49.8,21.9L1.3,70.3c-2.9,2.9-0.8,7.8,3.2,7.8h90.9C99.5,78.1,101.5,73.2,98.6,70.3z"/>
     </symbol>
-    
+
     <symbol id="icon-cross"         viewBox="0 0 100 100">
         <title>cross</title>
         <rect x="0" opacity="0" width="100" height="100"/>
@@ -23957,7 +23957,7 @@
                         js-RC-chooseBookieMobile__message--specific
                         js-RC-chooseBookieMobile__message--bet365"
                  data-test-selector="RC-chooseBookieMobile__message--bet365">
-                 Thanks, you've chosen to see bet365 prices on the cards. To bet quickly and easily, sign into a bookmaker account. 
+                 Thanks, you've chosen to see bet365 prices on the cards. To bet quickly and easily, sign into a bookmaker account.
                  To claim an open account offer, register.
             </div>
                     <div class="RC-chooseBookieMobile__message
@@ -23965,7 +23965,7 @@
                         js-RC-chooseBookieMobile__message--specific
                         js-RC-chooseBookieMobile__message--coral"
                  data-test-selector="RC-chooseBookieMobile__message--coral">
-                 Thanks, you've chosen to see coral prices on the cards. To bet quickly and easily, sign into a bookmaker account. 
+                 Thanks, you've chosen to see coral prices on the cards. To bet quickly and easily, sign into a bookmaker account.
                  To claim an open account offer, register.
             </div>
                     <div class="RC-chooseBookieMobile__message
@@ -23973,7 +23973,7 @@
                         js-RC-chooseBookieMobile__message--specific
                         js-RC-chooseBookieMobile__message--ladbrokes"
                  data-test-selector="RC-chooseBookieMobile__message--ladbrokes">
-                 Thanks, you've chosen to see ladbrokes prices on the cards. To bet quickly and easily, sign into a bookmaker account. 
+                 Thanks, you've chosen to see ladbrokes prices on the cards. To bet quickly and easily, sign into a bookmaker account.
                  To claim an open account offer, register.
             </div>
                     <div class="RC-chooseBookieMobile__message
@@ -23981,7 +23981,7 @@
                         js-RC-chooseBookieMobile__message--specific
                         js-RC-chooseBookieMobile__message--williamHill"
                  data-test-selector="RC-chooseBookieMobile__message--williamHill">
-                 Thanks, you've chosen to see williamHill prices on the cards. To bet quickly and easily, sign into a bookmaker account. 
+                 Thanks, you've chosen to see williamHill prices on the cards. To bet quickly and easily, sign into a bookmaker account.
                  To claim an open account offer, register.
             </div>
                     <div class="RC-chooseBookieMobile__message
@@ -23989,7 +23989,7 @@
                         js-RC-chooseBookieMobile__message--specific
                         js-RC-chooseBookieMobile__message--betfair"
                  data-test-selector="RC-chooseBookieMobile__message--betfair">
-                 Thanks, you've chosen to see betfair prices on the cards. To bet quickly and easily, sign into a bookmaker account. 
+                 Thanks, you've chosen to see betfair prices on the cards. To bet quickly and easily, sign into a bookmaker account.
                  To claim an open account offer, register.
             </div>
                     <div class="RC-chooseBookieMobile__message
@@ -23997,7 +23997,7 @@
                         js-RC-chooseBookieMobile__message--specific
                         js-RC-chooseBookieMobile__message--paddypower"
                  data-test-selector="RC-chooseBookieMobile__message--paddypower">
-                 Thanks, you've chosen to see paddypower prices on the cards. To bet quickly and easily, sign into a bookmaker account. 
+                 Thanks, you've chosen to see paddypower prices on the cards. To bet quickly and easily, sign into a bookmaker account.
                  To claim an open account offer, register.
             </div>
                     <div class="RC-chooseBookieMobile__message
@@ -24005,10 +24005,10 @@
                         js-RC-chooseBookieMobile__message--specific
                         js-RC-chooseBookieMobile__message--skybet"
                  data-test-selector="RC-chooseBookieMobile__message--skybet">
-                 Thanks, you've chosen to see skybet prices on the cards. To bet quickly and easily, sign into a bookmaker account. 
+                 Thanks, you've chosen to see skybet prices on the cards. To bet quickly and easily, sign into a bookmaker account.
                  To claim an open account offer, register.
             </div>
-        
+
                     <div class="RC-chooseBookieMobile__bookmaker
                         js-RC-chooseBookieMobile__bookmaker"
                  data-feed="BET365"
@@ -24041,7 +24041,7 @@
                                   ui-btn
                                   js-RC-chooseBookieMobile__accountBtn--register"
                             rel="noreferrer nofollow sponsored"
-                            bookmaker-name="Bet365"          
+                            bookmaker-name="Bet365"
                         >
                             Register
                         </a>
@@ -24080,7 +24080,7 @@
                                   ui-btn
                                   js-RC-chooseBookieMobile__accountBtn--register"
                             rel="noreferrer nofollow sponsored"
-                            bookmaker-name="Coral"          
+                            bookmaker-name="Coral"
                         >
                             Register
                         </a>
@@ -24119,7 +24119,7 @@
                                   ui-btn
                                   js-RC-chooseBookieMobile__accountBtn--register"
                             rel="noreferrer nofollow sponsored"
-                            bookmaker-name="Ladbrokes"          
+                            bookmaker-name="Ladbrokes"
                         >
                             Register
                         </a>
@@ -24158,7 +24158,7 @@
                                   ui-btn
                                   js-RC-chooseBookieMobile__accountBtn--register"
                             rel="noreferrer nofollow sponsored"
-                            bookmaker-name="William Hill"          
+                            bookmaker-name="William Hill"
                         >
                             Register
                         </a>
@@ -24197,7 +24197,7 @@
                                   ui-btn
                                   js-RC-chooseBookieMobile__accountBtn--register"
                             rel="noreferrer nofollow sponsored"
-                            bookmaker-name="Betfair"          
+                            bookmaker-name="Betfair"
                         >
                             Register
                         </a>
@@ -24236,7 +24236,7 @@
                                   ui-btn
                                   js-RC-chooseBookieMobile__accountBtn--register"
                             rel="noreferrer nofollow sponsored"
-                            bookmaker-name="Paddy Power"          
+                            bookmaker-name="Paddy Power"
                         >
                             Register
                         </a>
@@ -24275,7 +24275,7 @@
                                   ui-btn
                                   js-RC-chooseBookieMobile__accountBtn--register"
                             rel="noreferrer nofollow sponsored"
-                            bookmaker-name="SkyBet"          
+                            bookmaker-name="SkyBet"
                         >
                             Register
                         </a>
@@ -24302,7 +24302,7 @@
          data-test-selector="RC-chooseBookieMobile__header">Choose which bookmaker&apos;s prices you see</div>
     <div class="RC-chooseBookieMobileExperiment__body">
         <div class="RC-chooseBookieMobileExperiment__message">
-            To change prices, click a logo. To bet, sign in to an account, or register to claim an offer. 
+            To change prices, click a logo. To bet, sign in to an account, or register to claim an offer.
         </div>
         <div class="RC-chooseBookieMobileExperiment__bookmakerContainer">
                     <div class="RC-chooseBookieMobileExperiment__bookmaker
@@ -24635,7 +24635,7 @@
             </span>
         </div>
     </div>
-    
+
 </div>
 
     <div class="RC-cardMandatoryLoginContainer RC-cardMandatoryLoginContainer_topdown" hidden>
@@ -24666,7 +24666,7 @@
     </div>
 </div>
     </div>
-    
+
     <script>var assetsDomain = '//' + document.domain;</script>
     <script src="https://www.rp-assets.com/rp1-cards/assets/10.78.3/vendor.min.js"></script>
     <script src="https://www.rp-assets.com/rp1-cards/assets/10.78.3/app.min.js"></script>
@@ -24677,4 +24677,3 @@
         <div id="consent_blackbar"></div>
 </body>
 </html>
-

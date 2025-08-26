@@ -9,7 +9,7 @@ from typing import Optional, List
 
 from ..sources import RawRaceDocument, FieldConfidence, RunnerDoc, register_adapter
 from ..fetching import resilient_get
-from ..normalizer import canonical_track_key, canonical_race_key, parse_hhmm_any, map_discipline
+from ..normalizer import canonical_track_key, canonical_race_key, parse_hhmm_any, map_discipline, normalize_race_docs
 from .base_v3 import BaseAdapterV3
 
 @register_adapter
@@ -112,3 +112,14 @@ class RacingPostAdapter(BaseAdapterV3):
 
         logging.info(f"[{self.source_id}] Successfully parsed {len(races)} races from JSON.")
         return races
+
+    def _parse_and_normalize_racecard(self, html_content: str) -> list[NormalizedRace]:
+        """
+        Parses the HTML content and returns a list of fully normalized races.
+        """
+        soup = BeautifulSoup(html_content, "html.parser")
+        raw_races = self._parse_races_from_json(soup)
+
+        normalized_races = [normalize_race_docs(raw_race) for raw_race in raw_races]
+
+        return normalized_races
