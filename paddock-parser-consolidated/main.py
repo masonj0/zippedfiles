@@ -287,7 +287,7 @@ def create_cli_parser() -> argparse.ArgumentParser:
 
 if __name__ == "__main__":
     try:
-        CONFIG = load_config()
+        CONFIG = config_manager.get_config()
         if not CONFIG:
             print("FATAL: Could not load configuration file.", file=sys.stderr)
             sys.exit(1)
