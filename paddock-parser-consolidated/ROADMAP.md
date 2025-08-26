@@ -87,16 +87,36 @@ Our reconnaissance has revealed a critical strategic insight: the most valuable 
 
 **Our goal is to prioritize the discovery and implementation of adapters for GraphQL-powered sites before falling back on traditional REST APIs or HTML scraping.**
 
-## 3. Data Source Discovery Leads
-This section contains a backlog of promising open-source projects and resources for finding and scraping new data feeds.
+### **Data Source Discovery: From Scraping to Intelligence Gathering**
 
-1.  [joenano/rpscrape](https://github.com/joenano/rpscrape) – Scrapes horse racing results and racecards.
-2.  [Daniel57910/horse-scraper](https://github.com/Daniel57910/horse-scraper) – Web scraper for horse racing websites.
-3.  [Web Scraping for HKJC (Hong Kong Jockey Club)](https://gist.github.com/tomfoolc/ef039b229c8e97bd40c5493174bca839) – Gist for horse racing data scraping.
-4.  [LibHunt horse-racing open source projects](https://www.libhunt.com/topic/horse-racing) – Curated list of open source horse racing projects.
-5.  [Web data scraping for horse racing & greyhound (blog)](https://www.3idatascraping.com/how-does-web-data-scraping-help-in-horse-racing-and-greyhound/) – Resource and explanation of scraping techniques.
-6.  [Fawazk/Greyhoundscraper](https://github.com/Fawazk/Greyhoundscraper) – Python tool to extract greyhound racing data.
-7.  [Betfair Hub Models Scraping Tutorial](https://betfair-datascientists.github.io/tutorials/How_to_Automate_3/) – Guide for scraping Betfair model ratings.
-8.  [scrapy-horse-racing](https://github.com/chrismattmann/scrapy-horse-racing) – Scrapy-based project for horse racing data.
-9.  [horse-racing-data](https://github.com/jeffkub/horse-racing-data) – Historical horse racing data collection and tools.
-10. [Greyhound results web scraping code example (StackOverflow)](https://stackoverflow.com/questions/77761268/python-code-to-webscrape-greyhound-resukts-from-gbgb-site-for-soecified-dte-rang) – Discussion and example code for scraping UK greyhound results.
+Our recent reconnaissance efforts have yielded a significant breakthrough in our data acquisition strategy. We have confirmed that the most valuable, reliable, and data-rich sources are modern web platforms that use internal **GraphQL APIs**.
+
+Our strategic priority has therefore shifted. We are now focused on an **API-First** approach. This elevates our data acquisition from opportunistic scraping to targeted intelligence gathering.
+
+#### **Tier 1: Confirmed Live GraphQL Targets**
+
+These are our highest-priority targets, where a live API has been identified and is ready for adapter implementation.
+
+*   **Target:** **FanDuel Racing**
+    *   **API Type:** GraphQL
+    *   **Status:** **Confirmed Live.** Two-stage query process discovered (schedule and race detail).
+    *   **Value:** A single integration point for high-quality **Thoroughbred** and **Harness Racing** data for the US market. This is our primary active development target for the "Variety" mission.
+
+#### **Tier 2: High-Potential Leads for Investigation**
+
+These are leads identified through research that are likely to have modern, public-facing APIs. They require a "human-in-the-loop" reconnaissance mission to confirm.
+
+*   **Target:** **The Odds API (`the-odds-api.com`)**
+    *   **Potential:** A commercial odds aggregator. Could be a "one-to-many" source, providing odds from dozens of bookmakers in a single feed. A potential goldmine for Phase 2 (Advanced Odds Processing).
+    *   **Mission:** Investigate developer documentation for horse racing coverage and free tier limitations.
+
+*   **Target:** **Prophet Exchange API (`github.com/prophet-exchange`)**
+    *   **Potential:** A betting exchange with a public GitHub presence, signaling a developer-friendly API. Exchanges are excellent sources for real-time market data.
+    *   **Mission:** Investigate API documentation for horse racing coverage and technology type (REST, GraphQL, WebSocket).
+
+#### **Tier 3: The "Project Archeology" Protocol**
+
+This protocol is for leveraging old, unmaintained open-source projects as "treasure maps" to modern APIs. The discovery of `PySBR` (a dead project for a deprecated feature) taught us this valuable lesson.
+
+*   **The Principle:** Old API wrappers are not to be revived. They are to be studied as blueprints of how a site's API *used to work*.
+*   **The Mission:** When an "archeological" lead is found, the task is to perform reconnaissance on the *modern* version of the target website to find the *new* API, using the old code as a guide. This prevents wasting time on dead ends and accelerates the discovery of their modern replacements.
