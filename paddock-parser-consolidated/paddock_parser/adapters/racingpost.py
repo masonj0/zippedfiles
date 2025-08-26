@@ -10,6 +10,7 @@ from typing import Optional, List
 from ..sources import RawRaceDocument, FieldConfidence, RunnerDoc, register_adapter
 from ..fetching import resilient_get
 from ..normalizer import canonical_track_key, canonical_race_key, parse_hhmm_any, map_discipline, normalize_race_docs, NormalizedRace
+from ..utils import remove_honeypot_links
 from .base_v3 import BaseAdapterV3
 
 @register_adapter
@@ -45,6 +46,7 @@ class RacingPostAdapter(BaseAdapterV3):
                 return []
 
             soup = BeautifulSoup(response.text, "html.parser")
+            soup = remove_honeypot_links(soup)
             return self._parse_races_from_html(soup)
         except Exception as e:
             logging.error(f"[{self.source_id}] Failed to fetch or parse race list: {e}", exc_info=True)
