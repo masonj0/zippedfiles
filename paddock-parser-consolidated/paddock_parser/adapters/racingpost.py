@@ -9,7 +9,7 @@ from typing import Optional, List
 
 from ..sources import RawRaceDocument, FieldConfidence, RunnerDoc, register_adapter
 from ..fetching import resilient_get
-from ..normalizer import canonical_track_key, canonical_race_key, parse_hhmm_any, map_discipline, normalize_race_docs
+from ..normalizer import canonical_track_key, canonical_race_key, parse_hhmm_any, map_discipline, normalize_race_docs, NormalizedRace
 from .base_v3 import BaseAdapterV3
 
 @register_adapter
@@ -45,50 +45,65 @@ class RacingPostAdapter(BaseAdapterV3):
                 return []
 
             soup = BeautifulSoup(response.text, "html.parser")
-            return self._parse_races_from_json(soup)
+            return self._parse_races_from_html(soup)
         except Exception as e:
             logging.error(f"[{self.source_id}] Failed to fetch or parse race list: {e}", exc_info=True)
             return []
 
-    def _parse_races_from_json(self, soup: BeautifulSoup) -> list[RawRaceDocument]:
+    def _parse_races_from_html(self, soup: BeautifulSoup) -> list[RawRaceDocument]:
         """
-        Parses the embedded JSON data from the __NEXT_DATA__ script tag.
+        Parses the race data from the HTML structure of the racecard page.
         """
         races = []
 
-        script_tag = soup.find("script", id="__NEXT_DATA__")
-        if not script_tag:
-            logging.error(f"[{self.source_id}] Could not find __NEXT_DATA__ script tag.")
+        course_name_tag = soup.find("a", class_="RC-courseTime__link")
+        course_name = course_name_tag.get_text(strip=True) if course_name_tag else "Unknown Course"
+        track_key = canonical_track_key(course_name.replace("(IRE)","").strip())
+
+        race_divs = soup.find_all("div", class_="RC-meetingDay__race")
+
+        if not race_divs:
+            logging.error(f"[{self.source_id}] No race divs found on the page.")
             return []
 
-        try:
-            json_data = json.loads(script_tag.string)
-            all_races_data = json_data.get("props", {}).get("pageProps", {}).get("racecards", {}).get("racecards", [])
-        except (json.JSONDecodeError, AttributeError) as e:
-            logging.error(f"[{self.source_id}] Failed to parse JSON from __NEXT_DATA__: {e}")
-            return []
-
-        for race_data in all_races_data:
+        for race_div in race_divs:
             try:
-                course_name = race_data.get("courseName")
-                track_key = canonical_track_key(course_name)
-                race_time_str = race_data.get("raceTime")
+                race_time_tag = race_div.find("span", class_="RC-meetingDay__raceTime")
+                race_time_str = race_time_tag.get_text(strip=True) if race_time_tag else ""
                 race_time = parse_hhmm_any(race_time_str)
                 if not race_time:
                     continue
 
                 race_key = canonical_race_key(track_key, race_time)
-                race_url = urljoin(self.base_url, race_data.get("raceUrl", ""))
+                race_title_tag = race_div.find("a", class_="RC-meetingDay__raceTitle")
+                race_title = race_title_tag.get_text(strip=True) if race_title_tag else ""
+                race_url = urljoin(self.base_url, race_title_tag['href']) if race_title_tag and 'href' in race_title_tag.attrs else ""
 
                 runners = []
-                for runner_data in race_data.get("runners", []):
+                runner_rows = race_div.find_all("div", class_="RC-runnerRow")
+                for runner_row in runner_rows:
+                    if 'js-runnerNonRunner' in runner_row.get('class', []):
+                        continue
+
+                    runner_name_tag = runner_row.find("a", class_="RC-runnerName")
+                    runner_name = runner_name_tag.get_text(strip=True) if runner_name_tag else ""
+
+                    number_tag = runner_row.find("span", class_="RC-runnerNumber__no")
+                    number = number_tag.get_text(strip=True) if number_tag else ""
+
+                    jockey_tag = runner_row.find("a", attrs={"data-test-selector": "RC-cardPage-runnerJockey-name"})
+                    jockey = jockey_tag.get_text(strip=True) if jockey_tag else ""
+
+                    trainer_tag = runner_row.find("a", attrs={"data-test-selector": "RC-cardPage-runnerTrainer-name"})
+                    trainer = trainer_tag.get_text(strip=True) if trainer_tag else ""
+
                     runners.append(RunnerDoc(
-                        runner_id=f"{race_key}-{runner_data.get('saddleClothNumber')}",
-                        name=FieldConfidence(runner_data.get("horseName"), 0.9, self.source_id),
-                        number=FieldConfidence(str(runner_data.get("saddleClothNumber")), 0.9, self.source_id),
-                        jockey=FieldConfidence(runner_data.get("jockeyName"), 0.9, self.source_id),
-                        trainer=FieldConfidence(runner_data.get("trainerName"), 0.9, self.source_id),
-                        odds=FieldConfidence(runner_data.get("odds"), 0.9, self.source_id)
+                        runner_id=f"{race_key}-{number}",
+                        name=FieldConfidence(runner_name, 0.9, self.source_id),
+                        number=FieldConfidence(number, 0.9, self.source_id),
+                        jockey=FieldConfidence(jockey, 0.9, self.source_id),
+                        trainer=FieldConfidence(trainer, 0.9, self.source_id),
+                        odds=None
                     ))
 
                 if not runners:
@@ -102,15 +117,15 @@ class RacingPostAdapter(BaseAdapterV3):
                     start_time_iso=f"{dt.date.today().isoformat()}T{race_time}:00Z",
                     runners=runners,
                     extras={
-                        "race_title": FieldConfidence(race_data.get("raceTitle"), 0.9, self.source_id),
+                        "race_title": FieldConfidence(race_title, 0.9, self.source_id),
                         "race_url": FieldConfidence(race_url, 0.9, self.source_id)
                     }
                 ))
             except Exception as e:
-                logging.warning(f"[{self.source_id}] Failed to parse a race entry from JSON: {e}")
+                logging.warning(f"[{self.source_id}] Failed to parse a race entry from HTML: {e}")
                 continue
 
-        logging.info(f"[{self.source_id}] Successfully parsed {len(races)} races from JSON.")
+        logging.info(f"[{self.source_id}] Successfully parsed {len(races)} races from HTML.")
         return races
 
     def _parse_and_normalize_racecard(self, html_content: str) -> list[NormalizedRace]:
@@ -118,7 +133,7 @@ class RacingPostAdapter(BaseAdapterV3):
         Parses the HTML content and returns a list of fully normalized races.
         """
         soup = BeautifulSoup(html_content, "html.parser")
-        raw_races = self._parse_races_from_json(soup)
+        raw_races = self._parse_races_from_html(soup)
 
         normalized_races = [normalize_race_docs(raw_race) for raw_race in raw_races]
 
