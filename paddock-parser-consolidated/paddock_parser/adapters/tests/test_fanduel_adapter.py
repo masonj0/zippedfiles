@@ -124,9 +124,11 @@ class TestFanDuelAdapter(unittest.TestCase):
         self.assertEqual(len(raw_doc.runners), 2)
 
         # Check the first runner
+
         runner1 = raw_doc.runners[0]
         self.assertEqual(runner1.name.value, "Speedy")
         self.assertEqual(runner1.number.value, 1)
+ 
 
 
 if __name__ == "__main__":

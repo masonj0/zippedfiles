@@ -119,6 +119,7 @@ class FanDuelAdapter(BaseAdapterV3):
                     normalized_runner = NormalizedRunner(
                         runner_id=f"{interim_race['race_id']}-{interest.get('biNumber')}",
                         name=runner_info.get("horseName"),
+
                         saddle_cloth=interest.get("biNumber"),
                         jockey_name=runner_info.get("jockey"),
                         trainer_name=runner_info.get("trainer"),
@@ -129,10 +130,12 @@ class FanDuelAdapter(BaseAdapterV3):
                 track_key = canonical_track_key(interim_race["track_name"])
                 race_key = canonical_race_key(
                     track_key, interim_race["post_time"].strftime("%H%M")
+ 
                 )
 
                 raw_doc = RawRaceDocument(
                     source_id=self.source_id,
+
                     fetched_at=datetime.now().isoformat(),
                     track_key=track_key,
                     race_key=race_key,
@@ -144,7 +147,7 @@ class FanDuelAdapter(BaseAdapterV3):
                             number=FieldConfidence(r.saddle_cloth, 0.9, self.source_id),
                         )
                         for r in runners
-                    ],
+                 
                 )
                 normalized_races.append(raw_doc)
 
