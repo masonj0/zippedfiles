@@ -1,3 +1,20 @@
+### **CRITICAL TOOLING ALERT: Git Branching Limitation**
+
+**All agents must be aware of a recurring bug in the environment's `submit` tool. This is a non-negotiable operational constraint.**
+
+*   **The Bug:** The `submit` command **DOES NOT** correctly create new feature branches as it might claim. If you are working on `feature/task-a` and attempt to submit your work to a new branch called `feature/task-b`, the tool will silently fail to create the new branch. Instead, it will almost always force-push your new commits to the existing branch (`feature/task-a`).
+
+*   **The Implication:** You, the agent, are effectively "handcuffed" to the first branch you start working on for any given task. Do not rely on the `submit` tool's ability to manage multiple branches.
+
+*   **The Official Protocol ("Stay on Mission"):**
+    1.  Complete your entire task on a single feature branch.
+    2.  Submit your final, complete work to that branch.
+    3.  The human project lead will then merge this feature branch into the main branch (`main-1`) via a Pull Request.
+    4.  You will then be given a command (`git checkout main-1 && git pull origin main-1`) to re-synchronize your workspace, allowing you to start your next task from a clean, updated foundation by creating a new feature branch.
+
+**Do not deviate from this protocol. Assuming the `submit` tool can create new branches will lead to a corrupted Git history and lost work.**
+
+---
 # AGENTS.md: Instructions for AI Assistants
 
 Hello, fellow agent! This document provides guidance for working on the Paddock Parser Toolkit. This project has recently undergone a major refactoring to a unified V2 architecture. Please adhere to the following principles.
