@@ -5,20 +5,16 @@ from dataclasses import dataclass, field
 # A global registry for all adapters
 ADAPTERS: List[Type["SourceAdapter"]] = []
 
-
 @dataclass
 class FieldConfidence:
     """Holds a value and our confidence in its accuracy."""
-
     value: Any
     confidence: float  # 0.0 to 1.0
     source: str
 
-
 @dataclass
 class RunnerDoc:
     """A document representing a single runner in a race."""
-
     runner_id: str
     name: FieldConfidence
     number: FieldConfidence
@@ -27,22 +23,19 @@ class RunnerDoc:
     trainer: FieldConfidence | None = None
     extras: Dict[str, FieldConfidence] = field(default_factory=dict)
 
-
 @dataclass
 class RawRaceDocument:
     """
     A raw, unprocessed document for a single race from a specific source.
     This is the data structure that adapters are expected to return.
     """
-
     source_id: str
     fetched_at: str  # ISO 8601 timestamp
-    track_key: str  # e.g., "ascot"
-    race_key: str  # e.g., "ascot_1430"
+    track_key: str   # e.g., "ascot"
+    race_key: str    # e.g., "ascot_1430"
     start_time_iso: str
     runners: List[RunnerDoc]
     extras: Dict[str, FieldConfidence] = field(default_factory=dict)
-
 
 class SourceAdapter(Protocol):
     """
@@ -51,17 +44,16 @@ class SourceAdapter(Protocol):
     source (e.g., Timeform, Racing Post) and returning it in a standardized
     RawRaceDocument format.
     """
-
     source_id: str
 
-    def __init__(self, config: Dict[str, Any]): ...
+    def __init__(self, config: Dict[str, Any]):
+        ...
 
     async def fetch(self) -> List[RawRaceDocument]:
         """
         Fetches data from the source and returns a list of raw race documents.
         """
         ...
-
 
 def register_adapter(cls: Type[SourceAdapter]) -> Type[SourceAdapter]:
     """

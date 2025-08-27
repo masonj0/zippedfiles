@@ -2,7 +2,6 @@ import asyncio
 import pprint
 from .fetching import resolve_multi, resilient_get, close_shared_async_client
 
-
 async def main():
     print("--- Testing DNS Multi-Resolver ---")
     dns_results = await resolve_multi("google.com")
@@ -18,7 +17,6 @@ async def main():
         print(f"An error occurred during resilient_get: {e}")
     finally:
         await close_shared_async_client()
-
 
 if __name__ == "__main__":
     asyncio.run(main())

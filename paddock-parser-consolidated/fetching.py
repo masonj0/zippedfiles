@@ -3,6 +3,8 @@ from __future__ import annotations
 import asyncio
 import random
 import time
+import socket
+import ssl
 import httpx
 from httpx import Cookies
 from typing import Optional, List, Dict
@@ -11,7 +13,7 @@ import hashlib
 try:
     from zoneinfo import ZoneInfo
 except ImportError:
-    pass  # fallback if running on <3.9
+    from pytz import timezone as ZoneInfo  # fallback if running on <3.9
 
 # Import from the new config structure
 from config import (
@@ -24,36 +26,28 @@ from config import (
     DNSResolvers as DNS_RESOLVERS,
 )
 
-
 # Custom Exceptions
 class FetchingError(Exception):
     """Custom exception for fetching errors."""
-
     pass
-
 
 class BlockingDetectedError(FetchingError):
     """Raised when blocking or anti-bot measures are detected."""
-
     pass
-
 
 # --- New implementation from GPT5 plan ---
 
 _shared_async_client: Optional[httpx.AsyncClient] = None
-
 
 def _pick_proxy() -> Optional[str]:
     if PROXY_CFG.get("enabled") and PROXY_CFG.get("pool"):
         return random.choice(PROXY_CFG["pool"])
     return None
 
-
 def _pick_fingerprint() -> Dict[str, str]:
     if FEATURES.get("enable_fingerprint_rotation") and FP_LIST:
         return random.choice(FP_LIST)
     return {}
-
 
 def _base_headers(extra: Dict[str, str] | None = None) -> Dict[str, str]:
     h = {}
@@ -65,7 +59,6 @@ def _base_headers(extra: Dict[str, str] | None = None) -> Dict[str, str]:
     if extra:
         h.update(extra)
     return h
-
 
 def get_shared_async_client(extra_headers: Dict[str, str] | None = None) -> httpx.AsyncClient:
     global _shared_async_client
@@ -80,29 +73,22 @@ def get_shared_async_client(extra_headers: Dict[str, str] | None = None) -> http
         )
     return _shared_async_client
 
-
 async def close_shared_async_client():
     global _shared_async_client
     if _shared_async_client is not None:
         await _shared_async_client.aclose()
         _shared_async_client = None
 
-
 async def human_pause():
-    await asyncio.sleep(
-        random.uniform(HTTP_CFG.get("min_delay_sec", 0.5), HTTP_CFG.get("max_delay_sec", 2.0))
-    )
+    await asyncio.sleep(random.uniform(HTTP_CFG.get("min_delay_sec", 0.5), HTTP_CFG.get("max_delay_sec", 2.0)))
 
-
-async def breadcrumb_get(
-    urls: List[str], extra_headers: Dict[str, str] | None = None
-) -> httpx.Response:
+async def breadcrumb_get(urls: List[str], extra_headers: Dict[str, str] | None = None) -> httpx.Response:
     client = get_shared_async_client()
     last = None
     for i, u in enumerate(urls):
         headers = _base_headers(extra_headers)
         if i > 0:
-            headers["Referer"] = urls[i - 1]
+            headers["Referer"] = urls[i-1]
         await human_pause()
         last = await client.get(u, headers=headers)
         if FEATURES.get("enable_timing_content_fingerprints"):
@@ -111,10 +97,7 @@ async def breadcrumb_get(
             last.raise_for_status()
     return last
 
-
-async def resilient_get(
-    url: str, extra_headers: Dict[str, str] | None = None, attempts: int = 4
-) -> httpx.Response:
+async def resilient_get(url: str, extra_headers: Dict[str,str] | None = None, attempts: int = 4) -> httpx.Response:
     client = get_shared_async_client()
     delay = 1.0
     last_error = None
@@ -146,15 +129,11 @@ async def resilient_get(
             last_error = e
             await asyncio.sleep(1.0 + i)
 
-    raise FetchingError(
-        f"Failed to fetch {url} after {attempts} attempts. Last error: {last_error}"
-    )
+    raise FetchingError(f"Failed to fetch {url} after {attempts} attempts. Last error: {last_error}")
 
 
 # Simple timing/content fingerprint monitor
 _content_index: Dict[str, Dict[str, float | str]] = {}
-
-
 def _monitor_response(url: str, resp: httpx.Response):
     try:
         fp = hashlib.md5(resp.text.encode("utf-8")).hexdigest()[:8]
@@ -164,7 +143,6 @@ def _monitor_response(url: str, resp: httpx.Response):
     prev = _content_index.get(url)
     _content_index[url] = {"fp": fp, "ts": now, "status": str(resp.status_code)}
     # Optionally: log suspiciously fast responses or long-term unchanged content.
-
 
 # DNS multi-resolver check (safe, read-only)
 async def resolve_multi(hostname: str) -> Dict[str, List[str]]:

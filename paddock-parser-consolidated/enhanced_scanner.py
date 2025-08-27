@@ -12,16 +12,20 @@ Future Exploration Ideas:
   developer tools for hidden API calls, as we discovered with Sporting Life
   and UKRacingForm.
 """
-
 import sys
 import asyncio
+import argparse  # <-- Added import
 import httpx
+import json
 import logging
 from datetime import date
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+from bs4 import BeautifulSoup
 import re
 import unicodedata
+import hashlib # <-- Added import for hash-based ID generation if needed
 
 # Import the configuration loader
 try:
@@ -34,25 +38,15 @@ except ImportError:
 try:
     from fetching import get_shared_async_client, breadcrumb_get, resilient_get, resolve_multi
 except ImportError:
-    print(
-        "FATAL: Could not import fetching.py. Ensure it's in the same directory.", file=sys.stderr
-    )
+    print("FATAL: Could not import fetching.py. Ensure it's in the same directory.", file=sys.stderr)
     sys.exit(1)
 
 # Shared Intelligence: Ensure all normalization is consistent
 try:
-    from normalizer import (
-        normalize_course_name,
-        parse_hhmm_any,
-        convert_odds_to_fractional_decimal,
-        map_discipline,
-    )
+    from normalizer import normalize_course_name, parse_hhmm_any, convert_odds_to_fractional_decimal, map_discipline
 except ImportError:
-    print(
-        "FATAL: Could not import normalizer.py. Ensure it's in the same directory.", file=sys.stderr
-    )
+    print("FATAL: Could not import normalizer.py. Ensure it's in the same directory.", file=sys.stderr)
     sys.exit(1)
-
 
 # --- CONFIGURATION HELPERS ---
 def build_httpx_client_kwargs(config: Dict) -> Dict[str, Any]:
@@ -64,12 +58,8 @@ def build_httpx_client_kwargs(config: Dict) -> Dict[str, Any]:
     """
     http_client = config.get("HTTP_CLIENT", {})
     verify_ssl = http_client.get("VERIFY_SSL", True)
-    ca_bundle = http_client.get(
-        "CA_BUNDLE"
-    )  # e.g., "C:/company/ca.pem" or "/etc/ssl/certs/corp-ca.pem"
-    proxies = http_client.get(
-        "PROXIES"
-    )  # e.g., {"http": "http://user:pass@proxy:8080", "https": "..."} or "http://..."
+    ca_bundle = http_client.get("CA_BUNDLE")  # e.g., "C:/company/ca.pem" or "/etc/ssl/certs/corp-ca.pem"
+    proxies = http_client.get("PROXIES")      # e.g., {"http": "http://user:pass@proxy:8080", "https": "..."} or "http://..."
 
     # If a CA bundle path is provided, use it for verification.
     # Otherwise, use the VERIFY_SSL boolean flag.
@@ -78,22 +68,17 @@ def build_httpx_client_kwargs(config: Dict) -> Dict[str, Any]:
     if proxies:
         kwargs["proxies"] = proxies
     return kwargs
-
-
 # --- END CONFIGURATION HELPERS ---
-
 
 # - Helper Function for Filename Sanitization -
 def sanitize_filename(name: str) -> str:
     """Cleans a string to be a valid filename."""
-    name = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode("ascii")
-    name = re.sub(r"[^\w\s-]", "_", name).strip()
-    name = re.sub(r"\s+", "_", name)
+    name = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('ascii')
+    name = re.sub(r'[^\w\s-]', '_', name).strip()
+    name = re.sub(r'\s+', '_', name)
     return name
 
-
 # --- Core Fetching & Parsing Functions ---
-
 
 async def fetch_url(client: httpx.AsyncClient, url: str, config: Dict) -> str:
     """Fetches content from a URL using the 'Perfect Disguise' browser headers
@@ -102,7 +87,7 @@ async def fetch_url(client: httpx.AsyncClient, url: str, config: Dict) -> str:
     headers = config.get("HTTP_HEADERS", {})
     if not headers:
         logging.warning("HTTP_HEADERS not found in config.json. Using a basic User-Agent.")
-        headers = {"User-Agent": "Mozilla/5.0"}
+        headers = {'User-Agent': 'Mozilla/5.0'}
     timeout = config.get("HTTP_CLIENT", {}).get("REQUEST_TIMEOUT", 30.0)
     try:
         # Use the client passed in, which has proxy/CA settings
@@ -118,21 +103,17 @@ async def fetch_url(client: httpx.AsyncClient, url: str, config: Dict) -> str:
         logging.error(f"[ERROR] Unexpected error fetching {url}: {e}")
     return ""
 
-
 # --- Prefetching Logic ---
 
-
-async def prefetch_source(
-    client: httpx.AsyncClient, site: Dict[str, Any], config: Dict, today_str: str
-) -> bool:
+async def prefetch_source(client: httpx.AsyncClient, site: Dict[str, Any], config: Dict, today_str: str) -> bool:
     """Fetches and saves a single data source to the input directory."""
     input_dir = Path(config["INPUT_DIR"])
     input_dir.mkdir(exist_ok=True, parents=True)
     url = site["url"].format(date_str_iso=today_str)
     logging.info(f"Prefetching: {site['name']}")
-    content = await fetch_url(client, url, config)  # Pass client with settings
+    content = await fetch_url(client, url, config) # Pass client with settings
     if content:
-        filename = sanitize_filename(site["name"]) + ".html"
+        filename = sanitize_filename(site['name']) + ".html"
         output_path = input_dir / filename
         try:
             with open(output_path, "w", encoding="utf-8") as f:
@@ -143,7 +124,6 @@ async def prefetch_source(
             logging.error(f"[ERROR] Failed to write file for '{site['name']}': {e}")
     return False
 
-
 async def run_batch_prefetch(config: Dict):
     """Automatically downloads all enabled data sources to the input folder."""
     logging.info("Starting Automated Pre-Fetch of Enabled Sources...")
@@ -151,15 +131,12 @@ async def run_batch_prefetch(config: Dict):
     SKIP_LIST = ["(DISABLED)", "IGNORE", "SKIP"]
 
     # Get a list of all modern adapter source IDs once to avoid re-importing in the loop
+    from sources import ADAPTERS
     adapter_source_ids = [adapter.source_id for adapter in ADAPTERS]
-    logging.info(
-        f"Found {len(adapter_source_ids)} modern adapters. Will skip pre-fetching for these sources."
-    )
+    logging.info(f"Found {len(adapter_source_ids)} modern adapters. Will skip pre-fetching for these sources.")
 
     # --- Use the helper to create the client with proxy/CA settings ---
-    async with httpx.AsyncClient(
-        follow_redirects=True, **build_httpx_client_kwargs(config)
-    ) as client:
+    async with httpx.AsyncClient(follow_redirects=True, **build_httpx_client_kwargs(config)) as client:
         prefetch_tasks = []
         for category in config.get("DATA_SOURCES", []):
             logging.info(f"- Processing Category: {category['title']} -")
@@ -183,16 +160,12 @@ async def run_batch_prefetch(config: Dict):
         results = await asyncio.gather(*prefetch_tasks)
         success_count = sum(1 for r in results if r)
         logging.info("-" * 50)
-        logging.info(
-            f"Automated Pre-Fetch Complete. Successfully downloaded {success_count} of {len(prefetch_tasks)} sources."
-        )
+        logging.info(f"Automated Pre-Fetch Complete. Successfully downloaded {success_count} of {len(prefetch_tasks)} sources.")
         logging.info(f"Files are located in the '{config['INPUT_DIR']}' directory.")
         logging.info("You can now run the 'Parse Local Files' option from the main menu.")
         logging.info("-" * 50)
 
-
 # --- Connection Testing Logic ---
-
 
 async def test_scanner_connections(config: Dict):
     """Tests all enabled scanner connections to ensure URLs are reachable."""
@@ -210,9 +183,7 @@ async def test_scanner_connections(config: Dict):
                     url = site["url"].format(date_str_iso=today_str)
                     try:
                         # Use a streaming GET request to test connection, as HEAD is often blocked.
-                        async with client.stream(
-                            "GET", url, timeout=15.0, follow_redirects=True
-                        ) as response:
+                        async with client.stream("GET", url, timeout=15.0, follow_redirects=True) as response:
                             # We don't need to read the body, just establishing the connection
                             # and getting the status code is enough for a test.
                             status_code = response.status_code
@@ -222,19 +193,18 @@ async def test_scanner_connections(config: Dict):
                         else:
                             logging.warning(f"[WARNING] ({status_code}) - {site['name']} at {url}")
                     except httpx.RequestError as e:
-                        logging.error(
-                            f"[ERROR] FAILED - {site['name']} at {url} ({type(e).__name__})"
-                        )
-
+                        logging.error(f"[ERROR] FAILED - {site['name']} at {url} ({type(e).__name__})")
 
 # This file is now focused on V1 data collection (prefetch) and connection testing.
 # The V1 "Quick Strike" scanner has been deprecated in favor of the unified V2 pipeline.
 
 
+from sources import ADAPTERS
+
+
 # --- New scanner/discovery functions from GPT5 plan ---
 
 API_URL_RE = re.compile(r'https?://[^"\']*(?:api|json|live|odds)[^"\']*', re.I)
-
 
 async def fetch_with_favicon(base_url: str, target_url: str):
     if not FEATURES.get("enable_favicon_prefetch"):
@@ -242,9 +212,8 @@ async def fetch_with_favicon(base_url: str, target_url: str):
     client = get_shared_async_client()
     await asyncio.gather(
         client.get(f"{base_url.rstrip('/')}/favicon.ico"),
-        resilient_get(target_url),  # Use resilient_get here
+        resilient_get(target_url) # Use resilient_get here
     )
-
 
 async def discover_rss(base_url: str) -> List[str]:
     if not FEATURES.get("enable_rss_discovery"):
@@ -254,14 +223,11 @@ async def discover_rss(base_url: str) -> List[str]:
     for suf in ("rss", "feed", "xml"):
         try:
             r = await client.get(f"{base_url.rstrip('/')}/{suf}", timeout=8.0)
-            if r.status_code == 200 and (
-                "xml" in r.headers.get("content-type", "").lower() or "<rss" in r.text[:256].lower()
-            ):
+            if r.status_code == 200 and ("xml" in r.headers.get("content-type","").lower() or "<rss" in r.text[:256].lower()):
                 found.append(str(r.url))
         except Exception:
             pass
     return found
-
 
 async def scan_js_for_endpoints(html: str, base_url: str) -> List[str]:
     if not FEATURES.get("enable_js_endpoint_scan"):
@@ -270,7 +236,6 @@ async def scan_js_for_endpoints(html: str, base_url: str) -> List[str]:
     # A more robust solution would parse <script src="..."> tags and fetch their content.
     urls = list(set(API_URL_RE.findall(html)))
     return urls
-
 
 async def fetch_breadcrumb_page(base_url: str, *path_parts: str) -> str:
     """
@@ -281,7 +246,7 @@ async def fetch_breadcrumb_page(base_url: str, *path_parts: str) -> str:
     3. https://a.com/b/c
     """
     # Start with just the base URL
-    urls = [base_url.rstrip("/")]
+    urls = [base_url.rstrip('/')]
     # Append each part cumulatively
     for part in path_parts:
         urls.append(f"{urls[-1]}/{part}")
@@ -300,7 +265,9 @@ if __name__ == "__main__":
         sys.exit(1)
     # Force logging to stdout for this script
     logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s", stream=sys.stdout
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        stream=sys.stdout
     )
     # Running the batch prefetch by default for this test.
     asyncio.run(run_batch_prefetch(config))

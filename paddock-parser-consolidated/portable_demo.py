@@ -3,7 +3,6 @@
 Paddock Parser Toolkit - Portable "Elevator Pitch" Demo
 ... (docstring) ...
 """
-
 import asyncio
 import logging
 import sys
@@ -26,13 +25,9 @@ try:
     from paddock_parser.fetching import breadcrumb_get, close_shared_async_client
 except ImportError as e:
     print("FATAL: Could not import the paddock_parser package.", file=sys.stderr)
-    print(
-        "Please ensure you have installed the project in editable mode (`pip install -e .`) from the project root.",
-        file=sys.stderr,
-    )
+    print("Please ensure you have installed the project in editable mode (`pip install -e .`) from the project root.", file=sys.stderr)
     print(f"Original error: {e}", file=sys.stderr)
     sys.exit(1)
-
 
 def force_reload_config():
     """
@@ -45,7 +40,7 @@ def force_reload_config():
         sys.exit(1)
 
     try:
-        with open(config_file_path, "r") as f:
+        with open(config_file_path, 'r') as f:
             correct_config = json.load(f)
         # Forcefully reset the singleton's internal config dictionary
         config_manager._config = correct_config
@@ -64,11 +59,8 @@ def demonstrate_race_filtering():
     config = config_manager.get_config()
     race_filters = {"MIN_RUNNERS": 4, "MAX_RUNNERS": 6}
     config["RACE_FILTERS"] = race_filters
-    print(
-        f"Configuration updated to filter for races with {race_filters['MIN_RUNNERS']}-{race_filters['MAX_RUNNERS']} runners."
-    )
+    print(f"Configuration updated to filter for races with {race_filters['MIN_RUNNERS']}-{race_filters['MAX_RUNNERS']} runners.")
     print("-" * 35)
-
 
 async def demonstrate_breadcrumb_fetching():
     """
@@ -76,13 +68,11 @@ async def demonstrate_breadcrumb_fetching():
     navigation and bypass simple anti-scraping measures.
     """
     print("\n--- DEMO: Improved Fetching with Breadcrumbs ---")
-    print(
-        "This technique mimics a user clicking through a site, which can bypass some anti-bot measures."
-    )
+    print("This technique mimics a user clicking through a site, which can bypass some anti-bot measures.")
 
     urls_to_visit = [
         "https://www.timeform.com/horse-racing",
-        "https://www.timeform.com/horse-racing/racecards",
+        "https://www.timeform.com/horse-racing/racecards"
     ]
 
     print(f"Attempting to fetch the final page by visiting: {urls_to_visit}")

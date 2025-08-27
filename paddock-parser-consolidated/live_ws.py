@@ -1,13 +1,8 @@
 # live_ws.py
-import asyncio
-import json
-import websockets
+import asyncio, json, websockets
 from typing import List, Dict, Any
 
-
-async def ws_collect(
-    uri: str, subscribe_msg: Dict[str, Any] | None = None, duration_sec: int = 30
-) -> List[str]:
+async def ws_collect(uri: str, subscribe_msg: Dict[str, Any] | None = None, duration_sec: int = 30) -> List[str]:
     msgs = []
     async with websockets.connect(uri, max_size=2**22) as ws:
         if subscribe_msg:

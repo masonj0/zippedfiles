@@ -3,14 +3,12 @@ import logging
 from pathlib import Path
 from typing import Dict, Any, Optional
 
-
 class ConfigurationManager:
     """
     A centralized manager for loading and accessing application configuration.
     This class is the single source of truth for all settings, preventing
     conflicts and ensuring consistent behavior.
     """
-
     _instance = None
 
     def __new__(cls, *args, **kwargs):
@@ -18,9 +16,9 @@ class ConfigurationManager:
             cls._instance = super(ConfigurationManager, cls).__new__(cls)
         return cls._instance
 
-    def __init__(self, config_path: str = "config_settings.json"):
+    def __init__(self, config_path: str = 'config_settings.json'):
         # The __init__ will only run on the first instantiation
-        if hasattr(self, "_config"):
+        if hasattr(self, '_config'):
             return
 
         self.config_path = Path(config_path)
@@ -35,12 +33,10 @@ class ConfigurationManager:
             logging.critical(f"FATAL: Configuration file '{self.config_path}' not found.")
             return {}
         try:
-            with open(self.config_path, "r", encoding="utf-8") as f:
+            with open(self.config_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except json.JSONDecodeError as e:
-            logging.critical(
-                f"FATAL: Could not parse configuration file '{self.config_path}': {e}."
-            )
+            logging.critical(f"FATAL: Could not parse configuration file '{self.config_path}': {e}.")
             return {}
 
     def get_config(self) -> Dict[str, Any]:
@@ -78,14 +74,11 @@ class ConfigurationManager:
                 # This requires a helper to create canonical names, but for now we'll do a simple check
                 if source_id.lower() in site.get("name", "").lower():
                     if site.get("enabled", False):
-                        logging.debug(
-                            f"Found legacy config for '{source_id}' in '{site.get('name')}'."
-                        )
+                        logging.debug(f"Found legacy config for '{source_id}' in '{site.get('name')}'.")
                         return site
 
         logging.info(f"No enabled configuration found for adapter '{source_id}'.")
         return None
-
 
 # Global instance for easy access across the application
 config_manager = ConfigurationManager()

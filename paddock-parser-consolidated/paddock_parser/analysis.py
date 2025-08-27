@@ -12,20 +12,16 @@ from .adapters.base_v3 import BaseAdapterV3
 
 # --- Data Structures ---
 
-
 @dataclass
 class ScoreResult:
     """Represents a race after scoring, ready for display."""
-
     race: NormalizedRace
     score: float
     reason: str
     best_value_score: Optional[float] = None
     best_value_reason: Optional[str] = None
 
-
 # --- Pipeline Steps ---
-
 
 async def collect_all() -> List[RawRaceDocument]:
     """
@@ -51,7 +47,7 @@ async def collect_all() -> List[RawRaceDocument]:
             # V2 adapters expect the raw config dict
             config_dict = config_manager.get_config()
             adapter = adapter_class(config_dict)
-            if hasattr(adapter, "site_config") and adapter.site_config is not None:
+            if hasattr(adapter, 'site_config') and adapter.site_config is not None:
                 logging.info(f"Running legacy V2 adapter: {adapter.source_id}")
                 tasks.append(adapter.fetch())
 
@@ -72,7 +68,6 @@ async def collect_all() -> List[RawRaceDocument]:
     logging.info(f"Collected {len(all_docs)} raw race documents from all sources.")
     return all_docs
 
-
 def coalesce_docs(docs: List[RawRaceDocument]) -> Dict[str, List[RawRaceDocument]]:
     """
     Groups raw race documents by their unique race_key.
@@ -83,12 +78,12 @@ def coalesce_docs(docs: List[RawRaceDocument]) -> Dict[str, List[RawRaceDocument
     sorted_docs = sorted(docs, key=attrgetter("race_key"))
 
     grouped_by_race = {
-        key: list(group) for key, group in groupby(sorted_docs, key=attrgetter("race_key"))
+        key: list(group)
+        for key, group in groupby(sorted_docs, key=attrgetter("race_key"))
     }
 
     logging.info(f"Coalesced {len(docs)} documents into {len(grouped_by_race)} unique races.")
     return grouped_by_race
-
 
 def normalize_and_merge(race_docs: List[RawRaceDocument]) -> NormalizedRace:
     """
@@ -105,24 +100,19 @@ def normalize_and_merge(race_docs: List[RawRaceDocument]) -> NormalizedRace:
 
     return base_normalized_race
 
-
 # --- V2 SCORING LOGIC ---
-
 
 class V2Scorer:
     """
     Analyzes a NormalizedRace to produce a score based on various signals.
     Now uses the global config_manager for settings.
     """
-
     def __init__(self):
         config = config_manager.get_config()
         # --- Main Scorer Weights ---
         default_weights = {
-            "FIELD_SIZE": 0.25,
-            "FAVORITE_ODDS": 0.35,
-            "ODDS_SPREAD": 0.10,
-            "VALUE_VS_SP": 0.30,
+            "FIELD_SIZE": 0.25, "FAVORITE_ODDS": 0.35,
+            "ODDS_SPREAD": 0.10, "VALUE_VS_SP": 0.30,
         }
         scorer_weights = config.get("SCORER_WEIGHTS", default_weights)
         for key, value in default_weights.items():
@@ -131,15 +121,14 @@ class V2Scorer:
                 logging.warning(f"Missing '{key}' in SCORER_WEIGHTS, using default: {value}")
 
         total_weight = sum(scorer_weights.values())
-        self.weights = (
-            {k: v / total_weight for k, v in scorer_weights.items()}
-            if total_weight
-            else default_weights
-        )
+        self.weights = {k: v / total_weight for k, v in scorer_weights.items()} if total_weight else default_weights
         logging.info(f"V2Scorer initialized with main weights: {self.weights}")
 
         # --- Best Value Scorer Weights ---
-        default_value_weights = {"VALUE_ODDS_WEIGHT": 0.6, "VALUE_COMPETITIVENESS_WEIGHT": 0.4}
+        default_value_weights = {
+            "VALUE_ODDS_WEIGHT": 0.6,
+            "VALUE_COMPETITIVENESS_WEIGHT": 0.4
+        }
         value_weights = config.get("BEST_VALUE_WEIGHTS", default_value_weights)
         for key, value in default_value_weights.items():
             if key not in value_weights:
@@ -147,12 +136,9 @@ class V2Scorer:
                 logging.warning(f"Missing '{key}' in BEST_VALUE_WEIGHTS, using default: {value}")
 
         total_value_weight = sum(value_weights.values())
-        self.value_weights = (
-            {k: v / total_value_weight for k, v in value_weights.items()}
-            if total_value_weight
-            else default_value_weights
-        )
+        self.value_weights = {k: v / total_value_weight for k, v in value_weights.items()} if total_value_weight else default_value_weights
         logging.info(f"V2Scorer initialized with value weights: {self.value_weights}")
+
 
     def _get_field_size_score(self, field_size: int) -> float:
         if 5 <= field_size <= 7:
@@ -178,9 +164,7 @@ class V2Scorer:
             return 50.0
         return 30.0
 
-    def _get_odds_spread_score(
-        self, fav_odds: Optional[float], sec_fav_odds: Optional[float]
-    ) -> float:
+    def _get_odds_spread_score(self, fav_odds: Optional[float], sec_fav_odds: Optional[float]) -> float:
         if fav_odds is None or sec_fav_odds is None:
             return 20.0
         spread = sec_fav_odds - fav_odds
@@ -210,9 +194,7 @@ class V2Scorer:
             return 50.0, ratio
         return 40.0, ratio
 
-    def _get_best_value_score(
-        self, runners_with_odds: list
-    ) -> tuple[Optional[float], Optional[str]]:
+    def _get_best_value_score(self, runners_with_odds: list) -> tuple[Optional[float], Optional[str]]:
         """
         Calculates a 'Best Value' score by identifying a horse (3rd favorite)
         that has a good combination of high odds and competitiveness.
@@ -239,7 +221,7 @@ class V2Scorer:
         elif value_horse_odds >= 15.0:
             value_odds_score = 20.0
         else:
-            value_odds_score = 0.0  # Odds < 3.0 is not a value bet
+            value_odds_score = 0.0 # Odds < 3.0 is not a value bet
 
         # 2. Score based on competitiveness vs favorite
         spread = value_horse_odds - fav_odds
@@ -251,8 +233,9 @@ class V2Scorer:
             competitiveness_score = 30.0
 
         # 3. Calculate final weighted score
-        final_value_score = (value_odds_score * self.value_weights["VALUE_ODDS_WEIGHT"]) + (
-            competitiveness_score * self.value_weights["VALUE_COMPETITIVENESS_WEIGHT"]
+        final_value_score = (
+            (value_odds_score * self.value_weights["VALUE_ODDS_WEIGHT"]) +
+            (competitiveness_score * self.value_weights["VALUE_COMPETITIVENESS_WEIGHT"])
         )
 
         reason = f"Value Pick: {value_horse.name} ({value_horse_odds:.2f})"
@@ -261,7 +244,8 @@ class V2Scorer:
     def score_race(self, race: NormalizedRace) -> ScoreResult:
         """Calculates a score for a single normalized race."""
         runners_with_odds = sorted(
-            [r for r in race.runners if r.odds_decimal is not None], key=lambda r: r.odds_decimal
+            [r for r in race.runners if r.odds_decimal is not None],
+            key=lambda r: r.odds_decimal
         )
 
         if len(runners_with_odds) < 2:
@@ -280,10 +264,10 @@ class V2Scorer:
         fav_ratio_score, fav_ratio = self._get_fav_vs_field_ratio_score(runners_with_odds)
 
         final_score = (
-            (field_size_score * self.weights["FIELD_SIZE"])
-            + (fav_odds_score * self.weights["FAVORITE_ODDS"])
-            + (spread_score * self.weights["ODDS_SPREAD"])
-            + (fav_ratio_score * self.weights["VALUE_VS_SP"])
+            (field_size_score * self.weights["FIELD_SIZE"]) +
+            (fav_odds_score * self.weights["FAVORITE_ODDS"]) +
+            (spread_score * self.weights["ODDS_SPREAD"]) +
+            (fav_ratio_score * self.weights["VALUE_VS_SP"])
         )
         reason = (
             f"Field: {field_size} ({field_size_score:.0f}), "
@@ -300,9 +284,8 @@ class V2Scorer:
             score=round(final_score, 2),
             reason=reason,
             best_value_score=best_value_score,
-            best_value_reason=best_value_reason,
+            best_value_reason=best_value_reason
         )
-
 
 def score_races(races: List[NormalizedRace]) -> tuple[List[ScoreResult], int, int]:
     """
@@ -316,7 +299,10 @@ def score_races(races: List[NormalizedRace]) -> tuple[List[ScoreResult], int, in
     max_runners = filter_config.get("MAX_RUNNERS", 99)
 
     initial_race_count = len(races)
-    filtered_races = [race for race in races if min_runners <= len(race.runners) <= max_runners]
+    filtered_races = [
+        race for race in races
+        if min_runners <= len(race.runners) <= max_runners
+    ]
     final_race_count = len(filtered_races)
 
     if final_race_count < initial_race_count:
@@ -335,13 +321,9 @@ def score_races(races: List[NormalizedRace]) -> tuple[List[ScoreResult], int, in
     sorted_results = sorted(scored_races, key=lambda r: r.score, reverse=True)
     return sorted_results, initial_race_count, final_race_count
 
-
 # --- Reporting ---
 
-
-def display_results_console(
-    scored_results: List[ScoreResult], initial_count: int, final_count: int
-):
+def display_results_console(scored_results: List[ScoreResult], initial_count: int, final_count: int):
     """
     Displays the final scored results in a user-friendly format on the console.
     """
@@ -353,9 +335,7 @@ def display_results_console(
     max_runners = filter_config.get("MAX_RUNNERS", 99)
 
     if final_count < initial_count:
-        print(
-            f"\nFiltered {initial_count - final_count} of {initial_count} races to meet criteria (Runners: {min_runners}-{max_runners})."
-        )
+        print(f"\nFiltered {initial_count - final_count} of {initial_count} races to meet criteria (Runners: {min_runners}-{max_runners}).")
 
     if not scored_results:
         print("No races matching the criteria were found.")
@@ -372,19 +352,12 @@ def display_results_console(
         print(f"  Sources: {', '.join(result.race.source_ids)}")
         print(f"  Runners ({len(result.race.runners)}):")
         # Sort runners by saddle cloth number for consistent display
-        sorted_runners = sorted(
-            result.race.runners,
-            key=lambda r: int(r.saddle_cloth)
-            if r.saddle_cloth and r.saddle_cloth.isdigit()
-            else 999,
-        )
+        sorted_runners = sorted(result.race.runners, key=lambda r: int(r.saddle_cloth) if r.saddle_cloth and r.saddle_cloth.isdigit() else 999)
         for runner in sorted_runners:
             odds = f"{runner.odds_decimal:.2f}" if runner.odds_decimal else "N/A"
             print(f"    - {runner.saddle_cloth}. {runner.name} ({odds})")
 
-
 # --- Main Pipeline Orchestrator ---
-
 
 def normalize_races_from_docs(raw_docs: List[RawRaceDocument]) -> List[NormalizedRace]:
     """
@@ -406,7 +379,6 @@ def normalize_races_from_docs(raw_docs: List[RawRaceDocument]) -> List[Normalize
 
     return normalized_races
 
-
 async def run_v2_adapter_pipeline() -> List[NormalizedRace]:
     """
     The main entry point for the V2 data processing pipeline. It now returns
@@ -424,7 +396,5 @@ async def run_v2_adapter_pipeline() -> List[NormalizedRace]:
         logging.warning("No races were successfully normalized from V2 adapters.")
         return []
 
-    logging.info(
-        f"--- V2 ADAPTER PIPELINE END: Produced {len(normalized_races)} normalized races. ---"
-    )
+    logging.info(f"--- V2 ADAPTER PIPELINE END: Produced {len(normalized_races)} normalized races. ---")
     return normalized_races

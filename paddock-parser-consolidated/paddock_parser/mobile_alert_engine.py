@@ -26,27 +26,22 @@ try:
     from .analysis import V2Scorer
     from .fetching import resilient_get
 except ImportError as e:
-    print(
-        f"FATAL: Ensure normalizer.py, analysis.py, and fetching.py are accessible. Error: {e}",
-        file=sys.stderr,
-    )
+    print(f"FATAL: Ensure normalizer.py, analysis.py, and fetching.py are accessible. Error: {e}", file=sys.stderr)
     sys.exit(1)
 
 # =============================================================================
 # --- CONFIGURATION & LOGGING ---
 # =============================================================================
 
-
-def load_config(path: str = "mobile_config.json") -> Dict[str, Any]:
+def load_config(path: str = 'mobile_config.json') -> Dict[str, Any]:
     """Loads the mobile-specific configuration file."""
     try:
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError) as e:
         logging.critical(f"FATAL: Could not load or parse '{path}'. Error: {e}")
         sys.exit(1)
     return {}
-
 
 def setup_logging(log_file: str):
     """Configures logging for the mobile application."""
@@ -55,55 +50,51 @@ def setup_logging(log_file: str):
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s",
-        handlers=[logging.FileHandler(log_file, mode="w"), logging.StreamHandler(sys.stdout)],
+        handlers=[
+            logging.FileHandler(log_file, mode='w'),
+            logging.StreamHandler(sys.stdout)
+        ]
     )
-
 
 # =============================================================================
 # --- CORE DATA & STATE MANAGEMENT ---
 # =============================================================================
-
 
 def generate_race_id(course: str, race_date: date, time: str) -> str:
     """Creates a unique, deterministic ID for a race."""
     key = f"{normalize_course_name(course)}|{race_date.isoformat()}|{re.sub(r'[^\d]', '', time or '')}"
     return hashlib.sha1(key.encode()).hexdigest()[:12]
 
-
 def load_alert_state(state_file_path: Path) -> Set[str]:
     """Loads the set of already-alerted race IDs from the state file."""
     if not state_file_path.exists():
         return set()
     try:
-        with open(state_file_path, "r", encoding="utf-8") as f:
+        with open(state_file_path, 'r', encoding='utf-8') as f:
             content = f.read()
             return set(json.loads(content)) if content else set()
     except (json.JSONDecodeError, TypeError):
         logging.warning(f"Could not parse state file '{state_file_path}'. Starting fresh.")
         return set()
 
-
 def save_alert_state(state_file_path: Path, alerted_ids: Set[str]):
     """Saves the set of alerted race IDs to the state file."""
     try:
-        with open(state_file_path, "w", encoding="utf-8") as f:
+        with open(state_file_path, 'w', encoding='utf-8') as f:
             json.dump(list(alerted_ids), f, indent=2)
     except Exception as e:
         logging.error(f"Failed to save alert state to '{state_file_path}': {e}")
 
-
 # =============================================================================
 # --- DATA ACQUISITION & PARSING ---
 # =============================================================================
-
 
 def parse_source_to_normalized_races(html_content: str, source_name: str) -> List[NormalizedRace]:
     """
     A simplified parser for the mobile engine that creates NormalizedRace objects.
     """
     from bs4 import BeautifulSoup
-
-    soup = BeautifulSoup(html_content, "html.parser")
+    soup = BeautifulSoup(html_content, 'html.parser')
     races = []
 
     meeting_containers = soup.select('[class*="meeting"], [class*="accordion__row"]')
@@ -112,15 +103,11 @@ def parse_source_to_normalized_races(html_content: str, source_name: str) -> Lis
 
     for container in meeting_containers:
         try:
-            course_el = container.select_one(
-                'h1, h2, [class*="courseName"], [class*="course-name"]'
-            )
+            course_el = container.select_one('h1, h2, [class*="courseName"], [class*="course-name"]')
             course_name = course_el.get_text(strip=True) if course_el else "Unknown Course"
             track_key = normalize_course_name(course_name)
 
-            race_elements = container.select(
-                '[class*="race-item"], [class*="meetingItem"], li a[href*="racecards/"]'
-            )
+            race_elements = container.select('[class*="race-item"], [class*="meetingItem"], li a[href*="racecards/"]')
             for race_el in race_elements:
                 time_el = race_el.select_one('[class*="raceTime"], [class*="time"]')
                 if not time_el:
@@ -138,37 +125,30 @@ def parse_source_to_normalized_races(html_content: str, source_name: str) -> Lis
                 runners_el = race_el.select_one('[class*="runners"], [class*="numberOfRunners"]')
                 field_size = 0
                 if runners_el:
-                    runners_match = re.search(r"(\d+)", runners_el.get_text())
+                    runners_match = re.search(r'(\d+)', runners_el.get_text())
                     if runners_match:
                         field_size = int(runners_match.group(1))
 
                 # Create a NormalizedRace with placeholder runner info
                 # This is a simplification for the mobile engine
-                runners = [
-                    NormalizedRunner(runner_id=str(i), name=f"Runner {i}", saddle_cloth=str(i))
-                    for i in range(1, field_size + 1)
-                ]
+                runners = [NormalizedRunner(runner_id=str(i), name=f"Runner {i}", saddle_cloth=str(i)) for i in range(1, field_size + 1)]
 
-                races.append(
-                    NormalizedRace(
-                        race_key=race_key,
-                        track_key=track_key,
-                        start_time_iso=f"{date.today().isoformat()}T{race_time_parsed}:00Z",
-                        race_name=f"{race_time_parsed} {course_name}",
-                        runners=runners,
-                        source_ids=[source_name],
-                    )
-                )
+                races.append(NormalizedRace(
+                    race_key=race_key,
+                    track_key=track_key,
+                    start_time_iso=f"{date.today().isoformat()}T{race_time_parsed}:00Z",
+                    race_name=f"{race_time_parsed} {course_name}",
+                    runners=runners,
+                    source_ids=[source_name]
+                ))
         except Exception as e:
             logging.warning(f"Could not parse a container from {source_name}: {e}")
             continue
     return races
 
-
 # =============================================================================
 # --- NOTIFICATION ENGINE ---
 # =============================================================================
-
 
 def send_termux_notification(title: str, content: str):
     """Uses the Termux API to send a native Android notification."""
@@ -176,11 +156,10 @@ def send_termux_notification(title: str, content: str):
     try:
         safe_title = json.dumps(title)
         safe_content = json.dumps(content)
-        command = f"termux-notification --title {safe_title} --content {safe_content}"
+        command = f'termux-notification --title {safe_title} --content {safe_content}'
         os.system(command)
     except Exception as e:
         logging.error(f"Failed to send Termux notification: {e}")
-
 
 async def send_webhook_notification(config: Dict, title: str, content: str):
     """Sends a notification via a configured webhook."""
@@ -207,21 +186,21 @@ async def send_webhook_notification(config: Dict, title: str, content: str):
     except Exception as e:
         logging.error(f"Failed to send Webhook notification: {e}")
 
-
 # =============================================================================
 # --- MAIN MONITORING LOOP ---
 # =============================================================================
-
 
 async def perform_scan_and_alert(config: Dict, scorer: V2Scorer, alerted_ids: Set[str]):
     """
     Performs a single, full cycle of fetching, parsing, scoring, and alerting
     using the V2 architecture and resilient fetching.
     """
-    logging.info("=" * 20 + " Starting New Scan Cycle " + "=" * 20)
+    logging.info("="*20 + " Starting New Scan Cycle " + "="*20)
     all_races: Dict[str, NormalizedRace] = {}
 
-    fetch_tasks = [resilient_get(source["url"], config) for source in config["SOFT_TARGET_SOURCES"]]
+    fetch_tasks = [
+        resilient_get(source["url"], config) for source in config["SOFT_TARGET_SOURCES"]
+    ]
     http_responses = await asyncio.gather(*fetch_tasks, return_exceptions=True)
 
     for i, res in enumerate(http_responses):
@@ -249,15 +228,13 @@ async def perform_scan_and_alert(config: Dict, scorer: V2Scorer, alerted_ids: Se
         # For now, we will skip scoring and alerting.
         # This resolves the crash but leaves the script in a non-functional
         # state for alerting, as per its original simplified design.
-        pass  # Placeholder for future implementation
+        pass # Placeholder for future implementation
 
     logging.info("Scan cycle finished. Alerting logic is disabled pending odds data.")
-
 
 # =============================================================================
 # --- SCRIPT ENTRY POINT ---
 # =============================================================================
-
 
 def main():
     """Main function to initialize and run the continuous monitoring loop."""
@@ -289,7 +266,6 @@ def main():
         save_alert_state(state_file, alerted_race_ids)
         logging.info("Alert state saved before emergency shutdown.")
         sys.exit(1)
-
 
 if __name__ == "__main__":
     main()

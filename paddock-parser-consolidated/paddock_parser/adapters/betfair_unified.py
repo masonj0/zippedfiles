@@ -1,16 +1,17 @@
-from typing import Optional
+import asyncio
+import datetime as dt
+import logging
+from typing import Optional, List
 
-from ..sources import RawRaceDocument, register_adapter
-from ..normalizer import NormalizedRace
+from ..sources import RawRaceDocument, FieldConfidence, RunnerDoc, register_adapter
+from ..normalizer import NormalizedRace, NormalizedRunner
 from .base_v3 import BaseAdapterV3
-
 
 @register_adapter
 class BetfairUnifiedAdapter(BaseAdapterV3):
     """
     V3 Adapter for betfair.com, using their official API-NG.
     """
-
     source_id = "betfair_unified"
 
     async def fetch(self) -> list[RawRaceDocument]:

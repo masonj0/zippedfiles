@@ -5,12 +5,10 @@ from pathlib import Path
 
 # Add project root to path to allow imports of application modules
 import sys
-
 sys.path.insert(0, str(Path(__file__).parent))
 
 from config import load_config
 from analysis import V2Scorer
-
 
 class TestIntegration(unittest.TestCase):
     """
@@ -33,9 +31,9 @@ class TestIntegration(unittest.TestCase):
         test_config_data = {
             "SCHEMA_VERSION": "test",
             "APP_NAME": "Test App",
-            "SCORER_WEIGHTS": self.test_weights,
+            "SCORER_WEIGHTS": self.test_weights
         }
-        with open(self.test_config_path, "w") as f:
+        with open(self.test_config_path, 'w') as f:
             json.dump(test_config_data, f)
 
     def tearDown(self):
@@ -106,6 +104,5 @@ class TestIntegration(unittest.TestCase):
 
         self.assertDictEqual(scorer.weights, default_weights)
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main(verbosity=2)

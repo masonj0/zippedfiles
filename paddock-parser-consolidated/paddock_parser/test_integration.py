@@ -6,7 +6,6 @@ from pathlib import Path
 from .analysis import V2Scorer
 from .config_manager import config_manager
 
-
 class TestIntegration(unittest.TestCase):
     """
     Integration tests to ensure components work together correctly,
@@ -28,9 +27,9 @@ class TestIntegration(unittest.TestCase):
         test_config_data = {
             "SCHEMA_VERSION": "test",
             "APP_NAME": "Test App",
-            "SCORER_WEIGHTS": self.test_weights,
+            "SCORER_WEIGHTS": self.test_weights
         }
-        with open(self.test_config_path, "w") as f:
+        with open(self.test_config_path, 'w') as f:
             json.dump(test_config_data, f)
 
     def tearDown(self):
@@ -68,7 +67,7 @@ class TestIntegration(unittest.TestCase):
         """
         # Create a temp config file *without* the weights section
         temp_path = "temp_missing_weights_config.json"
-        with open(temp_path, "w") as f:
+        with open(temp_path, 'w') as f:
             json.dump({"APP_NAME": "Test App"}, f)
 
         original_path = config_manager.config_path
@@ -92,6 +91,5 @@ class TestIntegration(unittest.TestCase):
 
         self.assertDictEqual(scorer.weights, default_weights)
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main(verbosity=2)

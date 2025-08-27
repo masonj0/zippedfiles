@@ -6,10 +6,9 @@ This script probes a list of websites for common RSS/XML feed URLs.
 It's a utility for developers to discover new, structured data sources that
 can be used to create new adapters.
 """
-
 import asyncio
 import httpx
-from typing import Set
+from typing import List, Set
 
 # --- Configuration ---
 # A list of base URLs to check for feeds.
@@ -31,7 +30,6 @@ FEED_PATHS = [
     "/index.xml",
     "/sitemap.xml",
 ]
-
 
 async def check_url(client: httpx.AsyncClient, url: str) -> str | None:
     """
@@ -55,7 +53,7 @@ async def check_url(client: httpx.AsyncClient, url: str) -> str | None:
 
         if is_xml_type or is_xml_content:
             print(f"[+] Found potential feed: {url}")
-            return str(response.url)  # Return the final URL after redirects
+            return str(response.url) # Return the final URL after redirects
 
     except httpx.RequestError:
         # Don't log errors for timeouts, connection errors, etc. as many will be 404s.
@@ -64,7 +62,6 @@ async def check_url(client: httpx.AsyncClient, url: str) -> str | None:
         print(f"[!] Error checking {url}: {e}")
 
     return None
-
 
 async def main():
     """Main asynchronous function to run the discovery tool."""

@@ -15,7 +15,6 @@ from ..sources import (
     register_adapter,
 )
 
-
 @register_adapter
 class TimeformAdapter(BaseAdapterV3):
     """
@@ -23,7 +22,6 @@ class TimeformAdapter(BaseAdapterV3):
     This adapter uses a Playwright bootstrap to handle anti-bot challenges
     before fetching data with a standard HTTP client.
     """
-
     source_id = "timeform"
 
     def __init__(self, *args, **kwargs):
@@ -60,8 +58,8 @@ class TimeformAdapter(BaseAdapterV3):
         try:
             # Define the breadcrumb trail to mimic user navigation
             breadcrumb_urls = [
-                self._base_url,  # 1. Visit the homepage
-                target_url,  # 2. Visit the main racecards page
+                self._base_url,      # 1. Visit the homepage
+                target_url           # 2. Visit the main racecards page
             ]
             logging.info(f"[{self.source_id}] Navigating breadcrumb trail: {breadcrumb_urls}")
 
@@ -85,8 +83,8 @@ class TimeformAdapter(BaseAdapterV3):
             response = await resilient_get(url, config)
             soup = BeautifulSoup(response.text, "html.parser")
 
-            path_parts = urlparse(url).path.strip("/").split("/")
-            track_name = path_parts[2].replace("-", " ")
+            path_parts = urlparse(url).path.strip('/').split('/')
+            track_name = path_parts[2].replace('-', ' ')
             track_key = canonical_track_key(track_name)
             time_str = path_parts[4]
             race_date = path_parts[3]
@@ -101,12 +99,10 @@ class TimeformAdapter(BaseAdapterV3):
                 race_key=race_key,
                 start_time_iso=f"{race_date}T{time_str[:2]}:{time_str[2:]}:00Z",
                 runners=runners,
-                extras={"race_url": FieldConfidence(url, 0.95, "parsed_from_detail")},
+                extras={"race_url": FieldConfidence(url, 0.95, "parsed_from_detail")}
             )
         except Exception as e:
-            logging.error(
-                f"[{self.source_id}] Failed to fetch or parse race details for URL {url}: {e}"
-            )
+            logging.error(f"[{self.source_id}] Failed to fetch or parse race details for URL {url}: {e}")
             return None
 
     def _parse_race_list(self, html_content: str) -> list[str]:
@@ -115,14 +111,14 @@ class TimeformAdapter(BaseAdapterV3):
         """
         soup = BeautifulSoup(html_content, "html.parser")
         race_links = {
-            urljoin(self._base_url, a["href"]) for a in soup.select("a.rp-racecard-race-link")
+            urljoin(self._base_url, a['href'])
+            for a in soup.select("a.rp-racecard-race-link")
         }
         return list(race_links)
 
     def _parse_race_details(self, soup: BeautifulSoup, race_key: str) -> list:
         """Parses the runners from a Timeform race detail page."""
         from ..sources import RunnerDoc
-
         runners = []
         # This selector targets the rows in the main racecard table
         runner_rows = soup.select("div.rp-racecard-runner-row")
@@ -143,28 +139,14 @@ class TimeformAdapter(BaseAdapterV3):
 
                 horse_name = horse_name_el.get_text(strip=True)
 
-                runners.append(
-                    RunnerDoc(
-                        runner_id=f"{race_key}-{saddle_cloth}",
-                        name=FieldConfidence(horse_name, 0.9, "parsed_from_detail"),
-                        number=FieldConfidence(saddle_cloth, 0.9, "parsed_from_detail"),
-                        jockey=FieldConfidence(
-                            jockey_name_el.get_text(strip=True), 0.9, "parsed_from_detail"
-                        )
-                        if jockey_name_el
-                        else None,
-                        trainer=FieldConfidence(
-                            trainer_name_el.get_text(strip=True), 0.9, "parsed_from_detail"
-                        )
-                        if trainer_name_el
-                        else None,
-                        odds=FieldConfidence(
-                            odds_el.get_text(strip=True), 0.9, "parsed_from_detail"
-                        )
-                        if odds_el
-                        else None,
-                    )
-                )
+                runners.append(RunnerDoc(
+                    runner_id=f"{race_key}-{saddle_cloth}",
+                    name=FieldConfidence(horse_name, 0.9, "parsed_from_detail"),
+                    number=FieldConfidence(saddle_cloth, 0.9, "parsed_from_detail"),
+                    jockey=FieldConfidence(jockey_name_el.get_text(strip=True), 0.9, "parsed_from_detail") if jockey_name_el else None,
+                    trainer=FieldConfidence(trainer_name_el.get_text(strip=True), 0.9, "parsed_from_detail") if trainer_name_el else None,
+                    odds=FieldConfidence(odds_el.get_text(strip=True), 0.9, "parsed_from_detail") if odds_el else None,
+                ))
             except Exception as e:
                 logging.warning(f"[{self.source_id}] Could not parse a runner row: {e}")
                 continue

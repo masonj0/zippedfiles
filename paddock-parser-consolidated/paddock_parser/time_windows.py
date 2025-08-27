@@ -1,13 +1,11 @@
 # time_windows.py
 from datetime import datetime
-
 try:
     from zoneinfo import ZoneInfo
 except ImportError:
     from pytz import timezone as ZoneInfo
 
 from .config_manager import config_manager
-
 
 def within_business_hours() -> bool:
     config = config_manager.get_config()

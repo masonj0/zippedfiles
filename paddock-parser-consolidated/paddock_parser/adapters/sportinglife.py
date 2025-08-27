@@ -7,32 +7,30 @@ from ..fetching import resilient_get
 from ..sources import RawRaceDocument, FieldConfidence, register_adapter
 from ..normalizer import canonical_track_key, canonical_race_key, parse_hhmm_any, map_discipline
 
-
 @register_adapter
 class SportingLifeAdapter(BaseV2Adapter):
     """
     Adapter for fetching racecards from the Sporting Life API.
     This adapter now uses the resilient_get function.
     """
-
     source_id = "sportinglife"
 
     def _parse_api_data(self, json_data: dict) -> list[RawRaceDocument]:
         """Surgically parses the JSON response from the Sporting Life API."""
         races = []
-        meetings = json_data.get("race_meetings", [])
+        meetings = json_data.get('race_meetings', [])
         if not meetings and isinstance(json_data, list):
             meetings = json_data
 
         for meeting in meetings:
             try:
-                course_name = meeting.get("course_name")
+                course_name = meeting.get('course_name')
                 if not course_name:
                     continue
                 track_key = canonical_track_key(course_name)
 
-                for race_summary in meeting.get("races", []):
-                    start_time_iso = race_summary.get("start_time")
+                for race_summary in meeting.get('races', []):
+                    start_time_iso = race_summary.get('start_time')
                     if not start_time_iso:
                         continue
 
@@ -42,35 +40,22 @@ class SportingLifeAdapter(BaseV2Adapter):
                     race_key = canonical_race_key(track_key, time_str.replace(":", ""))
                     race_url = f"https://www.sportinglife.com{race_summary.get('race_url', '')}"
 
-                    races.append(
-                        RawRaceDocument(
-                            source_id=self.source_id,
-                            fetched_at=dt.datetime.now(dt.timezone.utc).isoformat(),
-                            track_key=track_key,
-                            race_key=race_key,
-                            start_time_iso=start_time_iso,
-                            runners=[],
-                            extras={
-                                "country_code": FieldConfidence(
-                                    meeting.get("country_code", "GB/IRE"), 0.9, ".country_code"
-                                ),
-                                "race_class": FieldConfidence(
-                                    race_summary.get("race_class"), 0.9, ".race_class"
-                                ),
-                                "discipline": FieldConfidence(
-                                    map_discipline(meeting.get("race_type_code", "F")),
-                                    0.9,
-                                    ".race_type_code",
-                                ),
-                                "race_url": FieldConfidence(race_url, 0.95, ".race_url"),
-                            },
-                        )
-                    )
+                    races.append(RawRaceDocument(
+                        source_id=self.source_id,
+                        fetched_at=dt.datetime.now(dt.timezone.utc).isoformat(),
+                        track_key=track_key,
+                        race_key=race_key,
+                        start_time_iso=start_time_iso,
+                        runners=[],
+                        extras={
+                            "country_code": FieldConfidence(meeting.get('country_code', 'GB/IRE'), 0.9, ".country_code"),
+                            "race_class": FieldConfidence(race_summary.get('race_class'), 0.9, ".race_class"),
+                            "discipline": FieldConfidence(map_discipline(meeting.get('race_type_code', 'F')), 0.9, ".race_type_code"),
+                            "race_url": FieldConfidence(race_url, 0.95, ".race_url")
+                        }
+                    ))
             except Exception as e:
-                logging.error(
-                    f"[{self.source_id}] Error parsing a meeting from Sporting Life API: {e}",
-                    exc_info=True,
-                )
+                logging.error(f"[{self.source_id}] Error parsing a meeting from Sporting Life API: {e}", exc_info=True)
         return races
 
     async def fetch(self) -> list[RawRaceDocument]:
@@ -88,9 +73,7 @@ class SportingLifeAdapter(BaseV2Adapter):
         try:
             target_url = self.site_config["url"].format(date_str_iso=today_str)
         except (KeyError, AttributeError):
-            logging.error(
-                f"[{self.source_id}] Invalid or unformattable URL in config: {self.site_config.get('url')}"
-            )
+            logging.error(f"[{self.source_id}] Invalid or unformattable URL in config: {self.site_config.get('url')}")
             return []
 
         try:
@@ -102,7 +85,5 @@ class SportingLifeAdapter(BaseV2Adapter):
             json_data = response.json()
             return self._parse_api_data(json_data)
         except Exception as e:
-            logging.error(
-                f"[{self.source_id}] An error occurred during fetch or parse: {e}", exc_info=True
-            )
+            logging.error(f"[{self.source_id}] An error occurred during fetch or parse: {e}", exc_info=True)
             return []

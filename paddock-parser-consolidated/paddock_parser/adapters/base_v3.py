@@ -5,7 +5,6 @@ from typing import List, Optional, Dict, Any
 from ..config_manager import ConfigurationManager
 from ..sources import RawRaceDocument
 
-
 class BaseAdapterV3(ABC):
     """
     The V3 abstract base class for all data source adapters.
@@ -19,7 +18,6 @@ class BaseAdapterV3(ABC):
     This ensures no adapter can be run in a partially-configured or
     un-configured state, improving overall system stability.
     """
-
     source_id: str = "base_adapter_v3"
 
     def __init__(self, config_manager: ConfigurationManager):
@@ -39,9 +37,7 @@ class BaseAdapterV3(ABC):
             logging.info(f"V3 Adapter '{self.source_id}' initialized successfully.")
             return True
 
-        logging.info(
-            f"V3 Adapter '{self.source_id}' could not be initialized (config not found or disabled)."
-        )
+        logging.info(f"V3 Adapter '{self.source_id}' could not be initialized (config not found or disabled).")
         self.is_initialized = False
         return False
 
@@ -51,6 +47,4 @@ class BaseAdapterV3(ABC):
         The core method for fetching data from the source.
         This must be implemented by all concrete adapter classes.
         """
-        raise NotImplementedError(
-            "The 'fetch' method must be implemented by a subclass of BaseAdapterV3."
-        )
+        raise NotImplementedError("The 'fetch' method must be implemented by a subclass of BaseAdapterV3.")
