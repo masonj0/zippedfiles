@@ -53,6 +53,7 @@ This phase transitions the toolkit from a batch-processing scraper to a real-tim
 
 ### Phase 3: Intelligence & Analysis
 This phase focuses on enriching the data and improving the scoring model.
+ pair
 
 -   **Contextualization Engine:**
     -   **Goal:** Add a "Contextualize" stage to the pipeline before scoring to integrate external data like weather, news, and pundit commentary.
@@ -140,4 +141,5 @@ As we move towards this vision, the following key points, based on agent feedbac
 
 *   **Opportunity - Enhancing the "Forager" Role:** The "Foragers" could be made even more powerful by performing a "pre-parsing" step. For example, a Go-based forager could extract a specific JSON blob from a large HTML page and return only that small chunk to Python, further reducing the load on the Python brain.
 
-*   **Challenge - Operational Complexity:** Moving from a single application to three separate services significantly increases the complexity of development, testing, and deployment. A strategy for managing this, likely involving containerization (Docker) and local orchestration (Docker Compose), will be essential.
+*   **Challenge - Operational Complexity:** Moving from a single application to three separate services significantly increases the complexity of development, testing, and deployment. A strategy for managing this, likely involving containerization (Docker) and local orchestration (Docker Cmpose), will be essential.
+  

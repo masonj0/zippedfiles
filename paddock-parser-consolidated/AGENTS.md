@@ -26,6 +26,7 @@ Hello, fellow agent! This document provides guidance for working on the Paddock 
 
 ## 2. Project Architecture Overview
 
+
 The application is a racing intelligence toolkit that gathers data from various web sources and local files, normalizes it, scores it, and presents the results.
 
 - **Data Flow:** The main pipeline (`main.py:run_unified_pipeline`) orchestrates the process:
@@ -75,7 +76,10 @@ Our reconnaissance has revealed a critical strategic insight: the most valuable 
 -   **Standardized Core Utilities:** Core, shared functions (like `resilient_get` in `fetching.py`) must have clear, stable, and well-documented function signatures to prevent errors as more adapters are built. Avoid passing the entire config dictionary when only specific values are needed.
 -   **Proactive Scraper Defense:** When building HTML-based adapters, use the `remove_honeypots` utility to strip out invisible scraper traps from the HTML before parsing. This is a critical step for long-term viability.
 
+
+
 ### **Data Acquisition Protocols**
+
 
 To align with our API-First strategy, all agents tasked with creating new adapters must follow these protocols.
 
@@ -104,6 +108,7 @@ To align with our API-First strategy, all agents tasked with creating new adapte
     ```
 -   Before submitting any work, please ensure all relevant tests pass without any import errors or failures.
 
+
 ### **Emergency Communication Protocol: The Chat Handoff**
 
 In the event of a **catastrophic environmental failure**, an agent's standard tools (`submit`, `write_file`) may become completely non-functional. The agent may report that it cannot save its work or communicate through standard file-based handoffs.
@@ -119,3 +124,4 @@ This is a "Level 3" failure. When this occurs, we will revert to the most reliab
 3.  **Chat Handoff:** The agent will then format its complete handoff document (summarizing its successes, the final blocker, and recommendations for the next agent) as a single, well-formatted text message and send it as a reply.
 
 This protocol ensures that even in the case of a total environmental collapse, the agent's valuable "institutional knowledge" is never lost. It is our ultimate safety net.
+
