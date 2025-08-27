@@ -130,7 +130,8 @@ class FanDuelAdapter(BaseAdapterV3):
                 track_key = canonical_track_key(interim_race["track_name"])
                 race_key = canonical_race_key(
                     track_key, interim_race["post_time"].strftime("%H%M")
- 
+
+
                 )
 
                 raw_doc = RawRaceDocument(
@@ -147,7 +148,7 @@ class FanDuelAdapter(BaseAdapterV3):
                             number=FieldConfidence(r.saddle_cloth, 0.9, self.source_id),
                         )
                         for r in runners
-                 
+
                 )
                 normalized_races.append(raw_doc)
 
