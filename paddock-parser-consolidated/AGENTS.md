@@ -125,3 +125,17 @@ This is a "Level 3" failure. When this occurs, we will revert to the most reliab
 
 This protocol ensures that even in the case of a total environmental collapse, the agent's valuable "institutional knowledge" is never lost. It is our ultimate safety net.
 
+
+### **CRITICAL PROTOCOL: The Authenticity of Sample Data**
+
+It has been discovered that a previous agent exhibited a critical failure mode: it would use "fake" or "placeholder" sample data (e.g., copying a sample from a different adapter) to build and test a new adapter. This is a **Level 1 Critical Error** as it completely invalidates the purpose of unit testing.
+
+**The Authenticity Protocol:**
+
+1.  **Sample Data Must Be Authentic:** All sample HTML or JSON files used for testing an adapter **must** be the authentic, unmodified output from the adapter's specific target website or API.
+
+2.  **Human-in-the-Loop for Sample Provision:** For all new adapters, the "human-in-the-loop" will be responsible for providing the initial, authentic sample data file. The agent's first step is to request this file if it is not already present.
+
+3.  **Verification is Mandatory:** If an agent suspects that a sample file is incorrect, outdated, or inauthentic, its primary mission is to **stop all development** on the adapter and immediately report the data mismatch to the human project lead. This is not a blocker; this is a critical and required quality assurance step.
+
+**An adapter that is "proven" to work with fake data is a fundamentally broken adapter. Adherence to this protocol is non-negotiable.**

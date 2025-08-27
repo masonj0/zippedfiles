@@ -26,7 +26,10 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 try:
     from .racing_data_parser import RacingDataParser
 except ImportError:
-    print("FATAL: Could not import racing_data_parser.py. Ensure it's in the same directory.", file=sys.stderr)
+    print(
+        "FATAL: Could not import racing_data_parser.py. Ensure it's in the same directory.",
+        file=sys.stderr,
+    )
     sys.exit(1)
 
 # Shared Intelligence: V2 Data Models, Scorers, and Normalizers
@@ -40,13 +43,17 @@ try:
     )
     from .analysis import V2Scorer, ScoreResult
 except ImportError:
-    print("FATAL: Could not import key V2 modules (normalizer, analysis). Ensure they are present.", file=sys.stderr)
+    print(
+        "FATAL: Could not import key V2 modules (normalizer, analysis). Ensure they are present.",
+        file=sys.stderr,
+    )
     sys.exit(1)
 
 
 # =============================================================================
 # --- V1 to V2 DATA CONVERSION & MERGING ---
 # =============================================================================
+
 
 def convert_v1_dict_to_v2_race(race_dict: Dict[str, Any]) -> Optional[NormalizedRace]:
     """
@@ -102,7 +109,10 @@ def convert_v1_dict_to_v2_race(race_dict: Dict[str, Any]) -> Optional[Normalized
         logging.debug(f"Problematic race dict: {race_dict}")
         return None
 
-def merge_normalized_races(existing_race: NormalizedRace, new_race: NormalizedRace) -> NormalizedRace:
+
+def merge_normalized_races(
+    existing_race: NormalizedRace, new_race: NormalizedRace
+) -> NormalizedRace:
     """
     Intelligently merges a new NormalizedRace into an existing one.
     """
@@ -118,7 +128,9 @@ def merge_normalized_races(existing_race: NormalizedRace, new_race: NormalizedRa
     existing_race.runners = list(existing_runners_map.values())
 
     # Combine source_ids without duplicates.
-    existing_race.source_ids = sorted(list(set(existing_race.source_ids) | set(new_race.source_ids)))
+    existing_race.source_ids = sorted(
+        list(set(existing_race.source_ids) | set(new_race.source_ids))
+    )
 
     # Fill in missing extras from the new race.
     for key, value in new_race.extras.items():
@@ -126,6 +138,7 @@ def merge_normalized_races(existing_race: NormalizedRace, new_race: NormalizedRa
             existing_race.extras[key] = value
 
     return existing_race
+
 
 # =============================================================================
 # --- PERSISTENT ENGINE (V2 INTEGRATED) ---
@@ -145,16 +158,20 @@ def run_persistent_engine(config: Dict, args: argparse.Namespace):
 
     races_by_key: Dict[str, NormalizedRace] = {}
     if cache_file.exists() and not args.disable_cache_backup:
-        restore = args.auto_restore or input("Cache file found for today. Restore? (Y/n): ").strip().lower() in ['y', '']
+        restore = args.auto_restore or input(
+            "Cache file found for today. Restore? (Y/n): "
+        ).strip().lower() in ["y", ""]
         if restore:
             try:
                 with open(cache_file, "r", encoding="utf-8") as f:
                     cached_data = json.load(f)
                     for race_dict in cached_data:
-                        races_by_key[race_dict['race_key']] = NormalizedRace(**race_dict)
+                        races_by_key[race_dict["race_key"]] = NormalizedRace(**race_dict)
                 logging.info(f"Loaded {len(races_by_key)} races from V2 cache: {cache_file}")
             except (json.JSONDecodeError, TypeError) as e:
-                logging.warning(f"Cache file '{cache_file}' is corrupted. Starting fresh. Error: {e}")
+                logging.warning(
+                    f"Cache file '{cache_file}' is corrupted. Starting fresh. Error: {e}"
+                )
 
     logging.info(f"Engine running. Paste data, then type '{args.paste_sentinel}' and Enter.")
 
@@ -180,17 +197,21 @@ def run_persistent_engine(config: Dict, args: argparse.Namespace):
 
                 if new_race.race_key in races_by_key:
                     existing_race = races_by_key[new_race.race_key]
-                    races_by_key[new_race.race_key] = merge_normalized_races(existing_race, new_race)
+                    races_by_key[new_race.race_key] = merge_normalized_races(
+                        existing_race, new_race
+                    )
                     update_count += 1
                 else:
                     races_by_key[new_race.race_key] = new_race
                     new_count += 1
 
-            logging.info(f"Processed paste. Added {new_count} new, updated {update_count} existing.")
+            logging.info(
+                f"Processed paste. Added {new_count} new, updated {update_count} existing."
+            )
 
             # Save cache atomically after each paste
             if not args.disable_cache_backup:
-                temp_file = cache_file.with_suffix('.json.tmp')
+                temp_file = cache_file.with_suffix(".json.tmp")
                 with open(temp_file, "w", encoding="utf-8") as f:
                     json.dump([asdict(race) for race in races_by_key.values()], f, indent=2)
                 temp_file.rename(cache_file)
@@ -201,9 +222,11 @@ def run_persistent_engine(config: Dict, args: argparse.Namespace):
     except Exception as e:
         logging.critical(f"Critical error in persistent engine: {e}", exc_info=True)
 
+
 # =============================================================================
 # --- BATCH PARSE MODE (V2 INTEGRATED) ---
 # =============================================================================
+
 
 def parse_local_files(config: Dict, args: Optional[argparse.Namespace]) -> List[NormalizedRace]:
     """
@@ -212,7 +235,7 @@ def parse_local_files(config: Dict, args: Optional[argparse.Namespace]) -> List[
     """
     input_dir_str = None
     # Handle cases where args might be None or the attribute might not be set
-    if args and hasattr(args, 'input_dir') and args.input_dir:
+    if args and hasattr(args, "input_dir") and args.input_dir:
         input_dir_str = args.input_dir
     else:
         input_dir_str = config.get("INPUT_DIR", "html_input")
@@ -233,7 +256,7 @@ def parse_local_files(config: Dict, args: Optional[argparse.Namespace]) -> List[
 
     for file_path in tqdm(html_files, desc="Parsing Local Files"):
         try:
-            html_content = file_path.read_text(encoding='utf-8')
+            html_content = file_path.read_text(encoding="utf-8")
             parsed_dicts = parser.parse_racing_data(html_content, source_file=file_path.name)
 
             for race_dict in parsed_dicts:
@@ -264,7 +287,7 @@ def generate_paddock_reports(scored_results: List[ScoreResult], config: Dict):
     # JSON Report
     json_path = output_dir / f"paddock_report_v2_{today_str}.json"
     try:
-        with open(json_path, 'w', encoding='utf-8') as f:
+        with open(json_path, "w", encoding="utf-8") as f:
             # Use asdict to convert the list of dataclasses to dicts
             json.dump([asdict(res) for res in scored_results], f, indent=2)
         logging.info(f"V2 JSON report saved to {json_path}")
@@ -274,10 +297,10 @@ def generate_paddock_reports(scored_results: List[ScoreResult], config: Dict):
     # HTML Report
     html_path = output_dir / f"paddock_report_v2_{today_str}.html"
     try:
-        env = Environment(loader=FileSystemLoader('.'), autoescape=select_autoescape())
+        env = Environment(loader=FileSystemLoader("."), autoescape=select_autoescape())
         template = env.get_template(config["TEMPLATE_PADDOCK"])
         html_output = template.render(races=scored_results, config=config, report_date=today_str)
-        html_path.write_text(html_output, encoding='utf-8')
+        html_path.write_text(html_output, encoding="utf-8")
         logging.info(f"V2 HTML report saved to {html_path}")
     except Exception as e:
         logging.error(f"Failed to generate V2 HTML report: {e}")

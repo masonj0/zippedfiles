@@ -6,6 +6,7 @@ This script serves as the main entry point for the unified toolkit. It has
 been refactored to provide a seamless, action-oriented user experience,
 integrating the V2 adapter pipeline and the V1 local file parser.
 """
+
 import argparse
 import asyncio
 import logging
@@ -20,9 +21,22 @@ nest_asyncio.apply()
 # --- Module Imports ---
 try:
     from .config_manager import config_manager
+
     # V1 modules (still used for specific tasks)
-    from .enhanced_scanner import test_scanner_connections, run_batch_prefetch, discover_rss, fetch_breadcrumb_page, scan_js_for_endpoints
-    from .paddock_parser import run_batch_parse, run_persistent_engine, parse_local_files, merge_normalized_races, generate_paddock_reports
+    from .enhanced_scanner import (
+        test_scanner_connections,
+        run_batch_prefetch,
+        discover_rss,
+        fetch_breadcrumb_page,
+        scan_js_for_endpoints,
+    )
+    from .paddock_parser import (
+        run_batch_parse,
+        run_persistent_engine,
+        parse_local_files,
+        merge_normalized_races,
+        generate_paddock_reports,
+    )
     from .link_helper import create_and_launch_link_helper
     from .fetching import close_shared_async_client
     from .spectral_scheduler import run_bursts
@@ -41,6 +55,7 @@ except ImportError as e:
 # --- SETUP & HELPERS ---
 # =============================================================================
 
+
 def setup_logging(log_file: str):
     """Configures logging for the application."""
     log_dir = Path(log_file).parent
@@ -48,11 +63,9 @@ def setup_logging(log_file: str):
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s",
-        handlers=[
-            logging.FileHandler(log_file, mode='w'),
-            logging.StreamHandler(sys.stdout)
-        ]
+        handlers=[logging.FileHandler(log_file, mode="w"), logging.StreamHandler(sys.stdout)],
     )
+
 
 def safe_async_run(coro, operation_name: str = "Operation"):
     """Safely run async operations with unified error handling."""
@@ -65,9 +78,11 @@ def safe_async_run(coro, operation_name: str = "Operation"):
         logging.error(f"{operation_name} failed: {e}", exc_info=True)
         print(f"❌ Error during {operation_name}: {e}")
 
+
 # =============================================================================
 # --- CORE UNIFIED PIPELINE (V3 COMPLIANT) ---
 # =============================================================================
+
 
 async def run_unified_pipeline(args: Optional[argparse.Namespace]):
     """
@@ -87,9 +102,7 @@ async def run_unified_pipeline(args: Optional[argparse.Namespace]):
     # 2. Get races from V1 local files
     print("\n==> Phase 2: Parsing local HTML files...")
     loop = asyncio.get_running_loop()
-    races_from_local = await loop.run_in_executor(
-        None, parse_local_files, config, args
-    )
+    races_from_local = await loop.run_in_executor(None, parse_local_files, config, args)
     print(f"==> Found {len(races_from_local)} races from local files.")
 
     # 3. Merge the two lists of races
@@ -115,7 +128,7 @@ async def run_unified_pipeline(args: Optional[argparse.Namespace]):
 
     # 5. Display and save reports
     display_results_console(scored_results, initial_count, final_count)
-    generate_paddock_reports(scored_results, config) # V1 report generator still needs config
+    generate_paddock_reports(scored_results, config)  # V1 report generator still needs config
     print("✅ Unified analysis pipeline complete.")
 
 
@@ -128,6 +141,7 @@ BASES = [
     {"base_url": "https://www.timeform.com", "category": "horse-racing", "detail": "racecards"},
     {"base_url": "https://www.racingpost.com", "category": "racecards", "detail": ""},
 ]
+
 
 async def advanced_prefetch_once():
     """one pass over bases for discovery"""
@@ -159,6 +173,7 @@ async def advanced_prefetch_once():
         except Exception as e:
             logging.warning(f"[WARN] advanced prefetch failed for {base_url}: {e}")
 
+
 def advanced_prefetch_menu_action():
     """Wrapper to run the burst scheduler for the advanced prefetch task."""
     try:
@@ -173,15 +188,16 @@ def advanced_prefetch_menu_action():
 # --- INTERACTIVE MENU ---
 # =============================================================================
 
+
 def main_menu():
     """Displays the action-oriented main menu for the user."""
     config = config_manager.get_config()
-    app_name = config.get('APP_NAME', 'Paddock Parser Toolkit')
+    app_name = config.get("APP_NAME", "Paddock Parser Toolkit")
 
     while True:
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print(f" {app_name} v3.0 - Main Menu")
-        print("="*60)
+        print("=" * 60)
         print("--- Analysis ---")
         print(" 1. Run Full Analysis (Live Adapters + Local Files)")
         print(" 2. Parse Local Files Only")
@@ -195,96 +211,110 @@ def main_menu():
         print(" 8. View & Validate Configuration")
         print()
         print(" Q. Quit")
-        print("="*60)
+        print("=" * 60)
 
         choice = input("Enter your choice: ").strip().upper()
 
-        if choice == '1':
+        if choice == "1":
             safe_async_run(run_unified_pipeline(None), "Unified Analysis")
-        elif choice == '2':
-            run_batch_parse(config, None) # V1 module, still needs config
-        elif choice == '3':
-            run_persistent_engine(config, argparse.Namespace()) # V1 module
-        elif choice == '4':
-            safe_async_run(run_batch_prefetch(config), "Pre-Fetch") # V1 module
-        elif choice == '5':
-            create_and_launch_link_helper(config) # V1 module
-        elif choice == '6':
-            safe_async_run(test_scanner_connections(config), "Connection Test") # V1 module
-        elif choice == '7':
+        elif choice == "2":
+            run_batch_parse(config, None)  # V1 module, still needs config
+        elif choice == "3":
+            run_persistent_engine(config, argparse.Namespace())  # V1 module
+        elif choice == "4":
+            safe_async_run(run_batch_prefetch(config), "Pre-Fetch")  # V1 module
+        elif choice == "5":
+            create_and_launch_link_helper(config)  # V1 module
+        elif choice == "6":
+            safe_async_run(test_scanner_connections(config), "Connection Test")  # V1 module
+        elif choice == "7":
             advanced_prefetch_menu_action()
-        elif choice == '8':
+        elif choice == "8":
             print("\n--- Current Configuration (via ConfigManager) ---")
             for key, value in config.items():
                 if isinstance(value, list):
                     print(f"- {key}: {len(value)} items")
                 elif isinstance(value, dict):
-                     print(f"- {key}: {len(value.keys())} keys")
+                    print(f"- {key}: {len(value.keys())} keys")
                 else:
                     print(f"- {key}: {value}")
             print("---------------------------")
-        elif choice == 'Q':
+        elif choice == "Q":
             print("👋 Goodbye!")
             break
         else:
             print("❌ Invalid choice, please try again.")
 
-        if choice != 'Q':
+        if choice != "Q":
             input("\nPress Enter to return to the menu...")
+
 
 # =============================================================================
 # --- COMMAND-LINE INTERFACE ---
 # =============================================================================
 
+
 def main_cli(args: argparse.Namespace):
     """Handles command-line argument parsing and execution."""
     config = config_manager.get_config()
-    if args.command == 'analyze':
+    if args.command == "analyze":
         safe_async_run(run_unified_pipeline(args), "Unified Analysis")
-    elif args.command == 'parse':
-        run_batch_parse(config, args) # V1 module
-    elif args.command == 'persistent':
-        run_persistent_engine(config, args) # V1 module
-    elif args.command == 'collect':
-        create_and_launch_link_helper(config) # V1 module
-    elif args.command == 'prefetch':
-        safe_async_run(run_batch_prefetch(config), "Pre-Fetch") # V1 module
-    elif args.command == 'test':
-        safe_async_run(test_scanner_connections(config), "Connection Test") # V1 module
+    elif args.command == "parse":
+        run_batch_parse(config, args)  # V1 module
+    elif args.command == "persistent":
+        run_persistent_engine(config, args)  # V1 module
+    elif args.command == "collect":
+        create_and_launch_link_helper(config)  # V1 module
+    elif args.command == "prefetch":
+        safe_async_run(run_batch_prefetch(config), "Pre-Fetch")  # V1 module
+    elif args.command == "test":
+        safe_async_run(test_scanner_connections(config), "Connection Test")  # V1 module
     else:
         print(f"Unknown command: {args.command}")
         sys.exit(1)
+
 
 def create_cli_parser() -> argparse.ArgumentParser:
     """Create and configure the CLI argument parser."""
     parser = argparse.ArgumentParser(
         description="Paddock Parser Toolkit v2.0 - A Unified Racing Intelligence Tool",
-        epilog="Use '<command> --help' for command-specific options."
+        epilog="Use '<command> --help' for command-specific options.",
     )
-    subparsers = parser.add_subparsers(dest='command', required=True, help="Available commands")
+    subparsers = parser.add_subparsers(dest="command", required=True, help="Available commands")
 
     # Unified 'analyze' command
-    analyze_parser = subparsers.add_parser('analyze', help="Run the full unified analysis (live adapters + local files)")
-    analyze_parser.add_argument('--input-dir', help="Local HTML directory (overrides config)")
-    analyze_parser.add_argument('--date', help="Date to scan in YYYY-MM-DD format", default=None)
+    analyze_parser = subparsers.add_parser(
+        "analyze", help="Run the full unified analysis (live adapters + local files)"
+    )
+    analyze_parser.add_argument("--input-dir", help="Local HTML directory (overrides config)")
+    analyze_parser.add_argument("--date", help="Date to scan in YYYY-MM-DD format", default=None)
 
     # Standalone 'parse' command for local files only
-    parse_parser = subparsers.add_parser('parse', help="Parse local HTML files only")
-    parse_parser.add_argument('--input-dir', help="Input directory path (overrides config)")
+    parse_parser = subparsers.add_parser("parse", help="Parse local HTML files only")
+    parse_parser.add_argument("--input-dir", help="Input directory path (overrides config)")
 
     # Persistent engine command
-    persistent_parser = subparsers.add_parser('persistent', help="Launch the 'Always-On' live paste engine")
-    persistent_parser.add_argument('--cache-dir', help="Directory for cache files (overrides config)")
-    persistent_parser.add_argument('--disable-cache-backup', action='store_true', help="Disable cache backup")
-    persistent_parser.add_argument('--paste-sentinel', default='KABOOM', help="Sentinel string")
+    persistent_parser = subparsers.add_parser(
+        "persistent", help="Launch the 'Always-On' live paste engine"
+    )
+    persistent_parser.add_argument(
+        "--cache-dir", help="Directory for cache files (overrides config)"
+    )
+    persistent_parser.add_argument(
+        "--disable-cache-backup", action="store_true", help="Disable cache backup"
+    )
+    persistent_parser.add_argument("--paste-sentinel", default="KABOOM", help="Sentinel string")
 
     # Data collection commands
-    subparsers.add_parser('collect', help="Generate the manual collection helper page")
-    prefetch_parser = subparsers.add_parser('prefetch', help="Pre-fetch all accessible HTML data sources")
-    prefetch_parser.add_argument('--date', help="Date to fetch in YYYY-MM-DD format", default=None)
-    subparsers.add_parser('test', help="Test all data source connections")
+    subparsers.add_parser("collect", help="Generate the manual collection helper page")
+    prefetch_parser = subparsers.add_parser(
+        "prefetch", help="Pre-fetch all accessible HTML data sources"
+    )
+    prefetch_parser.add_argument("--date", help="Date to fetch in YYYY-MM-DD format", default=None)
+    subparsers.add_parser("test", help="Test all data source connections")
 
     return parser
+
 
 # =============================================================================
 # --- MAIN EXECUTION ---
