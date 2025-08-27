@@ -53,6 +53,7 @@ This phase transitions the toolkit from a batch-processing scraper to a real-tim
 
 ### Phase 3: Intelligence & Analysis
 This phase focuses on enriching the data and improving the scoring model.
+ pair
 
 -   **Contextualization Engine:**
     -   **Goal:** Add a "Contextualize" stage to the pipeline before scoring to integrate external data like weather, news, and pundit commentary.
@@ -120,3 +121,25 @@ This protocol is for leveraging old, unmaintained open-source projects as "treas
 
 *   **The Principle:** Old API wrappers are not to be revived. They are to be studied as blueprints of how a site's API *used to work*.
 *   **The Mission:** When an "archeological" lead is found, the task is to perform reconnaissance on the *modern* version of the target website to find the *new* API, using the old code as a guide. This prevents wasting time on dead ends and accelerates the discovery of their modern replacements.
+
+---
+
+## **The "Polyglot Future" Vision**
+
+The long-term vision for the Paddock Parser Toolkit is to evolve beyond a single-language "monolith" and into a "polyglot" system, where we use the absolute best language for each specific task. This will allow the toolkit to become more powerful, scalable, and performant than it could ever be if it remained purely in Python.
+
+The proposed architecture identifies three distinct roles:
+1.  **The "Project Lead" (Python):** The central nervous system for orchestration, data science, and high-level analysis.
+2.  **The "Foragers" (Go/Rust):** A high-performance, standalone data ingestion engine for maximum concurrency and speed.
+3.  **The "Town Crier" (TypeScript):** An interactive, web-based user interface for modern data presentation and real-time dashboards.
+
+### **Architectural Considerations**
+
+As we move towards this vision, the following key points, based on agent feedback, must be considered:
+
+*   **Challenge - The API Contract:** The single most critical success factor will be the design of the **API contracts** between the three components. These APIs (e.g., between Python/TypeScript and Python/Go) must be meticulously designed, documented, and versioned to allow for independent development and prevent integration issues.
+
+*   **Opportunity - Enhancing the "Forager" Role:** The "Foragers" could be made even more powerful by performing a "pre-parsing" step. For example, a Go-based forager could extract a specific JSON blob from a large HTML page and return only that small chunk to Python, further reducing the load on the Python brain.
+
+*   **Challenge - Operational Complexity:** Moving from a single application to three separate services significantly increases the complexity of development, testing, and deployment. A strategy for managing this, likely involving containerization (Docker) and local orchestration (Docker Cmpose), will be essential.
+  
