@@ -8,7 +8,7 @@ from typing import Dict, List, Any, Optional
 
 from sources import ADAPTERS, RawRaceDocument
 from normalizer import NormalizedRace, normalize_race_docs
-from config import load_config
+from paddock_parser.config import load_config
 import adapters
 
 # --- Data Structures ---
