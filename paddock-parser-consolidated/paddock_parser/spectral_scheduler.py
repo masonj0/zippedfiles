@@ -1,9 +1,11 @@
 # spectral_scheduler.py
 from __future__ import annotations
-import asyncio, random
+import asyncio
+import random
 from typing import Callable, Awaitable
 
 from .config_manager import config_manager
+
 
 async def run_bursts(task: Callable[[], Awaitable[None]]):
     config = config_manager.get_config()
