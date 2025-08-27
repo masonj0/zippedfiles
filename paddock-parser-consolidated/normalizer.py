@@ -9,13 +9,12 @@ V2 introduces versioned, structured dataclasses for raw and normalized data.
 """
 
 import re
-import logging
 from typing import Optional, List, Dict, Any
 from dataclasses import dataclass, field
-from sources import RawRaceDocument, RunnerDoc, FieldConfidence
-import hashlib
+from sources import RawRaceDocument
 
 # --- V2 DATA STRUCTURES ---
+
 
 @dataclass
 class NormalizedRunner:
@@ -23,6 +22,7 @@ class NormalizedRunner:
     A runner with all key fields normalized for consistent analysis.
     V2 of the data structure.
     """
+
     runner_id: str
     name: str
     saddle_cloth: str
@@ -35,6 +35,7 @@ class NormalizedRunner:
     # Raw source-specific data for debugging and future use
     raw_data: Dict[str, Any] = field(default_factory=dict)
 
+
 @dataclass
 class NormalizedRace:
     """
@@ -42,6 +43,7 @@ class NormalizedRace:
     This is the primary data structure for the V2 analysis engine.
     V2 of the data structure.
     """
+
     race_key: str  # Globally unique key, e.g., "ascot_2025-08-18_1430"
     track_key: str
     start_time_iso: str
@@ -52,7 +54,9 @@ class NormalizedRace:
     source_ids: List[str] = field(default_factory=list)
     extras: Dict[str, Any] = field(default_factory=dict)
 
+
 # --- KEY GENERATION ---
+
 
 def canonical_track_key(name: str) -> str:
     """Generates a standardized, URL-safe key for a racetrack."""
@@ -60,35 +64,44 @@ def canonical_track_key(name: str) -> str:
         return "unknown_track"
     # Lowercase, remove special chars, replace spaces with underscores
     name = name.lower().strip()
-    name = re.sub(r'[^a-z0-9\s-]', '', name)
-    name = re.sub(r'[\s-]+', '_', name)
+    name = re.sub(r"[^a-z0-9\s-]", "", name)
+    name = re.sub(r"[\s-]+", "_", name)
     return name
+
 
 def canonical_race_key(track_key: str, race_time: str) -> str:
     """Generates a globally unique key for a race."""
     # Assumes race_time is already in HHMM format
-    time_str = re.sub(r'[^0-9]', '', race_time)
+    time_str = re.sub(r"[^0-9]", "", race_time)
     return f"{track_key}::r{time_str}"
+
 
 # --- NORMALIZATION FUNCTIONS ---
 
-_COURSE_NAME_AT_REGEX = re.compile(r' at .*$')
-_COURSE_NAME_PAREN_REGEX = re.compile(r'\s*\([^)]*\)')
+_COURSE_NAME_AT_REGEX = re.compile(r" at .*$")
+_COURSE_NAME_PAREN_REGEX = re.compile(r"\s*\([^)]*\)")
+
 
 def normalize_course_name(name: str) -> str:
     """Cleans and standardizes a racetrack name."""
     if not name:
         return ""
     name = name.lower().strip()
-    name = _COURSE_NAME_AT_REGEX.sub('', name)
-    name = _COURSE_NAME_PAREN_REGEX.sub('', name)
+    name = _COURSE_NAME_AT_REGEX.sub("", name)
+    name = _COURSE_NAME_PAREN_REGEX.sub("", name)
     replacements = {
-        'park': '', 'raceway': '', 'racecourse': '', 'track': '',
-        'stadium': '', 'greyhound': '', 'harness': ''
+        "park": "",
+        "raceway": "",
+        "racecourse": "",
+        "track": "",
+        "stadium": "",
+        "greyhound": "",
+        "harness": "",
     }
     for old, new in replacements.items():
         name = name.replace(old, new)
     return " ".join(name.split())
+
 
 def map_discipline(discipline_name: str) -> str:
     """Maps a raw discipline string to a standardized category."""
@@ -103,19 +116,21 @@ def map_discipline(discipline_name: str) -> str:
         return "jump"
     return "thoroughbred"
 
+
 def parse_hhmm_any(time_text: str) -> Optional[str]:
     """Parses a time string into a standardized 24-hour 'HH:MM' format."""
     if not time_text:
         return None
-    match = re.search(r'(\d{1,2})[:.](\d{2})', str(time_text))
+    match = re.search(r"(\d{1,2})[:.](\d{2})", str(time_text))
     if not match:
         return None
     hour, minute = int(match.group(1)), int(match.group(2))
-    if 'pm' in str(time_text).lower() and hour != 12:
+    if "pm" in str(time_text).lower() and hour != 12:
         hour += 12
-    if 'am' in str(time_text).lower() and hour == 12:
+    if "am" in str(time_text).lower() and hour == 12:
         hour = 0
     return f"{hour:02d}:{minute:02d}"
+
 
 def convert_odds_to_decimal(odds_str: str) -> float | None:
     """Converts various odds formats to a decimal float."""
@@ -138,10 +153,12 @@ def convert_odds_to_decimal(odds_str: str) -> float | None:
     except ValueError:
         return None
 
+
 def convert_odds_to_fractional_decimal(odds_str: str) -> Optional[float]:
     """Legacy function for V1 compatibility. Returns None for invalid odds."""
     dec = convert_odds_to_decimal(odds_str)
     return (dec - 1.0) if dec is not None else None
+
 
 def normalize_race_docs(doc: RawRaceDocument) -> NormalizedRace:
     """
@@ -159,21 +176,21 @@ def normalize_race_docs(doc: RawRaceDocument) -> NormalizedRace:
             "trainer": r.trainer.confidence if r.trainer else 0.0,
         }
 
-        raw_data = {
-            "extras": {k: v.value for k, v in r.extras.items()}
-        }
+        raw_data = {"extras": {k: v.value for k, v in r.extras.items()}}
 
-        runners.append(NormalizedRunner(
-            runner_id=r.runner_id,
-            name=r.name.value,
-            saddle_cloth=r.number.value,
-            odds_decimal=odds_decimal,
-            odds_fractional=r.odds.value if r.odds else None,
-            jockey_name=r.jockey.value if r.jockey else None,
-            trainer_name=r.trainer.value if r.trainer else None,
-            confidence_scores=confidence_scores,
-            raw_data=raw_data,
-        ))
+        runners.append(
+            NormalizedRunner(
+                runner_id=r.runner_id,
+                name=r.name.value,
+                saddle_cloth=r.number.value,
+                odds_decimal=odds_decimal,
+                odds_fractional=r.odds.value if r.odds else None,
+                jockey_name=r.jockey.value if r.jockey else None,
+                trainer_name=r.trainer.value if r.trainer else None,
+                confidence_scores=confidence_scores,
+                raw_data=raw_data,
+            )
+        )
 
     return NormalizedRace(
         race_key=doc.race_key,
@@ -181,5 +198,5 @@ def normalize_race_docs(doc: RawRaceDocument) -> NormalizedRace:
         start_time_iso=doc.start_time_iso,
         runners=runners,
         source_ids=[doc.source_id],
-        extras={k: v.value for k,v in doc.extras.items()}
+        extras={k: v.value for k, v in doc.extras.items()},
     )
