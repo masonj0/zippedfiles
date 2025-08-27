@@ -1,4 +1,5 @@
 import datetime as dt
+import json
 import logging
 from urllib.parse import urljoin
 
@@ -61,90 +62,90 @@ class GreyhoundRecorderAdapter(BaseAdapterV3):
 
     def _parse_races_from_html(self, soup: BeautifulSoup) -> list[RawRaceDocument]:
         """
-        Parses the race data from the HTML structure of the racecard page.
+        Parses the race data from the HTML structure of the long-form racecard page.
         """
         races = []
 
-        course_name_tag = soup.find("a", class_="RC-courseTime__link")
-        course_name = course_name_tag.get_text(strip=True) if course_name_tag else "Unknown Course"
-        track_key = canonical_track_key(course_name.replace("(IRE)", "").strip())
+        try:
+            track_name_tag = soup.find("h1", class_="form-guide-meeting__heading")
+            if not track_name_tag:
+                logging.error(f"[{self.source_id}] Could not find track name tag.")
+                return []
 
-        race_divs = soup.find_all("div", class_="RC-meetingDay__race")
+            track_name_full = track_name_tag.get_text(strip=True)
+            track_name = track_name_full.split('(')[0].strip()
+            track_key = canonical_track_key(track_name)
 
-        if not race_divs:
-            logging.error(f"[{self.source_id}] No race divs found on the page.")
+            race_header = soup.find("div", class_="meeting-event__header--desktop")
+            if not race_header:
+                logging.error(f"[{self.source_id}] Could not find race header.")
+                return []
+
+            race_time_tag = race_header.find("div", class_="meeting-event__header-time")
+            race_time_str = race_time_tag.get_text(strip=True) if race_time_tag else ""
+
+            race_time = parse_hhmm_any(race_time_str)
+            if not race_time:
+                logging.warning(f"[{self.source_id}] Could not parse race time: {race_time_str}")
+                return []
+
+            race_key = canonical_race_key(track_key, race_time)
+
+            runners = []
+            runner_rows = soup.select("tr.form-guide-long-form-table-selection")
+
+            for runner_row in runner_rows:
+                if "form-guide-long-form-table-selection--scratched" in runner_row.get("class", []):
+                    continue
+
+                runner_name_tag = runner_row.find("span", class_="form-guide-long-form-table-selection__name")
+                runner_name = runner_name_tag.get_text(strip=True) if runner_name_tag else ""
+
+                rug_img_tag = runner_row.find("img", class_="form-guide-long-form-table-selection__rug")
+                number_str = ""
+                if rug_img_tag and rug_img_tag.get('alt'):
+                    number_str = rug_img_tag.get('alt').replace("Rug ", "").strip()
+
+                if not runner_name or not number_str:
+                    continue
+
+                runners.append(
+                    RunnerDoc(
+                        runner_id=f"{race_key}-{number_str}",
+                        name=FieldConfidence(runner_name, 0.9, self.source_id),
+                        number=FieldConfidence(number_str, 0.9, self.source_id),
+                    )
+                )
+
+            if not runners:
+                logging.warning(f"[{self.source_id}] No runners found for race {race_key}")
+                return []
+
+            start_time_iso = f"{dt.date.today().isoformat()}T{race_time}:00Z"
+
+            # There are multiple ld+json scripts, find the SportsEvent one
+            for script_tag in soup.find_all("script", type="application/ld+json"):
+                try:
+                    json_data = json.loads(script_tag.string)
+                    if json_data.get("@type") == "SportsEvent" and json_data.get("startDate"):
+                        start_time_iso = json_data.get("startDate")
+                        break
+                except (json.JSONDecodeError, KeyError):
+                    continue
+
+            races.append(
+                RawRaceDocument(
+                    source_id=self.source_id,
+                    fetched_at=dt.datetime.now(dt.timezone.utc).isoformat(),
+                    track_key=track_key,
+                    race_key=race_key,
+                    start_time_iso=start_time_iso,
+                    runners=runners,
+                )
+            )
+        except Exception as e:
+            logging.error(f"[{self.source_id}] Failed to parse race from HTML: {e}", exc_info=True)
             return []
-
-        for race_div in race_divs:
-            try:
-                race_time_tag = race_div.find("span", class_="RC-meetingDay__raceTime")
-                race_time_str = race_time_tag.get_text(strip=True) if race_time_tag else ""
-                race_time = parse_hhmm_any(race_time_str)
-                if not race_time:
-                    continue
-
-                race_key = canonical_race_key(track_key, race_time)
-                race_title_tag = race_div.find("a", class_="RC-meetingDay__raceTitle")
-                race_title = race_title_tag.get_text(strip=True) if race_title_tag else ""
-                race_url = (
-                    urljoin(self.base_url, race_title_tag["href"])
-                    if race_title_tag and "href" in race_title_tag.attrs
-                    else ""
-                )
-
-                runners = []
-                runner_rows = race_div.find_all("div", class_="RC-runnerRow")
-                for runner_row in runner_rows:
-                    if "js-runnerNonRunner" in runner_row.get("class", []):
-                        continue
-
-                    runner_name_tag = runner_row.find("a", class_="RC-runnerName")
-                    runner_name = runner_name_tag.get_text(strip=True) if runner_name_tag else ""
-
-                    number_tag = runner_row.find("span", class_="RC-runnerNumber__no")
-                    number = number_tag.get_text(strip=True) if number_tag else ""
-
-                    jockey_tag = runner_row.find(
-                        "a", attrs={"data-test-selector": "RC-cardPage-runnerJockey-name"}
-                    )
-                    jockey = jockey_tag.get_text(strip=True) if jockey_tag else ""
-
-                    trainer_tag = runner_row.find(
-                        "a", attrs={"data-test-selector": "RC-cardPage-runnerTrainer-name"}
-                    )
-                    trainer = trainer_tag.get_text(strip=True) if trainer_tag else ""
-
-                    runners.append(
-                        RunnerDoc(
-                            runner_id=f"{race_key}-{number}",
-                            name=FieldConfidence(runner_name, 0.9, self.source_id),
-                            number=FieldConfidence(number, 0.9, self.source_id),
-                            jockey=FieldConfidence(jockey, 0.9, self.source_id),
-                            trainer=FieldConfidence(trainer, 0.9, self.source_id),
-                            odds=None,
-                        )
-                    )
-
-                if not runners:
-                    continue
-
-                races.append(
-                    RawRaceDocument(
-                        source_id=self.source_id,
-                        fetched_at=dt.datetime.now(dt.timezone.utc).isoformat(),
-                        track_key=track_key,
-                        race_key=race_key,
-                        start_time_iso=f"{dt.date.today().isoformat()}T{race_time}:00Z",
-                        runners=runners,
-                        extras={
-                            "race_title": FieldConfidence(race_title, 0.9, self.source_id),
-                            "race_url": FieldConfidence(race_url, 0.9, self.source_id),
-                        },
-                    )
-                )
-            except Exception as e:
-                logging.warning(f"[{self.source_id}] Failed to parse a race entry from HTML: {e}")
-                continue
 
         logging.info(f"[{self.source_id}] Successfully parsed {len(races)} races from HTML.")
         return races
@@ -153,7 +154,7 @@ class GreyhoundRecorderAdapter(BaseAdapterV3):
         """
         Parses the HTML content and returns a list of fully normalized races.
         """
-        soup = BeautifulSoup(html_content, "html.parser")
+        soup = BeautifulSoup(html_content, "lxml")
         raw_races = self._parse_races_from_html(soup)
 
         normalized_races = [normalize_race_docs(raw_race) for raw_race in raw_races]
