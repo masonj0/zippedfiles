@@ -55,6 +55,11 @@
       "enabled": true
     }
   },
+  "BetfairAPICredentials": {
+    "username": "YOUR_USERNAME",
+    "password": "YOUR_PASSWORD",
+    "app_key": "YOUR_APP_KEY"
+  },
   "LEGACY_DATA_SOURCES": [],
   "Fingerprints": [
     {

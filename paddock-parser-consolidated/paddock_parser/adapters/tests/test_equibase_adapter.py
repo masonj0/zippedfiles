@@ -1,7 +1,12 @@
 import unittest
 from unittest.mock import Mock
 import os
+import sys
 import datetime as dt
+
+# Add the project root to the Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
+
 from paddock_parser.adapters.equibase import EquibaseAdapter
 
 class TestEquibaseAdapter(unittest.TestCase):

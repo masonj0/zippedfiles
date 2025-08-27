@@ -14,26 +14,26 @@ from ..utils import remove_honeypot_links
 from .base_v3 import BaseAdapterV3
 
 @register_adapter
-class RacingPostAdapter(BaseAdapterV3):
+class GreyhoundRecorderAdapter(BaseAdapterV3):
     """
-    V3 Adapter for racingpost.com.
+    V3 Adapter for thegreyhoundrecorder.com.au.
 
     This adapter scrapes the racecard page by finding a JSON object embedded
     in the HTML, which contains all the necessary data. This approach is
     based on the methodology from the `joenano/rpscrape` project.
     """
-    source_id = "racingpost"
-    base_url = "https://www.racingpost.com"
+    source_id = "greyhound_recorder"
+    base_url = "https://www.thegreyhoundrecorder.com.au"
 
     async def fetch(self) -> list[RawRaceDocument]:
         """
-        Fetches race data from Racing Post.
+        Fetches race data from The Greyhound Recorder.
         """
         if not self.is_initialized or not self.site_config:
             logging.error(f"Adapter {self.source_id} is not initialized. Cannot fetch.")
             return []
 
-        target_url = f"{self.base_url}/racecards"
+        target_url = f"{self.base_url}/form-guides"
 
         try:
             config = self.config_manager.get_config()
