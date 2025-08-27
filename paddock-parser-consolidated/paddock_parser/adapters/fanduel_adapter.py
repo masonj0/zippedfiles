@@ -1,8 +1,19 @@
 import copy
 import httpx
 from datetime import datetime
-from paddock_parser.normalizer import NormalizedRace, NormalizedRunner
-from .base_v3 import BaseAdapterV3, RawRaceDocument, register_adapter
+from paddock_parser.normalizer import (
+    NormalizedRace,
+    NormalizedRunner,
+    canonical_track_key,
+    canonical_race_key,
+)
+from ..sources import (
+    RawRaceDocument,
+    register_adapter,
+    RunnerDoc,
+    FieldConfidence,
+)
+from .base_v3 import BaseAdapterV3
 
 
 @register_adapter
@@ -106,29 +117,37 @@ class FanDuelAdapter(BaseAdapterV3):
                         continue
 
                     normalized_runner = NormalizedRunner(
+                        runner_id=f"{interim_race['race_id']}-{interest.get('biNumber')}",
                         name=runner_info.get("horseName"),
-                        runner_number=interest.get("biNumber"),
-                        jockey=runner_info.get("jockey"),
-                        trainer=runner_info.get("trainer"),
-                        is_scratched=runner_info.get("scratched", False),
-                        odds=self._calculate_odds(interest.get("currentOdds")),
+
+                        saddle_cloth=interest.get("biNumber"),
+                        jockey_name=runner_info.get("jockey"),
+                        trainer_name=runner_info.get("trainer"),
+                        odds_decimal=self._calculate_odds(interest.get("currentOdds")),
                     )
                     runners.append(normalized_runner)
 
-                normalized_race = NormalizedRace(
-                    race_id=interim_race["race_id"],
-                    track_id=None,  # Not available in this flow
-                    track_name=interim_race["track_name"],
-                    race_number=interim_race["race_number"],
-                    post_time=interim_race["post_time"],
-                    race_type=interim_race["race_type"],
-                    runners=runners,
+                track_key = canonical_track_key(interim_race["track_name"])
+                race_key = canonical_race_key(
+                    track_key, interim_race["post_time"].strftime("%H%M")
+ 
                 )
 
                 raw_doc = RawRaceDocument(
                     source_id=self.source_id,
-                    race_id=normalized_race.race_id,
-                    document=normalized_race,
+
+                    fetched_at=datetime.now().isoformat(),
+                    track_key=track_key,
+                    race_key=race_key,
+                    start_time_iso=interim_race["post_time"].isoformat(),
+                    runners=[
+                        RunnerDoc(
+                            runner_id=r.runner_id,
+                            name=FieldConfidence(r.name, 0.9, self.source_id),
+                            number=FieldConfidence(r.saddle_cloth, 0.9, self.source_id),
+                        )
+                        for r in runners
+                 
                 )
                 normalized_races.append(raw_doc)
 

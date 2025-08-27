@@ -5,6 +5,8 @@ import httpx
 
 from paddock_parser.adapters.fanduel_adapter import FanDuelAdapter
 from paddock_parser.normalizer import NormalizedRace
+from paddock_parser.config_manager import ConfigurationManager
+from paddock_parser.sources import RawRaceDocument
 
 # Sample JSON response for the schedule (Phase 1)
 SAMPLE_SCHEDULE_RESPONSE = {
@@ -100,7 +102,9 @@ class TestFanDuelAdapter(unittest.TestCase):
         mock_client_instance.post = mock_post
         mock_async_client.return_value.__aenter__.return_value = mock_client_instance
 
-        adapter = FanDuelAdapter()
+        mock_config_manager = MagicMock(spec=ConfigurationManager)
+        adapter = FanDuelAdapter(config_manager=mock_config_manager)
+        adapter.initialize()  # Initialize the adapter with the mock config
 
         # Act
         results = asyncio.run(adapter.fetch())
@@ -112,30 +116,19 @@ class TestFanDuelAdapter(unittest.TestCase):
         # Check that we got exactly one race (the Harness race)
         self.assertEqual(len(results), 1)
 
-        # Check the normalized race object
-        race = results[0].document
-        self.assertIsInstance(race, NormalizedRace)
-        self.assertEqual(race.race_id, "HP-1")
-        self.assertEqual(race.track_name, "Harness Park")
-        self.assertEqual(race.race_number, 1)
-        self.assertEqual(race.race_type, "H")
-        self.assertEqual(len(race.runners), 2)
+        # Check the raw race document
+        raw_doc = results[0]
+        self.assertIsInstance(raw_doc, RawRaceDocument)
+        self.assertEqual(raw_doc.track_key, "harness_park")
+        self.assertEqual(raw_doc.race_key, "harness_park::r2000")
+        self.assertEqual(len(raw_doc.runners), 2)
 
         # Check the first runner
-        runner1 = race.runners[0]
-        self.assertEqual(runner1.name, "Speedy")
-        self.assertEqual(runner1.runner_number, 1)
-        self.assertEqual(runner1.jockey, "J. Doe")
-        self.assertEqual(runner1.trainer, "T. Roe")
-        self.assertFalse(runner1.is_scratched)
-        self.assertEqual(runner1.odds, 12.0)  # 12 / 1
 
-        # Check the second runner (scratched)
-        runner2 = race.runners[1]
-        self.assertEqual(runner2.name, "Pacer")
-        self.assertEqual(runner2.runner_number, 2)
-        self.assertTrue(runner2.is_scratched)
-        self.assertEqual(runner2.odds, 2.5)  # 5 / 2
+        runner1 = raw_doc.runners[0]
+        self.assertEqual(runner1.name.value, "Speedy")
+        self.assertEqual(runner1.number.value, 1)
+ 
 
 
 if __name__ == "__main__":
