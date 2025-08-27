@@ -1,6 +1,7 @@
 import logging
 from bs4 import BeautifulSoup
 
+
 def remove_honeypot_links(soup: BeautifulSoup) -> BeautifulSoup:
     """
     Removes invisible "honeypot" links from a BeautifulSoup object.
@@ -22,7 +23,9 @@ def remove_honeypot_links(soup: BeautifulSoup) -> BeautifulSoup:
     for selector in honeypot_selectors:
         honeypots = soup.select(selector)
         for honeypot in honeypots:
-            logging.info(f"Removing potential honeypot link: {honeypot.get('href', 'No href found')}")
+            logging.info(
+                f"Removing potential honeypot link: {honeypot.get('href', 'No href found')}"
+            )
             honeypot.decompose()
 
     return soup

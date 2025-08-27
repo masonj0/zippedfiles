@@ -1,14 +1,13 @@
-import asyncio
 import csv
 import datetime as dt
 import logging
 from io import StringIO
-from typing import Optional, List
 
 from ..sources import RawRaceDocument, FieldConfidence, RunnerDoc, register_adapter
 from ..fetching import resilient_get
 from ..normalizer import canonical_track_key, canonical_race_key
 from .base_v3 import BaseAdapterV3
+
 
 @register_adapter
 class BetfairAdapter(BaseAdapterV3):
@@ -18,6 +17,7 @@ class BetfairAdapter(BaseAdapterV3):
     This adapter fetches CSV data directly from the unofficial API endpoint
     described in the Betfair "How to Automate 3" tutorial.
     """
+
     source_id = "betfair"
 
     async def fetch(self) -> list[RawRaceDocument]:
@@ -80,15 +80,21 @@ class BetfairAdapter(BaseAdapterV3):
                         extras={
                             "betfair_market_id": FieldConfidence(market_id, 1.0, self.source_id),
                             "meeting_name": FieldConfidence(track_name, 0.9, self.source_id),
-                        }
+                        },
                     )
 
                 # Add the runner to the race
                 runner_doc = RunnerDoc(
                     runner_id=row.get("meetings.races.runners.bfExchangeSelectionId"),
-                    name=FieldConfidence(row.get("meetings.races.runners.runnerName"), 0.9, self.source_id),
-                    number=FieldConfidence(row.get("meetings.races.runners.runnerNumber"), 0.9, self.source_id),
-                    odds=FieldConfidence(row.get("meetings.races.runners.ratedPrice"), 0.9, self.source_id),
+                    name=FieldConfidence(
+                        row.get("meetings.races.runners.runnerName"), 0.9, self.source_id
+                    ),
+                    number=FieldConfidence(
+                        row.get("meetings.races.runners.runnerNumber"), 0.9, self.source_id
+                    ),
+                    odds=FieldConfidence(
+                        row.get("meetings.races.runners.ratedPrice"), 0.9, self.source_id
+                    ),
                 )
                 races_data[market_id].runners.append(runner_doc)
 
