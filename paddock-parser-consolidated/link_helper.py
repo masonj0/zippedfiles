@@ -16,6 +16,7 @@ import sys
 # Use the canonical config loader
 from config import load_config
 
+
 def create_and_launch_link_helper(config: Dict):
     """
     Generates and opens the interactive `collector.html` dashboard,
@@ -68,9 +69,11 @@ def create_and_launch_link_helper(config: Dict):
                     proxy_url_template = viewer.get("TOOL_URL", "")
                     proxy_link_text = viewer.get("LINK_TEXT", "View via Proxy")
                     if proxy_url_template:
-                        encoded_url = quote(url, safe=':/')
+                        encoded_url = quote(url, safe=":/")
                         proxy_full_url = proxy_url_template.format(target_url=encoded_url)
-                        proxy_links_html += f' | <a href="{proxy_full_url}" target="_blank">{proxy_link_text}</a>'
+                        proxy_links_html += (
+                            f' | <a href="{proxy_full_url}" target="_blank">{proxy_link_text}</a>'
+                        )
 
             sites_html += f"""
             <div class="source-item">
@@ -114,9 +117,10 @@ def create_and_launch_link_helper(config: Dict):
     except Exception as e:
         print(f"❌ Could not create or open the Integrated Collector file: {e}", file=sys.stderr)
 
+
 if __name__ == "__main__":
     # Use the new default config name
-    config = load_config('config_settings.json')
+    config = load_config("config_settings.json")
     if config:
         create_and_launch_link_helper(config)
     else:

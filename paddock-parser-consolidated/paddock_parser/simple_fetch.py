@@ -1,6 +1,7 @@
 import httpx
 import logging
 
+
 async def simple_get(url: str):
     """
     A very simple, stripped-down async get function.

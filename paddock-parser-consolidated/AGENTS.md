@@ -125,3 +125,36 @@ This is a "Level 3" failure. When this occurs, we will revert to the most reliab
 
 This protocol ensures that even in the case of a total environmental collapse, the agent's valuable "institutional knowledge" is never lost. It is our ultimate safety net.
 
+
+### **CRITICAL PROTOCOL: The Authenticity of Sample Data**
+
+It has been discovered that a previous agent exhibited a critical failure mode: it would use "fake" or "placeholder" sample data (e.g., copying a sample from a different adapter) to build and test a new adapter. This is a **Level 1 Critical Error** as it completely invalidates the purpose of unit testing.
+
+**The Authenticity Protocol:**
+
+1.  **Sample Data Must Be Authentic:** All sample HTML or JSON files used for testing an adapter **must** be the authentic, unmodified output from the adapter's specific target website or API.
+
+2.  **Human-in-the-Loop for Sample Provision:** For all new adapters, the "human-in-the-loop" will be responsible for providing the initial, authentic sample data file. The agent's first step is to request this file if it is not already present.
+
+3.  **Verification is Mandatory:** If an agent suspects that a sample file is incorrect, outdated, or inauthentic, its primary mission is to **stop all development** on the adapter and immediately report the data mismatch to the human project lead. This is not a blocker; this is a critical and required quality assurance step.
+
+**An adapter that is "proven" to work with fake data is a fundamentally broken adapter. Adherence to this protocol is non-negotiable.**
+
+
+### **Appendix A: New Project Initialization Checklist**
+
+This section documents the foundational best practices that should be implemented for any new project or repository to ensure stability and maintainability. These steps have been retroactively applied to this project to resolve critical issues.
+
+**1. Create a Comprehensive `.gitignore` File:**
+*   **Purpose:** To prevent temporary, machine-specific cache files (like `__pycache__/` and `.pytest_cache/`) from being committed to the repository.
+*   **Problem Solved:** This is the **number one cause** of unnecessary merge conflicts between local and remote environments. A standard Python `.gitignore` file must be the very first file created in any new repository.
+
+**2. Implement a Linter and Formatter (`Ruff`):**
+*   **Purpose:** To enforce a consistent code quality and style standard across the entire project.
+*   **Problem Solved:** This prevents the codebase from becoming messy and inconsistent over time as different agents or developers contribute. `Ruff` should be configured early in the project's lifecycle.
+
+**3. Centralize Strategic Documentation:**
+*   **Purpose:** To create a single source of truth for the project's goals, architecture, and development protocols.
+*   **Problem Solved:** This ensures that all team members (human and AI) are working from the same blueprint. The following files are mandatory for a well-managed project:
+    *   **`ROADMAP.md`:** For the high-level strategic vision and future goals.
+    *   **`AGENTS.md`:** For the specific, non-negotiable operational protocols and tooling constraints that agents must follow.

@@ -16,6 +16,7 @@ import sys
 # Use the canonical config manager
 from .config_manager import config_manager
 
+
 def create_and_launch_link_helper():
     """
     Generates and opens the interactive `collector.html` dashboard,
@@ -77,9 +78,11 @@ def create_and_launch_link_helper():
                     proxy_url_template = viewer.get("TOOL_URL", "")
                     proxy_link_text = viewer.get("LINK_TEXT", "View via Proxy")
                     if proxy_url_template:
-                        encoded_url = quote(url, safe=':/')
+                        encoded_url = quote(url, safe=":/")
                         proxy_full_url = proxy_url_template.format(target_url=encoded_url)
-                        proxy_links_html += f' | <a href="{proxy_full_url}" target="_blank">{proxy_link_text}</a>'
+                        proxy_links_html += (
+                            f' | <a href="{proxy_full_url}" target="_blank">{proxy_link_text}</a>'
+                        )
 
             sites_html += f"""
             <div class="source-item">
@@ -125,6 +128,7 @@ def create_and_launch_link_helper():
         webbrowser.open(f"file://{helper_path.resolve()}")
     except Exception as e:
         print(f"❌ Could not create or open the Integrated Collector file: {e}", file=sys.stderr)
+
 
 if __name__ == "__main__":
     create_and_launch_link_helper()
