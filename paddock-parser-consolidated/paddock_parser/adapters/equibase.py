@@ -12,6 +12,7 @@ from ..fetching import resilient_get
 from ..normalizer import NormalizedRace, NormalizedRunner, canonical_track_key, canonical_race_key
 from ..sources import RawRaceDocument, register_adapter
 from ..config_manager import config_manager
+from ..utils import remove_honeypot_links
 
 print("--- [equibase.py] Module loaded ---", file=sys.stderr)
 
@@ -68,6 +69,7 @@ class EquibaseAdapter(BaseAdapterV3):
 
     def _parse_race_list(self, html_content: str) -> list[str]:
         soup = BeautifulSoup(html_content, "html.parser")
+        soup = remove_honeypot_links(soup)
         links = soup.select('a[href*="/static/entry/"][href*="USA-D.html"]')
 
         race_urls = {urljoin(self._base_url, a['href']) for a in links}

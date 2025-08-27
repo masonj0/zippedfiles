@@ -1,0 +1,2015 @@
+<!DOCTYPE html>
+<html lang="en" class="ui-advertising__skinsBodyWrp">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, width=device-width">
+    <base href="/racecards/">
+        <title>Bellewstown (IRE) Racecard | 26th August 2025 | Racing Post</title>
+    <meta name="description" content="Bellewstown (IRE) racecard, 26th August 2025. Going: YIELDING, Good to yielding in places. (Light rain)">
+                <link rel="stylesheet" href="https://www.rp-assets.com/rp1-cards/assets/10.78.3/vendor.min.css">
+    <link rel="stylesheet" href="https://www.rp-assets.com/rp1-cards/assets/10.78.3/app.min.css">
+        <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+
+    <script type="application/ld+json">
+        {
+            "@context"  : "http://schema.org/",
+            "@type"     : "Organization",
+            "name"      : "Racing Post",
+            "url"       : "https://www.racingpost.com",
+            "logo"      : "https://www.rp-assets.com/Racing-Post-logo.png",
+            "sameAs"    : [
+                "https://www.facebook.com/racingpost",
+                "https://twitter.com/racingpost",
+                "https://www.youtube.com/user/racingpostdotcom",
+                "https://www.instagram.com/racingpost/"
+            ]
+        }
+    </script>
+
+    <!-- Init RP -->
+    <script>
+        'use strict';
+        !function initRp(global_)
+        {
+            var RP_CONFIG_NAME = window.RP_CONFIG_NAME || 'rp_config';
+
+            initRpConfig();
+            initConsole();
+
+            console.info('[INIT].initRp() -> RP_CONFIG_NAME: "' + RP_CONFIG_NAME + '"');
+
+            function initRpConfig()
+            {
+                var rp_config_ = window[RP_CONFIG_NAME] = window[RP_CONFIG_NAME] || {};
+
+                rp_config_.setPropertyValue         = setPropertyValue;
+                rp_config_.getPropertyValue         = getPropertyValue;
+                rp_config_.getRequiredPropertyValue = getRequiredPropertyValue;
+
+                window.getRpConfig = getRpConfig;
+
+                function getRpConfig()
+                {
+                    var rp_config_ = window[RP_CONFIG_NAME];
+
+                    if (rp_config_ === undefined) console.error('.getRpConfig() -> window.' + RP_CONFIG_NAME + ' is not defined!');
+
+                    return rp_config_;
+                }
+
+                function setPropertyValue(property_path_, value_)
+                {
+                    var path_ = property_path_.split('.');
+
+                    var property_       = getRpConfig();
+                    var sub_property_   = undefined;
+
+                    var property_name_;
+
+                    var index_;
+                    var length_ = path_.length - 1;
+
+                    for(index_ = 0; index_ < length_; index_++)
+                    {
+                        property_name_  = path_[index_];
+                        sub_property_   = property_[property_name_];
+
+                        if (sub_property_ instanceof Object)
+                        {
+                            property_ = sub_property_;
+                            continue;
+                        }
+
+                        if (sub_property_ === undefined)
+                        {
+                            property_ = sub_property_ = property_[property_name_] = {};
+                            continue;
+                        }
+
+                        throw new Error(
+                            '.setPropertyValue("' + property_path_ + '"', value_, ')' +
+                            path_.slice(0, index_ + 1).join('.') +
+                            ' is already defined but not an object: ',
+                            property_
+                        );
+                    }
+
+                    property_name_ = path_.pop();
+
+                    if (property_.hasOwnProperty(property_name_)) console.warn(
+                        '.setPropertyValue("' + property_path_ + '")', '\n',
+                        'to value', value_, '\n',
+                        'was already set to: ', '\n',
+                        property_[property_name_], '\n',
+                        'and will be overridden!'
+                    );
+
+                    property_[property_name_] = value_;
+                }
+
+                function getPropertyValue(property_path_, default_value_, is_required_)
+                {
+                    var path_ = property_path_.split('.');
+
+                    var property_       = getRpConfig();
+                    var sub_property_   = undefined;
+
+                    var property_name_;
+
+                    var index_;
+                    var length_ = path_.length;
+
+                    for(index_ = 0; index_ < length_; index_++)
+                    {
+                        if (property_ === undefined) break;
+
+                        property_name_  = path_[index_];
+                        sub_property_   = property_[property_name_];
+
+                        if (!is_required_)
+                        {
+                            property_ = sub_property_;
+                            continue;
+                        }
+
+                        if (property_.hasOwnProperty(property_name_))
+                        {
+                            property_ = sub_property_;
+                            continue;
+                        }
+
+                        throw new Error(
+                            'undefined configuration property "' + path_[index_] + '" in "' + path_.slice(0, index_).join('.') + '"\n' +
+                            '.getRequiredPropertyValue("' + property_path_ + '") \n' +
+                            'window.getRpConfig() === window.' + RP_CONFIG_NAME + '\n'
+                        );
+                    }
+
+                    var value_ = property_;
+
+                    if (value_ === undefined) value_ = default_value_;
+
+                    return value_;
+                }
+
+                function getRequiredPropertyValue(property_path_)
+                {
+                    var is_required_    = true;
+                    var value_          = getPropertyValue(property_path_, undefined, is_required_);
+
+                    return value_;
+                }
+            }
+
+            function initConsole()
+            {
+                function doNothing() {}
+
+                /* in IE console is not present and breaks unless dev tools are open */
+                var browser_console_ = global_.console = global_.console || {
+                    log         : doNothing,
+                    info        : doNothing,
+                    warn        : doNothing,
+                    error       : doNothing,
+                    is_debug    : false
+                };
+
+                browser_console_.is_debug = browser_console_.is_debug || getRpConfig().is_debug;
+
+                function logIfDebug()
+                {
+                    if (!browser_console_.is_debug) return;
+
+                    var arguments_ = Array.prototype.slice.call(arguments);
+
+                    browser_console_.log.apply(null, arguments_);
+                }
+
+                function infoIfDebug()
+                {
+                    if (!browser_console_.is_debug) return;
+
+                    var arguments_ = Array.prototype.slice.call(arguments);
+
+                    browser_console_.info.apply( null, arguments_);
+                }
+
+                var debug_console_ = { /* disable log and info messages unless is_debug */
+                    log     : logIfDebug,
+                    info    : infoIfDebug,
+                    warn    : browser_console_.warn,
+                    error   : browser_console_.error
+                };
+
+                browser_console_.getCustom = getCustom;
+
+                var custom_consoles_ = {};
+
+                function getCustom(console_name_, is_debug_)
+                {
+                    if (!console_name_)     return debug_console_;
+
+                    var custom_console_ = custom_consoles_[console_name_];
+
+                    if (custom_console_)
+                    {
+                        custom_console_.is_debug = custom_console_;
+
+                        return custom_console_;
+                    }
+
+                    function isConsoleDebug()
+                    {
+                        var is_console_debug_ = custom_console_.is_debug && browser_console_.is_debug;
+
+                        return is_console_debug_;
+                    }
+
+                    function constructCustomConsoleArguments(arguments_)
+                    {
+                        arguments_ = Array.prototype.slice.call(arguments_);
+
+                        arguments_ = ['[' + console_name_ + ']'].concat(arguments_);
+
+                        return arguments_;
+                    }
+
+                    function logIfDebugCustom()
+                    {
+                        if (!isConsoleDebug()) return;
+
+                        var arguments_ = constructCustomConsoleArguments(arguments);
+
+                        browser_console_.log.apply(null, arguments_);
+                    }
+
+                    function infoIfDebugCustom()
+                    {
+                        if (!isConsoleDebug()) return;
+
+                        var arguments_ = constructCustomConsoleArguments(arguments);
+
+                        browser_console_.info.apply(null, arguments_);
+                    }
+
+                    function warnCustom()
+                    {
+                        var arguments_ = constructCustomConsoleArguments(arguments);
+
+                        browser_console_.warn.apply(null, arguments_);
+                    }
+
+                    function errorCustom()
+                    {
+                        var arguments_ = constructCustomConsoleArguments(arguments);
+
+                        browser_console_.error.apply(null, arguments_);
+                    }
+
+                    var custom_console_ = {
+                        log         : logIfDebugCustom,
+                        info        : infoIfDebugCustom,
+                        warn        : warnCustom,
+                        error       : errorCustom,
+                        is_debug    : is_debug_
+                    };
+
+                    custom_consoles_[console_name_] = custom_console_;
+
+                    return custom_console_;
+                }
+            }
+
+        }(window);
+
+    </script>
+    <!-- Init RP End -->
+
+    <!-- TrustArc -->
+    <script type="text/javascript" crossorigin>
+	const environmentName = window.location.origin;
+	const isStagingEnvironment =
+		environmentName.includes("test1") ||
+		environmentName.includes("uat") ||
+		environmentName.includes("localhost") ||
+		environmentName.includes("dev-beta");
+
+	const script = document.createElement("script");
+	let trustArcSrc = null;
+
+	if (isStagingEnvironment) {
+		trustArcSrc =
+			"//consent.trustarc.com/notice?domain=racingpost-iabtest.com&c=teconsent&js=nj&noticeType=bb&text=true&gtm=1&language=en";
+	} else {
+		trustArcSrc =
+			"//consent.trustarc.com/notice?domain=racingpost-iab.com&c=teconsent&js=nj&noticeType=bb&text=true&gtm=1&language=en";
+	}
+
+	script.setAttribute("src", trustArcSrc);
+	document.head.appendChild(script);
+    </script>
+    <!-- TrustArc End -->
+    <!-- GTM Event Listener script /trustarc/ -->
+    <script>
+      var __dispatched__ = {};
+
+      var __i__ = self.postMessage && setInterval(function() {
+          if (self.PrivacyManagerAPI && __i__) {
+              var apiObject = {
+                  PrivacyManagerAPI: {
+                      action: "getConsentDecision",
+                      timestamp: new Date().getTime(),
+                      self: self.location.host
+                  }
+              };
+              self.top.postMessage(JSON.stringify(apiObject), "*");
+              __i__ = clearInterval(__i__);
+          }
+      }, 50);
+
+      self.addEventListener("message", function(e, d) {
+          try {
+              if (e.data && (d = JSON.parse(e.data)) && (d = d.PrivacyManagerAPI) && d.capabilities && d.action == "getConsentDecision") {
+                  var newDecision = self.PrivacyManagerAPI.callApi("getGDPRConsentDecision", self.location.host).consentDecision;
+                  newDecision && newDecision.forEach(function(label) {
+                      if (!__dispatched__[label]) {
+                          self.dataLayer && self.dataLayer.push({
+                              "event": "GDPR  Pref Allows " + label
+                          });
+                          __dispatched__[label] = 1;
+                      }
+                  });
+              }
+          } catch(xx){/** not a cm api message **/}
+      });
+    </script>
+    <!-- GTM Event Listener script /trustarc/ End -->
+
+    <!-- Segement Init -->
+    <script>
+      !function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on","addSourceMiddleware","addIntegrationMiddleware","setAnonymousId","addDestinationMiddleware"];analytics.factory=function(e){return function(){var t=Array.prototype.slice.call(arguments);t.unshift(e);analytics.push(t);return analytics}};for(var e=0;e<analytics.methods.length;e++){var key=analytics.methods[e];analytics[key]=analytics.factory(key)}analytics.load=function(key,e){var t=document.createElement("script");t.type="text/javascript";t.async=!0;t.src="https://cdn.segment.com/analytics.js/v1/" + key + "/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n);analytics._loadOptions=e};analytics.SNIPPET_VERSION="4.13.1";
+      }}();
+    </script>
+    <script>
+        'use strict';
+        window.getRpConfig().setPropertyValue('analytics.segment.segment_key', 'YXytl93DqbW9pzIMLUfFgHKNCcZLYWon');
+    </script>
+    <!-- Segement Init End -->
+    <!-- Segement Load -->
+    <script>
+        'use strict';
+        !async function loadSegmentAnalytics(global_)
+        {
+            var console_ = global_.console.getCustom('segment', global_.getRpConfig().getPropertyValue('analytics.segment.is_debug'));
+
+            var segment_key_ = getSegmentKey();
+
+            console_.log('.loadSegmentAnalytics() -> segment_key: ' + segment_key_);
+
+            if (!segment_key_) return console_.error('.loadSegmentAnalytics() -> no segment_key configured in window.getRpConfig().analytics.segment.segment_key');
+
+            // segment trustarc
+            const OPT_IN = false; // false = only disable after opt out, can replace with a function such as inEU above
+            const DOMAIN = "racingpost.com"; // the hostname of your website
+            const WEBSITE_WRITE_KEY = segment_key_; // your segment website source write key
+            // const SEGMENT_MAPPING = 2;
+            const OTHER_WRITE_KEYS = []; // any other sources w destinations that you want to include in config
+
+            // gets enabled destination configurations from across your source (and optionally other sources in workspace)
+            // promise wait for truste.cma.callapi to be available
+            await new Promise((resolve, reject) => {
+              let interval_ = setInterval(()=>{
+                if(window.truste && window.truste.cma && window.truste.cma.callApi){
+                  clearInterval(interval_);
+                  resolve();
+                }
+              }, 100);
+            }).then(() => {
+                return fetchDestinations([WEBSITE_WRITE_KEY, ...OTHER_WRITE_KEYS]);
+              })
+              .then((destinations) => {
+                const getTrustarcDecision = truste.cma.callApi("getConsentDecision", DOMAIN);
+                let setSegmentTrustarcPref = getTrustarcPrefs();
+
+                const destinationPreferences = destinations
+                  .map(function(dest) {
+                    if(setSegmentTrustarcPref){
+                      if (getTrustarcDecision.consentDecision === 3) return { [dest.id]: true };
+                      if (getTrustarcDecision.consentDecision === 2) return { [dest.id]: dest.category === "Advertising" ? false : true };
+                      if (getTrustarcDecision.consentDecision === 1) return { [dest.id]: false };
+                      if (getTrustarcDecision.consentDecision === 0) return { [dest.id]: !OPT_IN };
+                    } else {
+                      return {[dest.id]: false};
+                    }
+                  })
+                  .reduce(
+                    (acc, val) => {
+                      return {
+                        ...val,
+                        ...acc
+                      };
+                    },
+                    {
+                      "Segment.io": setSegmentTrustarcPref,
+                       "All": false
+                    }
+                  );
+                conditionallyLoadAnalytics({
+                  writeKey: WEBSITE_WRITE_KEY,
+                  destinations,
+                  destinationPreferences,
+                  isConsentRequired: OPT_IN
+                });
+              })
+              .then(() => global_.analytics.ready(onAnalyticsReady));
+
+            function getTrustarcPrefs(){
+              let getTrustarcPrefs_ = getCookie('notice_gdpr_prefs');
+
+              return getTrustarcPrefs_ ? getTrustarcPrefs_.includes('1') : true;
+            }
+
+            function getCookie(name) {
+              const value = `; ${document.cookie}`;
+              const parts = value.split(`; ${name}=`);
+              if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+
+            // @prefs array
+            // @return array
+            function modifyTrustarcPrefs(prefs){
+              let modifiedPrefs = new Array;
+
+              prefs.forEach((pref) =>{
+                // .replace is intentional
+                let modPref = pref.replace(':', '').replace(':implied', '');
+                modifiedPrefs.push(modPref);
+              });
+
+              return modifiedPrefs;
+            }
+
+            function conditionallyLoadAnalytics({
+              writeKey,
+              destinations,
+              destinationPreferences,
+              isConsentRequired,
+              shouldReload = true // change if you dont want to reload on consent changes
+            }) {
+              let isAnythingEnabled = false;
+
+              if (!destinationPreferences) {
+                if (isConsentRequired) {
+                  return;
+                }
+
+                // Load a.js normally when consent isn't required and there's no preferences
+                if (!global_.analytics.initialized) {
+                  global_.analytics.load(writeKey);
+                }
+                return;
+              }
+
+              for (const destination in destinationPreferences) {
+                const isEnabled = destinationPreferences[destination];
+                if (isEnabled) {
+                  isAnythingEnabled = true;
+                }
+              }
+
+              // Reload the page if the trackers have already been initialised so that
+              // the user's new preferences can take affect
+              if (global_.analytics.initialized) {
+                if (shouldReload) {
+                  global_.location.reload();
+                }
+                return;
+              }
+
+              // Don't load a.js at all if nothing has been enabled
+              if (isAnythingEnabled) {
+                console.log("Segment Integrations Object:", destinationPreferences);
+                global_.analytics.load(writeKey, { integrations: destinationPreferences });
+              }
+            }
+
+            async function fetchDestinationForWriteKey(writeKey) {
+              const res = await global_.fetch(
+                `https://cdn.segment.com/v1/projects/${writeKey}/integrations`
+              );
+
+              if (!res.ok) {
+                throw new Error(
+                  `Failed to fetch integrations for write key ${writeKey}: HTTP ${
+                    res.status
+                  } ${res.statusText}`
+                );
+              }
+
+              const destinations = await res.json();
+
+              // Rename creationName to id to abstract the weird data model
+              for (const destination of destinations) {
+                destination.id = destination.creationName;
+                delete destination.creationName;
+              }
+
+              return destinations;
+            }
+
+            async function fetchDestinations(...writeKeys) {
+              const destinationsRequests = [];
+              for (const writeKey of writeKeys) {
+                destinationsRequests.push(fetchDestinationForWriteKey(writeKey));
+              }
+
+              let destinations = await Promise.all(destinationsRequests);
+
+              // unique list of destination across all sources
+              destinations = [
+                ...destinations
+                  .reduce((a, b) => a.concat(b), []) // flatten multi-d array
+                  .filter(d => d.id !== "Repeater") // remove repeater
+                  .reduce((map, item) => {
+                    map.has(item["id"]) || map.set(item["id"], item);
+                    return map;
+                  }, new Map())
+                  .values()
+              ];
+
+              return destinations;
+            }
+
+            function onAnalyticsReady()
+            {
+                console_.log('.onAnalyticsReady()');
+
+                if (!global_.mixpanel) return;
+
+                console_.info('.onAnalyticsReady() -> Mixpanel integration (window.mixpanel) available, will use campaign parameters.');
+
+                campaignParams();
+
+                function getQueryParam(url_, param_)
+                {
+                    param_ = param_.replace(/[[]/, '\[').replace(/[]]/, '\]');
+
+                    var regex_query_string_param_ = '[\?&]' + param_ + '=([^&#]*)';
+
+                    var regex_      = new RegExp(regex_query_string_param_);
+                    var results_    = regex_.exec(url_);
+
+                    if (results_ === null)                              return '';
+
+                    var value_ = results_[1];
+
+                    if (typeof(value_) !== 'string' && value_.length)   return '';
+
+                    value_ = decodeURIComponent(value_).replace(/\W/gi, ' ');
+
+                    return value_;
+                }
+
+                function campaignParams()
+                {
+                    var campaign_keywords_  = 'utm_source utm_medium utm_campaign utm_content utm_term'.split(' ');
+                    var key_words_          = '';
+                    var params_             = {};
+                    var first_params_       = {};
+
+                    var index_;
+                    var length_ = campaign_keywords_.length;
+
+                    for (index_ = 0; index_ < length_; index_++)
+                    {
+                        key_words_ = getQueryParam(document_.URL, campaign_keywords_[index_]);
+
+                        if (!key_words_.length) continue;
+
+                        params_[campaign_keywords_[index_] + ' [last touch]'] = key_words_;
+                    }
+
+                    for (index_ = 0; index_ < length_; index_++)
+                    {
+                        key_words_ = getQueryParam(document_.URL, campaign_keywords_[index_]);
+
+                        if (!key_words_.length) continue;
+
+                        first_params_[campaign_keywords_[index_] + ' [first touch]'] = key_words_;
+                    }
+
+                    mixpanel.people.set(params_);
+                    mixpanel.people.set_once(first_params_);
+                    mixpanel.register(params_);
+                }
+            }
+
+            function getSegmentKey()
+            {
+                var rp_config_      = global_.getRpConfig();
+
+                var segment_key_    = rp_config_.getRequiredPropertyValue('analytics.segment.segment_key');
+
+                return segment_key_;
+            }
+
+        }(window);
+
+    </script>
+    <!-- Segement Load End -->
+    <!-- Google Analytics -->
+    <script>
+        'use strict';
+        window.getRpConfig().setPropertyValue('analytics.google.google_analytics_ua', 'UA-86306597-1');
+    </script>
+    <script>
+        'use strict';
+        !function initTrustarcCallbacks(window_)
+        {
+            var console_ = window_.console.getCustom('trustarc', window_.getRpConfig().getPropertyValue('trustarc.is_debug'));
+
+            console_.log('.initTrustarcCallbacks()');
+
+            window_.enableGoogleAnalytics = enableGoogleAnalytics;
+            window_.enableAdvertising     = enableAdvertising;
+            window_.addEventListener('RP_PAGE_VIEW', enableAdvertising);
+
+            function initGoogleAnalytics()
+            {
+                console_.log('.initGoogleAnalytics()');
+
+                window_.GoogleAnalyticsObject = 'ga';
+
+                var ga_     = window_.ga = window_.ga || googleAnalytics;
+                var queue_  = ga_.q = ga_.q || [];
+                queue_;
+
+                ga_.l  = 1*new Date();
+
+                function googleAnalytics()
+                {
+                    console_.log('.googleAnalytics() -> ', arguments);
+
+                    window_.ga.q.push(arguments);
+                };
+            }
+
+            function enableGoogleAnalytics()
+            {
+                console_.warn('.enableGoogleAnalytics() -> when segment is disabled');
+
+                var google_analytics_ua_    = getGoogleAnalyticsUA();
+
+                if (!google_analytics_ua_)  return console_.warn('.enableGoogleAnalytics() -> no google_analytics_ua is configured, will not use GA');
+
+                initGoogleAnalytics();
+                loadGoogleAnalytics();
+
+                console_.warn('.enableGoogleAnalytics() -> google_analytics_ua: "' + google_analytics_ua_ + '"');
+
+                ga('create' , google_analytics_ua_, 'auto');
+                ga('send'   , 'pageview');
+
+                function getGoogleAnalyticsUA()
+                {
+                    var google_analytics_ua_ = window_.getRpConfig().getRequiredPropertyValue('analytics.google.google_analytics_ua');
+
+                    return google_analytics_ua_;
+                }
+
+                function loadGoogleAnalytics()
+                {
+                    console_.log('.loadGoogleAnalytics()');
+
+                    var script_ = window_.document.createElement('script');
+
+                    script_.async = true;
+                    script_.src   = 'https://www.google-analytics.com/analytics.js';
+
+                    var first_script_ = window_.document.getElementsByTagName('script')[0];
+
+                    first_script_.parentNode.insertBefore(script_, first_script_);
+                }
+            }
+
+            function enableAdvertising()
+            {
+                if(!getTrustarcPrefs()) return;
+
+                console_.log('.enableAdvertising()');
+                console.log('.enableAdvertising()');
+                /*window_.dispatchEvent(new Event('RP_ADVERTISING_ALLOWED')); / / IE does not work with this */
+                var event_ = window_.document.createEvent('Event');
+                event_.initEvent('RP_ADVERTISING_ALLOWED', false, true);
+
+                window_.removeEventListener('RP_PAGE_VIEW', enableAdvertising);
+                window_.dispatchEvent(event_);
+            }
+
+            function getTrustarcPrefs(){
+                let getTrustarcPrefs_ = getCookie('notice_gdpr_prefs');
+
+                return getTrustarcPrefs_ ? getTrustarcPrefs_.includes('1') : true;
+            }
+
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+
+        /*
+            function trackPageTime()
+            {
+
+                console_.log('.trackPageTime()');
+
+                var has_ga_         = window_.ga;
+                var has_analytics_  = window_.analytics;
+
+                if (!has_ga_ && !has_analytics_)
+                {
+                    console_.warn('.trackPageTime() -> globals "window.ga" for GA or "window.analytics" for Segment are missing, there will be no page view duration tracking!');
+
+                    return;
+                }
+
+                var timers_data_ = [
+                    { time: 0       , event: '0-10 seconds'     },
+                    { time: 11000   , event: '11-30 seconds'    },
+                    { time: 31000   , event: '31-60 seconds'    },
+                    { time: 61000   , event: '61-180 seconds'   },
+                    { time: 181000  , event: '181-600 seconds'  },
+                    { time: 601000  , event: '601-1800 seconds' },
+                    { time: 1801000 , event: '1801+ seconds'    }
+                ];
+
+                function onPageViewDurationTimer(timer_index_, event_name_, time_)
+                {
+                    console_.log('.onPageViewDurationTimer() -> timer_index: ' + timer_index_+ ' event_name: ' + event_name_ + ' time: ' + time_ + ' ms');
+
+                    if (has_ga_)
+                    {
+                        window_.ga('send', 'event', 'TimeOnPage', timer_index_, event_name_, { 'nonInteraction': 1 });
+
+                        return;
+                    }
+
+                    window_.analytics.track('TimeOnPage', {
+                        'index'         : timer_index_,
+                        'event_name'    : event_name_
+                    })
+                }
+
+                function setPageViewDurationTimer(timer_index_)
+                {
+                    var timer_data_ = timers_data_[timer_index_];
+                    var event_name_ = timer_data_.event;
+                    var time_       = timer_data_.time;
+
+                    console_.log('.setPageViewDurationTimer() -> timer_index: '+ timer_index_ + ' time: ' + time_);
+
+                    setTimeout(
+                        function () {
+                            onPageViewDurationTimer(timer_index_, event_name_, time_);
+                        },
+                        time_
+                    );
+                }
+
+                var timer_index_;
+
+                for( timer_index_= 0; timer_index_ < timers_data_.length; timer_index_++)
+                {
+                    setPageViewDurationTimer(timer_index_);
+                }
+            }
+        */
+
+        }(window);
+
+    </script>
+    <!-- Google Analytics End -->
+
+    <!-- Braze -->
+    <script>
+        'use strict';
+        !function initBrazeIntegation(window)
+        {
+            analytics.ready(onAnalyticsReady);
+
+            const BRAZE_PAGE_VIEWS = 'braze_page_views'
+            const BRAZE_SOFT_PUSH_DAYS_DELAY = 'braze_soft_push_days_delay'
+            const BRAZE_STAGE = 'braze_stage'
+
+            const BRAZE_STAGES = {
+                FIRST: 'first',
+                SECOND: 'second',
+                THIRD: 'third',
+                MORE_THAN_THREE: 'more_than_three'
+            }
+
+            const getBrazeInstance = () => {
+                return typeof window !== 'undefined' ? window.braze : null
+            }
+
+            const initializeBraze = () => {
+                const braze = getBrazeInstance()
+                if (braze) {
+                    console.info('Braze is ready')
+
+                    braze.subscribeToInAppMessage(handleBrazeMessage)
+                    braze.openSession()
+
+                    if (!getAppCookie(BRAZE_STAGE)) {
+                        setAppCookie(BRAZE_STAGE, BRAZE_STAGES.FIRST)
+                    }
+
+                    if (!getAppCookie(BRAZE_PAGE_VIEWS)) {
+                        setAppCookie(BRAZE_PAGE_VIEWS, 1)
+                    }
+                } else {
+                    console.log('Braze not loaded')
+                }
+            }
+
+            const handleBrazeMessage = (inAppMessage) => {
+                const braze = getBrazeInstance()
+
+                if (inAppMessage instanceof braze.InAppMessage) {
+                    const keyValuePairs = inAppMessage.extras || {}
+
+                    const shouldHandlePushMessage =
+                        braze.isPushSupported() && !braze.isPushPermissionGranted() && !braze.isPushBlocked()
+
+                    // push-primer is the push notification prompt
+                    if (keyValuePairs['msg-id'] === 'push-primer' && shouldHandlePushMessage) {
+                        handlePushMessagePermissions(inAppMessage)
+                    }
+
+                    // show the in-app message now
+                    braze.showInAppMessage(inAppMessage)
+                }
+            }
+
+            const getCurrentStagePageViews = () => {
+                const currentStage = getAppCookie(BRAZE_STAGE)
+
+                const stagePageViewsMapping = {
+                    [BRAZE_STAGES.FIRST]: 8,
+                    [BRAZE_STAGES.SECOND]: 4,
+                    [BRAZE_STAGES.THIRD]: 4
+                }
+
+                return stagePageViewsMapping[currentStage] || 4
+            }
+
+            const getCurrentStageDaysDelay = () => {
+                const currentStage = getAppCookie(BRAZE_STAGE)
+
+                const stageDaysDelayMapping = {
+                    [BRAZE_STAGES.FIRST]: 7,
+                    [BRAZE_STAGES.SECOND]: 5,
+                    [BRAZE_STAGES.THIRD]: 5
+                }
+
+                const currentStageDaysDelay = stageDaysDelayMapping[currentStage] || 7
+
+                const date = new Date()
+                date.setDate(date.getDate() + currentStageDaysDelay)
+                return date
+            }
+
+            const shouldRequestPushPermissions = () => {
+                const braze = getBrazeInstance()
+
+                if (!getAppCookie(BRAZE_STAGE)) {
+                    setAppCookie(BRAZE_STAGE, BRAZE_STAGES.FIRST)
+                }
+
+                if (!getAppCookie(BRAZE_PAGE_VIEWS)) {
+                    setAppCookie(BRAZE_PAGE_VIEWS, 0)
+                }
+
+                if (new Date(getAppCookie(BRAZE_SOFT_PUSH_DAYS_DELAY)) > new Date()) {
+                    return false
+                }
+
+                if (parseInt(getAppCookie(BRAZE_PAGE_VIEWS)) < getCurrentStagePageViews()) {
+                    return false
+                }
+
+                if (braze.isPushPermissionGranted()) {
+                    return false
+                }
+
+                return true
+            }
+
+            const getNextStage = () => {
+                const currentStage = getAppCookie(BRAZE_STAGE)
+
+                switch (currentStage) {
+                    case BRAZE_STAGES.FIRST:
+                        return BRAZE_STAGES.SECOND
+                    case BRAZE_STAGES.SECOND:
+                        return BRAZE_STAGES.THIRD
+                    case BRAZE_STAGES.THIRD:
+                    default:
+                        return BRAZE_STAGES.MORE_THAN_THREE
+                }
+            }
+
+            const deleteCookies = () => {
+                setAppCookie(BRAZE_STAGE, '')
+                setAppCookie(BRAZE_SOFT_PUSH_DAYS_DELAY, '')
+                setAppCookie(BRAZE_PAGE_VIEWS, 0)
+            }
+
+            const handlePushMessagePermissions = (message) => {
+                const onMaybeLater = () => {
+                    setAppCookie(BRAZE_STAGE, getNextStage())
+                    setAppCookie(BRAZE_SOFT_PUSH_DAYS_DELAY, getCurrentStageDaysDelay())
+                    setAppCookie(BRAZE_PAGE_VIEWS, 0)
+                }
+
+                const onAccept = () => {
+                    const braze = getBrazeInstance()
+                    deleteCookies()
+                    braze.requestPushPermission()
+                }
+
+                // execute always - whether the user click the 'Maybe Later' button
+                // or the X or clicks away from the prompt
+                // to execute only on the Maybe Later button click:
+                // message.buttons[0].subscribeToClickedEvent(onMaybeLater);
+                onMaybeLater()
+
+                // buttons[1] is the Accept button
+                message.buttons[1].subscribeToClickedEvent(onAccept)
+            }
+
+            const incrementPageViewsCookie = () => {
+
+                if (new Date(getAppCookie(BRAZE_SOFT_PUSH_DAYS_DELAY)) > new Date()) {
+                    return
+                }
+
+                const currentPageViews = parseInt(getAppCookie(BRAZE_PAGE_VIEWS))
+                setAppCookie(BRAZE_PAGE_VIEWS, !isNaN(currentPageViews) ? currentPageViews + 1 : 0)
+            }
+
+
+            const logBrazePushNotificationEvent = () => {
+                const braze = getBrazeInstance()
+                const isMobileDevice =
+                    (/iPad|iPhone|iPod/.test(window.navigator.userAgent) && !window.MSStream) ||
+                    /android/i.test(window.navigator.userAgent)
+
+                if (braze && shouldRequestPushPermissions() && !isMobileDevice) {
+                    braze.logCustomEvent('prime-for-push')
+                }
+            }
+
+            const setAppCookie = (cookieName, value) => {
+                if (typeof window !== 'undefined') {
+                    document.cookie = `${cookieName}=${value}; path=/`
+                }
+            }
+
+            const getAppCookie = (cookieName) => {
+                if (typeof window !== 'undefined') {
+                    const cookies = document.cookie.split(';')
+                    const cookie = cookies.find((c) => c.includes(cookieName))
+
+                    if (!cookie) {
+                        return null
+                    }
+
+                    return cookie.split('=')[1]
+                }
+            }
+
+            function onAnalyticsReady()
+            {
+                const braze = getBrazeInstance();
+
+                if (!braze)
+                {
+                    console.log('.onAnalyticsReady() -> Braze integration (window.appboy) not present.', window.braze);
+                    return;
+                }
+
+                initializeBraze();
+
+                if(!braze.isPushPermissionGranted()){
+                    incrementPageViewsCookie();
+                    logBrazePushNotificationEvent();
+                }
+            }
+
+        }(window);
+
+    </script>
+    <!-- Braze End -->
+
+    <!-- Segmentify -->
+    <script type="text/javascript" id="" charset="UTF-8" src="//sgmcdn.racingpost.com/3331e89e-fade-4ec2-8662-99174bdd2b69/sgmrp.js"></script>
+    <!-- Segmentify End -->
+
+    <!-- AB Tasty (with GDPR check) -->
+    <script type="text/javascript" crossorigin>
+	(function () {
+		// ---- 1. Parse cookies into a key→value map ----
+		function getCookies() {
+			return document.cookie.split(';').reduce(function (map, pair) {
+			var parts = pair.split('=');
+			var key = parts.shift().trim();
+			var val = parts.join('=').trim();
+
+			if (key) {
+				try {
+					map[key] = decodeURIComponent(val);
+				} catch (e) {
+					map[key] = val;
+				}
+			}
+
+			return map;
+			}, {});
+		}
+
+		// ---- 2. Read the GDPR prefs cookie ----
+		var cookies = getCookies();
+		var prefs = cookies.notice_gdpr_prefs || '';
+
+		// ---- 3. Consent logic ----
+		// “1” = Functional/Analytics
+		// “2” = Marketing/AB Tasty, default: allow if missing
+		// (change `: false` to `: true` if you prefer to allow by default)
+		var isAbTastyAllowed  = prefs ? prefs.includes('2') : true;
+
+		// ---- 4. Inject only if Marketing consent is true ----
+		if (!isAbTastyAllowed) {
+			// consent denied → do nothing (or add your fallback logic here)
+			return;
+		}
+
+		var script = document.createElement("script");
+
+		script.type = "text/javascript";
+		script.async = true;
+
+		script.src = `//try.abtasty.com/efa71c7ee8e392f99b43bdc68b8ddba8.js`;
+
+		document.head.appendChild(script);
+	})();
+    </script>
+    <!-- AB Tasty End -->
+    </head>
+<script type="text/javascript">
+    (function () {
+        window.skybetDiffusionName = "skybet_flutter";
+        window.isSkybetMigrationEnabled = true;
+    })();
+</script>
+<body class="ui-wrapper ui-advertising__skinsBodyWrp">
+            <!-- Advertising -->
+<script  src="https://www.googletagservices.com/tag/js/gpt.js"></script>
+<script id="js-advertising" data-url="data/advertising/31/0.json">
+    'use strict';
+    !function waitGoogleTagAndCollapseEmptyAds(window_)
+    {
+        window_.googletag       = window_.googletag     || {};
+        window_.googletag.cmd   = window_.googletag.cmd || [];
+
+        window_.googletag.cmd.push(collapseEmptyAds);
+
+        function collapseEmptyAds()
+        {
+            var pubads_ = window_.googletag.pubads();
+
+            pubads_.collapseEmptyDivs();
+
+            var not_to_folow_ = true;
+
+            if (not_to_folow_) return;
+
+            pubads_.setTargeting('to_follow', "");
+            pubads_.enableSingleRequest();
+        }
+
+    }(window);
+
+</script>
+<script>
+    'use strict';
+    !function waitForAllowHeaderAdvertisement(window_)
+    {
+        window_.addEventListener('RP_ADVERTISING_ALLOWED', allowHeaderAdvertisement);
+
+        function allowHeaderAdvertisement()
+        {
+            window_.removeEventListener('RP_ADVERTISING_ALLOWED', allowHeaderAdvertisement);
+
+            $('.ui-advertising_position1').removeAttr('style');
+        }
+
+    }(window);
+</script>
+<!-- Advertising End -->
+        <div class="ui-header">
+            <aside class="ui-advertising__container ui-advertising_position1 js-advertising__placeholder1"
+       data-test-selector="block-advertising_position1" >
+</aside>
+
+<div style="display: none;">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <symbol id="icon-down" viewBox="0 0 100 100">
+        <title>down</title>
+        <rect opacity="0" width="100" height="100"/>
+        <path d="M96.7,32.9L52.6,77c-1.6,1.6-4.1,1.6-5.7,0L3.3,33.4c-1.6-1.6-1.6-4.1,0-5.7l4.2-4.2c1.6-1.6,4.1-1.6,5.7,0l36.6,36.6
+            L86.8,23c-1.6-1.6-4.1-1.6-5.7,0l-4.2,4.2C98.3,28.8,98.3,31.3,96.7,32.9z"/>
+    </symbol>
+    <symbol id="icon-cross" viewBox="0 0 100 100">
+        <title>cross</title>
+        <rect x="0" opacity="0" width="100" height="100"/>
+        <path d="M59.9,50l27.6-27.6c1.6-1.6,1.6-4.1,0-5.7l-4.2-4.2c-1.6-1.6-4.1-1.6-5.7,0L50,40.1L22.4,12.5c-1.6-1.6-4.1-1.6-5.7,0
+            l-4.2,4.2c-1.6,1.6-1.6,4.1,0,5.7L40.1,50L12.5,77.6c-1.6,1.6-1.6,4.1,0,5.7l4.2,4.2c1.6,1.6,4.1,1.6,5.7,0L50,59.9l27.6,27.6
+            c1.6,1.6,4.1,1.6,5.7,0l4.2-4.2c1.6-1.6,1.6-4.1,0-5.7L59.9,50z"/>
+    </symbol>
+    <symbol id="icon-right" viewBox="0 0 100 100">
+        <title>right</title>
+        <path d="M32.9,3.3L77,47.4c1.6,1.6,1.6,4.1,0,5.7L33.4,96.7c-1.6,1.6-4.1,1.6-5.7,0l-4.2-4.2c-1.6-1.6-1.6-4.1,0-5.7l36.6-36.6
+	L23,13.2c-1.6-1.6-1.6-4.1,0-5.7l4.2-4.2C28.8,1.7,31.3,1.7,32.9,3.3z"/>
+    </symbol>
+    <symbol id="icon-results" viewBox="0 0 100 100">
+        <title>results</title>
+        <path d="M92.8,42.5C92.8,19,73.7,0,50.2,0S7.8,19,7.8,42.5c0,19.3,12.9,35.6,30.5,40.8V96c0,2.2,1.8,4,4,4h16c2.2,0,4-1.8,4-4V83.3
+		C79.9,78.1,92.8,61.8,92.8,42.5z M50.2,69c-14.6,0-26.5-11.9-26.5-26.5C23.8,27.9,35.6,16,50.2,16s26.5,11.9,26.5,26.5
+		C76.8,57.1,64.9,69,50.2,69z"/>
+    </symbol>
+    <symbol id="icon-premium-content" viewBox="0 0 28 33">
+        <title>icon premium content</title>
+        <path fill="#FAA627" d="M18.462 3.196C19.897 2.829 21.803 0 21.803 0l4.649 5.084s-1.889 3.632 0 6.973c0 0 5.986 11.433-8.483 18.294 0 0-3.382 1.359-4.13 2.649-.747-1.29-4.129-2.649-4.129-2.649-14.468-6.86-8.483-18.294-8.483-18.294 1.888-3.34 0-6.973 0-6.973L5.876 0s1.888 2.905 3.341 3.196c0 0 4.168 1.297 9.245 0"/>
+        <path fill="#4A4A4A" d="M17.61 23v-8.1L14.568 23H13.2l-3.024-8.1V23H7.08V10.994h4.302l2.502 6.804 2.52-6.804h4.302V23z"/>
+    </symbol>
+    <symbol id="icon-video" viewBox="0 0 100 100">
+        <title>video</title>
+        <path d="M50,0C22.4,0,0,22.4,0,50c0,27.6,22.4,50,50,50s50-22.4,50-50C100,22.4,77.6,0,50,0z M77.1,54.1L38.3,76.4
+        c-3.1,1.8-7.2-0.5-7.2-4.1V27.7c0-3.6,4-5.9,7.2-4.1l38.7,22.3C80.2,47.7,80.3,52.3,77.1,54.1z"/>
+    </symbol>
+    <symbol id="icon-videoHollow" viewBox="0 0 24 24">
+        <title>video hollow icon</title>
+        <path fill-rule="evenodd" d="M12 0a12 12 0 0 1 12 12c0 6.627-5.373 12-12 12S0 18.627 0 12 5.373 0 12 0zm0 1C5.925 1 1 5.925 1 12s4.925 11 11 11a11 11 0 0 0 11-11c0-6.075-4.925-11-11-11zM8.64 6.37a.5.5 0 0 1 .5 0l8.7 5h.01a.5.5 0 0 1 0 .86l-8.69 5.4a.5.5 0 0 1-.77-.42V6.8a.5.5 0 0 1 .25-.43z"/>
+    </symbol>
+    <symbol id="icon-audio" viewBox="0 0 100 100">
+        <title>audio</title>
+        <path d="M43.2,9.7l-24,21.9H4c-2.2,0-4,1.8-4,4v28.8c0,2.2,1.8,4,4,4h15.2l24,21.9c1.6,1.5,3,0.9,3-1.3V11
+				C46.2,8.8,44.8,8.2,43.2,9.7z"/>
+        <path d="M61.8,30.5c-1.4-2.1-4.3-2.4-6.1-0.6L55.6,30c-1.3,1.3-1.5,3.4-0.4,5c2.7,4,4.3,8.9,4.3,14.1c0,5.8-2,11.1-5.3,15.3
+            c-1.2,1.6-1.1,3.8,0.3,5.3l0.1,0.1c1.7,1.7,4.5,1.5,6-0.4c4.4-5.6,7-12.6,7-20.3C67.5,42.2,65.4,35.8,61.8,30.5z"/>
+        <path d="M72.8,18.9c-1.5-1.9-4.2-2-5.9-0.3l-0.1,0.1c-1.4,1.4-1.6,3.6-0.3,5.2c5.5,7,8.8,15.7,8.8,25.3c0,10.1-3.7,19.3-9.8,26.5
+            c-1.3,1.6-1.2,3.9,0.2,5.3l0.1,0.1c1.6,1.6,4.3,1.5,5.8-0.3c7.3-8.5,11.6-19.6,11.6-31.6C83.3,37.7,79.4,27.2,72.8,18.9z"/>
+        <path d="M84.2,7.3C82.7,5.5,80,5.4,78.3,7l-0.1,0.1c-1.4,1.4-1.6,3.7-0.2,5.3c8.4,9.9,13.4,22.7,13.4,36.7
+            c0,14.5-5.5,27.8-14.4,37.8c-1.4,1.6-1.3,3.9,0.2,5.4l0.1,0.1c1.6,1.6,4.2,1.6,5.7-0.1C93.2,80.7,99.4,65.6,99.4,49
+            C99.4,33.2,93.7,18.6,84.2,7.3z"/>
+    </symbol>
+    <symbol id="icon-lifeNews" viewBox="0 0 100 100">
+        <title>lifeNews</title>
+        <rect opacity="0" width="100" height="100"/>
+        <circle cx="50" cy="50.4" r="10"/>
+        <path d="M54.3,0.6C52,0.4,50,2.2,50,4.5v0.1c0,2,1.5,3.8,3.6,3.9c20.3,1.7,36.6,18,38.3,38.3c0.2,2,1.9,3.6,3.9,3.6h0.1
+            c2.3,0,4.1-2,4-4.3C97.8,21.9,78.5,2.6,54.3,0.6z"/>
+        <path d="M54.4,12.6C52,12.4,50,14.2,50,16.6v0.1c0,2,1.5,3.7,3.5,3.9c13.7,1.6,24.7,12.5,26.3,26.3c0.2,2,1.9,3.5,3.9,3.5h0.1
+            c2.3,0,4.2-2,3.9-4.4C85.8,28.5,71.9,14.6,54.4,12.6z"/>
+        <path d="M54.7,24.8c-2.4-0.4-4.7,1.4-4.7,3.9v0.1c0,1.9,1.3,3.5,3.2,3.9c7.4,1.3,13.2,7.2,14.5,14.6c0.3,1.9,2,3.2,3.9,3.2h0.1
+            c2.5,0,4.3-2.2,3.9-4.7C73.7,35.1,65.3,26.7,54.7,24.8z"/>
+        <path d="M46.3,92C25.9,90.3,9.7,74,8,53.7c-0.2-2-1.9-3.6-3.9-3.6H4c-2.3,0-4.1,2-4,4.3C2.1,78.6,21.3,97.9,45.5,100
+            c2.3,0.2,4.3-1.6,4.3-4V96C49.8,93.9,48.3,92.2,46.3,92z"/>
+        <path d="M46.3,80C32.6,78.3,21.6,67.4,20,53.7c-0.2-2-1.9-3.5-3.9-3.5H16c-2.3,0-4.2,2-3.9,4.4C14.1,72,28,85.9,45.5,87.9
+            c2.3,0.3,4.4-1.6,4.4-3.9v-0.1C49.8,81.9,48.3,80.2,46.3,80z"/>
+        <path d="M46.7,67.9c-7.4-1.3-13.2-7.2-14.5-14.6c-0.3-1.9-2-3.2-3.9-3.2h-0.1c-2.5,0-4.3,2.2-3.9,4.7c1.9,10.6,10.3,19,20.9,20.9
+            c2.4,0.4,4.7-1.4,4.7-3.9v-0.1C49.8,69.9,48.5,68.2,46.7,67.9z"/>
+    </symbol>
+    <symbol id="icon-comment" viewBox="-10 -10.1 20 20.1">
+        <title>icon-comment</title>
+        <g transform="rotate(180 0 0) scale(-1, 1)">
+            <g>
+                <path d="M6,10H-6c-2.2,0-4-1.8-4-4v-7c0-2.2,1.8-4,4-4h8.1L7-10.1v5.2c1.7,0.4,3,2,3,3.9v7C10,8.2,8.2,10,6,10z"/>
+            </g>
+        </g>
+    </symbol>
+    <symbol id="icon-tick" viewBox="0 0 100 100">
+        <title>tick</title>
+        <path d="M97,23.6L34.4,86.3c-1.6,1.6-4.1,1.6-5.7,0L3,60.6c-1.6-1.6-1.6-4.1,0-5.7l4.2-4.2c1.6-1.6,4.1-1.6,5.7,0l18.6,18.6
+        l55.6-55.6c1.6-1.6,4.1-1.6,5.7,0L97,18C98.6,19.5,98.6,22.1,97,23.6z"/>
+    </symbol>
+    <symbol id="icon-starFilled" viewBox="0 0 100 100">
+        <title>starFilled</title>
+        <path d="M53.9,4.3l13,26.3l29,4.2c3.6,0.5,5,4.9,2.4,7.5l-21,20.4l5,28.9c0.6,3.6-3.1,6.3-6.3,4.6L50,82.5L24.1,96.1
+        c-3.2,1.7-7-1-6.3-4.6l5-28.9l-21-20.4c-2.6-2.5-1.2-6.9,2.4-7.5l29-4.2l13-26.3C47.7,1,52.3,1,53.9,4.3z"/>
+    </symbol>
+    <symbol id="icon-betSlip" viewBox="0 0 100 100">
+        <title>betSlip</title>
+        <rect x="0" opacity="0" width="100" height="100"/>
+        <path d="M96.7,18.1L69.2,12l1.5,6.7l22.6,5.1L90.6,36l-16.9-3.8l9.7,44.2c0.5,2.3-0.9,4.6-3.2,5.1L50.6,88l29,6.5
+            c2.3,0.5,4.6-0.9,5.1-3.2l15.2-68.1C100.4,20.9,99,18.6,96.7,18.1z"/>
+        <path d="M79.3,73.8l-15-68.1c-0.5-2.3-2.8-3.7-5.1-3.2L3.3,14.8c-2.3,0.5-3.7,2.8-3.2,5.1l15,68.1c0.5,2.3,2.8,3.7,5.1,3.2
+            L76,78.9C78.3,78.4,79.8,76.1,79.3,73.8z M9.3,32.7L6.6,20.4L58.6,9l2.7,12.2L9.3,32.7z"/>
+    </symbol>
+    <symbol id="icon-hot" viewBox="0 0 100 100">
+        <title>hot</title>
+	<path d="M34.3,67.6c-7.7,6.8-8.3,16.4-1.4,23.6c0.4,0.4,0.9,0.8,1.2,1.2c0.5,0.8,1.7,1.5,0.8,2.6c-0.6,0.7-1.6,0.2-2.4-0.1
+		C23.8,92.5,14.9,81.4,14,72.2c-1.3-12.6,2.4-23.6,10-33.6c5.5-7.2,12.6-13,18.4-19.9c3.3-3.9,5.7-8,5.6-13.2c0-1-0.2-2.2,1-2.6
+		c1.3-0.5,2.1,0.6,2.8,1.5c5.4,6.9,8.5,14.4,5.4,23.3c-1.1,3-1.7,6.2-1.2,9.4c0.5,2.9,1.8,5.4,5.1,5.5c2.7,0.2,4.5-0.9,4.8-4.2
+		c0.2-2.3,2.2-1.7,3.7-0.8c16.9,10,22.4,31.6,9.4,46.8c-3.3,3.9-7.4,6.8-11.9,9.2c-1.9,1-3.8,2-6.2,1.4c0-2,1.6-2.7,2.8-3.6
+		c7.2-5.8,8.7-15.1,3.6-22.8c-2.9-4.4-7-7.7-11.3-10.6c-4.5-3-9.1-5.7-12-10.4c-0.4-0.6-0.8-1.4-1.6-1c-0.5,0.3-1,1.1-1,1.8
+		c-0.1,3.4-0.5,6.9,1.9,9.9c1.2,1.5,2.3,3,3.3,4.6c1.9,3,1.8,6,0,9c-1.4,2.3-3.7,2.8-6.1,2.5c-3.3-0.4-4.9-2.7-5.7-5.7
+		C34.8,68.3,34.5,68,34.3,67.6z"/>
+    </symbol>
+    <symbol id="icon-liveCommentary" viewBox="0 0 100 100">
+        <title>icon-liveCommentary</title>
+        <path d="M56.2,78.6V90h12.1c1.5,0,2.8,0.4,3.8,1.4s1.6,2,1.6,3.5c0,3-2.4,5.1-5.4,5.1H34c-1.5,0-2.8-0.4-3.8-1.4s-1.6-2-1.6-3.5
+            c0-3,2.4-5.1,5.4-5.1h12.2V79c-0.2,0-0.3,0-0.5-0.1C29.1,76.7,16.2,62,16.2,45h7.6c0,13,11.8,26.4,26.4,26.4S76.6,58,76.6,45h7.6
+            c0,16-11.9,30.6-27.7,33.5C56.4,78.6,56.3,78.6,56.2,78.6z"/>
+        <path d="M61.8,30.2c-0.5,0.5-0.9,1.3-0.9,2.1c0,1.6,1.3,3,3,3h6.2V39h-6.2c-0.8,0-1.6,0.3-2.1,0.9c-0.5,0.6-0.9,1.3-0.9,2.1
+            c0,1.6,1.3,3,3,3h6.2c0,11-9,20-20,20s-20-9-20-20h6c0.8,0,1.6-0.3,2.1-0.9c0.5-0.6,0.9-1.3,0.9-2.1c0-1.7-1.3-3-3-3h-6v-3.7h6
+            c0.8,0,1.6-0.3,2.1-0.9c0.5-0.5,0.9-1.3,0.9-2.1c0-1.7-1.3-3-3-3h-6v-3.7h6c0.8,0,1.6-0.3,2.1-0.9c0.5-0.5,0.9-1.3,0.9-2.1
+            c0-1.6-1.3-3-3-3h-6C30.3,8.8,39.3,0,50.2,0c5.5,0,10.5,2.2,14.1,5.9c3.5,3.5,5.8,8.4,5.9,13.8H64c-0.8,0-1.6,0.3-2.1,0.9
+            c-0.5,0.5-0.9,1.3-0.9,2.1c0,1.7,1.3,3,3,3h6.2v3.7H64C63.1,29.3,62.4,29.7,61.8,30.2z"/>
+    </symbol>
+    <symbol id="icon-refresh" viewBox="0 0 100 100">
+        <title>refresh</title>
+        <path d="M8.2,49.7C8.2,26.7,27,8,50,8c10,0,19.3,3.6,26.5,9.5L65.8,28.2c-2.5,2.5-0.7,6.8,2.8,6.8H99V4.7c0-3.6-4.3-5.3-6.8-2.8
+			l-10,10C73.5,4.5,62.2,0,50,0C22.5,0,0.2,22.3,0.2,49.7c0,2.1,0.1,4.2,0.4,6.3h8.1C8.4,54,8.2,51.9,8.2,49.7z"/>
+        <path d="M99.1,42H91c0.5,2.5,0.7,5.1,0.7,7.7c0,23-18.7,41.7-41.7,41.7c-9.9,0-19-3.5-26.2-9.3l10.3-10.3c2.5-2.5,0.7-6.8-2.8-6.8
+			H1v30.3c0,3.6,4.3,5.3,6.8,2.8l10.3-10.3c8.6,7.2,19.7,11.6,31.9,11.6c27.5,0,49.7-22.3,49.7-49.7C99.7,47.1,99.5,44.5,99.1,42z"
+        />
+    </symbol>
+    <symbol id="icon-spinner" viewBox="0 0 100 100">
+        <title>spinner</title>
+        <path fill="#F0EFF1" d="M50,3.1C24.1,3.1,3.1,24.1,3.1,50c0,25.9,21,46.9,46.9,46.9s46.9-21,46.9-46.9C96.9,24.1,75.9,3.1,50,3.1z
+                M50,90.6C27.6,90.6,9.4,72.4,9.4,50S27.6,9.4,50,9.4S90.6,27.6,90.6,50S72.4,90.6,50,90.6z"/>
+        <path fill="#D11F25" d="M21.6,21c3.8-3.7,8.4-6.7,13.4-8.7l-2.4-5.8c-5.8,2.3-11,5.7-15.4,10L21.6,21z"/>
+        <path fill="#D11F25" d="M83.4,82.8L79,78.5c-3.7,3.7-8,6.8-12.9,8.9l2.3,5.8C74.1,90.7,79.2,87.2,83.4,82.8z"/>
+    </symbol>
+    <symbol id="arrow-down" viewBox="0 0 100 100">
+        <title>arrow-down</title>
+        <path fill-rule="evenodd" d="M3.5 0v6.1L.7 3.3 0 4l4 4 4-4-.7-.7-2.8 2.8V0z"/>
+    </symbol>
+</svg></div>
+<div class="rn-canvas rn-footerBottomLinks">
+    <a href="/about-us" class="rn-footerBottomLinks__link" data-test-selector="link-footerAboutUs">About Us</a>
+    <a href="https://racingpost.zendesk.com/hc/en-us/categories/200924429-Advertising-and-Media" class="rn-footerBottomLinks__link" data-test-selector="link-footerAdvertising">Advertising</a>
+    <a href="https://racingpost.zendesk.com/hc/en-us/articles/208344589" class="rn-footerBottomLinks__link" data-test-selector="link-footerRewards4Racing">Rewards4Racing</a>
+    <a href="/feedback" class="rn-footerBottomLinks__link" data-test-selector="link-footerFeedback">Feedback</a>
+    <a href="https://racingpost.zendesk.com/hc/en-us" class="rn-footerBottomLinks__link" data-test-selector="link-footerHelpCentre">Help Centre</a>
+    <a href="https://racingpost.zendesk.com/hc/en-us" class="rn-footerBottomLinks__link" data-test-selector="link-footerContactUs">Contact Us</a>
+    <a href="/sitemap" class="rn-footerBottomLinks__link" data-test-selector="link-footerSiteMap">Sitemap</a>
+    <a href="/cookie-policy" class="rn-footerBottomLinks__link" data-test-selector="link-footerCookiePolicy">Cookie Policy</a>
+    <a href="/privacy-policy" class="rn-footerBottomLinks__link" data-test-selector="link-footerPrivacyPolicy">Privacy Policy</a>
+    <a href="/safer-gambling" class="rn-footerBottomLinks__link" data-test-selector="link-footerGambleResponsibly">Gamble Responsibly</a>
+</div>
+</footer>
+    </div>
+    <div class="RC-chooseBookieMobile
+            js-RC-chooseBookieMobile"
+     data-test-selector="RC-chooseBookieMobile">
+    <div class="RC-chooseBookieMobile__header"
+         data-test-selector="RC-chooseBookieMobile__header">Choose your Bookmaker</div>
+    <div class="RC-chooseBookieMobile__body">
+        <div class="RC-chooseBookieMobile__message
+                    RC-chooseBookieMobile__message--general"
+             data-test-selector="RC-chooseBookieMobile__message--general">
+            Choose which bookmaker's prices you want to see on the cards. You can change your bookmaker later by selecting Accounts.
+        </div>
+                    <div class="RC-chooseBookieMobile__message
+                        RC-chooseBookieMobile__message--specific
+                        js-RC-chooseBookieMobile__message--specific
+                        js-RC-chooseBookieMobile__message--bet365"
+                 data-test-selector="RC-chooseBookieMobile__message--bet365">
+                 Thanks, you've chosen to see bet365 prices on the cards. To bet quickly and easily, sign into a bookmaker account.
+                 To claim an open account offer, register.
+            </div>
+                    <div class="RC-chooseBookieMobile__message
+                        RC-chooseBookieMobile__message--specific
+                        js-RC-chooseBookieMobile__message--specific
+                        js-RC-chooseBookieMobile__message--coral"
+                 data-test-selector="RC-chooseBookieMobile__message--coral">
+                 Thanks, you've chosen to see coral prices on the cards. To bet quickly and easily, sign into a bookmaker account.
+                 To claim an open account offer, register.
+            </div>
+                    <div class="RC-chooseBookieMobile__message
+                        RC-chooseBookieMobile__message--specific
+                        js-RC-chooseBookieMobile__message--specific
+                        js-RC-chooseBookieMobile__message--ladbrokes"
+                 data-test-selector="RC-chooseBookieMobile__message--ladbrokes">
+                 Thanks, you've chosen to see ladbrokes prices on the cards. To bet quickly and easily, sign into a bookmaker account.
+                 To claim an open account offer, register.
+            </div>
+                    <div class="RC-chooseBookieMobile__message
+                        RC-chooseBookieMobile__message--specific
+                        js-RC-chooseBookieMobile__message--specific
+                        js-RC-chooseBookieMobile__message--williamHill"
+                 data-test-selector="RC-chooseBookieMobile__message--williamHill">
+                 Thanks, you've chosen to see williamHill prices on the cards. To bet quickly and easily, sign into a bookmaker account.
+                 To claim an open account offer, register.
+            </div>
+                    <div class="RC-chooseBookieMobile__message
+                        RC-chooseBookieMobile__message--specific
+                        js-RC-chooseBookieMobile__message--specific
+                        js-RC-chooseBookieMobile__message--betfair"
+                 data-test-selector="RC-chooseBookieMobile__message--betfair">
+                 Thanks, you've chosen to see betfair prices on the cards. To bet quickly and easily, sign into a bookmaker account.
+                 To claim an open account offer, register.
+            </div>
+                    <div class="RC-chooseBookieMobile__message
+                        RC-chooseBookieMobile__message--specific
+                        js-RC-chooseBookieMobile__message--specific
+                        js-RC-chooseBookieMobile__message--paddypower"
+                 data-test-selector="RC-chooseBookieMobile__message--paddypower">
+                 Thanks, you've chosen to see paddypower prices on the cards. To bet quickly and easily, sign into a bookmaker account.
+                 To claim an open account offer, register.
+            </div>
+                    <div class="RC-chooseBookieMobile__message
+                        RC-chooseBookieMobile__message--specific
+                        js-RC-chooseBookieMobile__message--specific
+                        js-RC-chooseBookieMobile__message--skybet"
+                 data-test-selector="RC-chooseBookieMobile__message--skybet">
+                 Thanks, you've chosen to see skybet prices on the cards. To bet quickly and easily, sign into a bookmaker account.
+                 To claim an open account offer, register.
+            </div>
+
+                    <div class="RC-chooseBookieMobile__bookmaker
+                        js-RC-chooseBookieMobile__bookmaker"
+                 data-feed="BET365"
+                 data-position="1"
+                 data-bookmaker-name="bet365"
+                 data-test-selector="RC-chooseBookieMobile__bookmaker--bet365">
+                <div class="RC-chooseBookieMobile__topSection
+                            RC-chooseBookieMobile__topSection--bet365">
+                    <button class="RC-chooseBookieMobile__button
+                                   js-RC-chooseBookieMobile__button"
+                            data-test-selector="RC-chooseBookieMobile__button--bet365"
+                            rel="noreferrer nofollow sponsored">
+                        <img src="https://www.rp-assets.com/rp1-cards/assets/10.78.3/img/svg/logo-text-bet365.svg"
+                             class="RC-chooseBookieMobile__buttonLabel">
+                        <span class="RC-chooseBookieMobile__buttonFreeBet">
+                                                            Bet £10 Get £30 In Free bets for new customers at bet365                                                    </span>
+                    </button>
+                    <div class="RC-chooseBookieMobile__account">
+                        <a href="/my-bookmakers"
+                        class="RC-chooseBookieMobile__accountBtn
+                                       RC-chooseBookieMobile__accountBtn--logIn
+                                       ui-btn
+                                       js-RC-chooseBookieMobile__accountBtn--logIn">
+                            Log in
+                        </a>
+                        <a href="https://www.bet365.com/olp/open-account?affiliate=365_03388506"
+                           target="_blank"
+                           class="RC-chooseBookieMobile__accountBtn
+                                  RC-chooseBookieMobile__accountBtn--register
+                                  ui-btn
+                                  js-RC-chooseBookieMobile__accountBtn--register"
+                            rel="noreferrer nofollow sponsored"
+                            bookmaker-name="Bet365"
+                        >
+                            Register
+                        </a>
+                    </div>
+                </div>
+            </div>
+                    <div class="RC-chooseBookieMobile__bookmaker
+                        js-RC-chooseBookieMobile__bookmaker"
+                 data-feed="CORAL"
+                 data-position="2"
+                 data-bookmaker-name="coral"
+                 data-test-selector="RC-chooseBookieMobile__bookmaker--coral">
+                <div class="RC-chooseBookieMobile__topSection
+                            RC-chooseBookieMobile__topSection--coral">
+                    <button class="RC-chooseBookieMobile__button
+                                   js-RC-chooseBookieMobile__button"
+                            data-test-selector="RC-chooseBookieMobile__button--coral"
+                            rel="noreferrer nofollow sponsored">
+                        <img src="https://www.rp-assets.com/rp1-cards/assets/10.78.3/img/svg/logo-text-coral.svg"
+                             class="RC-chooseBookieMobile__buttonLabel">
+                        <span class="RC-chooseBookieMobile__buttonFreeBet">
+                                                            Get £20 In Free Bets When You Bet £5                                                    </span>
+                    </button>
+                    <div class="RC-chooseBookieMobile__account">
+                        <a href="/my-bookmakers"
+                        class="RC-chooseBookieMobile__accountBtn
+                                       RC-chooseBookieMobile__accountBtn--logIn
+                                       ui-btn
+                                       js-RC-chooseBookieMobile__accountBtn--logIn">
+                            Log in
+                        </a>
+                        <a href="https://mediaserver.entainpartners.com/renderBanner.do?zoneId=2097506"
+                           target="_blank"
+                           class="RC-chooseBookieMobile__accountBtn
+                                  RC-chooseBookieMobile__accountBtn--register
+                                  ui-btn
+                                  js-RC-chooseBookieMobile__accountBtn--register"
+                            rel="noreferrer nofollow sponsored"
+                            bookmaker-name="Coral"
+                        >
+                            Register
+                        </a>
+                    </div>
+                </div>
+            </div>
+                    <div class="RC-chooseBookieMobile__bookmaker
+                        js-RC-chooseBookieMobile__bookmaker"
+                 data-feed="LADB"
+                 data-position="3"
+                 data-bookmaker-name="ladbrokes"
+                 data-test-selector="RC-chooseBookieMobile__bookmaker--ladbrokes">
+                <div class="RC-chooseBookieMobile__topSection
+                            RC-chooseBookieMobile__topSection--ladbrokes">
+                    <button class="RC-chooseBookieMobile__button
+                                   js-RC-chooseBookieMobile__button"
+                            data-test-selector="RC-chooseBookieMobile__button--ladbrokes"
+                            rel="noreferrer nofollow sponsored">
+                        <img src="https://www.rp-assets.com/rp1-cards/assets/10.78.3/img/svg/logo-text-ladbrokes.svg"
+                             class="RC-chooseBookieMobile__buttonLabel">
+                        <span class="RC-chooseBookieMobile__buttonFreeBet">
+                                                            £20 In Free Bets When You Bet £5 On Horse Racing                                                    </span>
+                    </button>
+                    <div class="RC-chooseBookieMobile__account">
+                        <a href="/my-bookmakers"
+                        class="RC-chooseBookieMobile__accountBtn
+                                       RC-chooseBookieMobile__accountBtn--logIn
+                                       ui-btn
+                                       js-RC-chooseBookieMobile__accountBtn--logIn">
+                            Log in
+                        </a>
+                        <a href="https://mediaserver.entainpartners.com/renderBanner.do?zoneId=2097495"
+                           target="_blank"
+                           class="RC-chooseBookieMobile__accountBtn
+                                  RC-chooseBookieMobile__accountBtn--register
+                                  ui-btn
+                                  js-RC-chooseBookieMobile__accountBtn--register"
+                            rel="noreferrer nofollow sponsored"
+                            bookmaker-name="Ladbrokes"
+                        >
+                            Register
+                        </a>
+                    </div>
+                </div>
+            </div>
+                    <div class="RC-chooseBookieMobile__bookmaker
+                        js-RC-chooseBookieMobile__bookmaker"
+                 data-feed="WH_OXI"
+                 data-position="4"
+                 data-bookmaker-name="williamHill"
+                 data-test-selector="RC-chooseBookieMobile__bookmaker--williamHill">
+                <div class="RC-chooseBookieMobile__topSection
+                            RC-chooseBookieMobile__topSection--williamHill">
+                    <button class="RC-chooseBookieMobile__button
+                                   js-RC-chooseBookieMobile__button"
+                            data-test-selector="RC-chooseBookieMobile__button--williamHill"
+                            rel="noreferrer nofollow sponsored">
+                        <img src="https://www.rp-assets.com/rp1-cards/assets/10.78.3/img/svg/logo-text-williamHill.svg"
+                             class="RC-chooseBookieMobile__buttonLabel">
+                        <span class="RC-chooseBookieMobile__buttonFreeBet">
+                                                            Get £40 In Free Bets When You Deposit & Bet £10                                                    </span>
+                    </button>
+                    <div class="RC-chooseBookieMobile__account">
+                        <a href="/my-bookmakers"
+                        class="RC-chooseBookieMobile__accountBtn
+                                       RC-chooseBookieMobile__accountBtn--logIn
+                                       ui-btn
+                                       js-RC-chooseBookieMobile__accountBtn--logIn">
+                            Log in
+                        </a>
+                        <a href="https://campaigns.williamhill.com/C.ashx?btag=a_209578b_1455c_&affid=1504384&siteid=209578&adid=1455&c="
+                           target="_blank"
+                           class="RC-chooseBookieMobile__accountBtn
+                                  RC-chooseBookieMobile__accountBtn--register
+                                  ui-btn
+                                  js-RC-chooseBookieMobile__accountBtn--register"
+                            rel="noreferrer nofollow sponsored"
+                            bookmaker-name="William Hill"
+                        >
+                            Register
+                        </a>
+                    </div>
+                </div>
+            </div>
+                    <div class="RC-chooseBookieMobile__bookmaker
+                        js-RC-chooseBookieMobile__bookmaker"
+                 data-feed="BETFAIR"
+                 data-position="5"
+                 data-bookmaker-name="betfair"
+                 data-test-selector="RC-chooseBookieMobile__bookmaker--betfair">
+                <div class="RC-chooseBookieMobile__topSection
+                            RC-chooseBookieMobile__topSection--betfair">
+                    <button class="RC-chooseBookieMobile__button
+                                   js-RC-chooseBookieMobile__button"
+                            data-test-selector="RC-chooseBookieMobile__button--betfair"
+                            rel="noreferrer nofollow sponsored">
+                        <img src="https://www.rp-assets.com/rp1-cards/assets/10.78.3/img/svg/logo-text-betfair.svg"
+                             class="RC-chooseBookieMobile__buttonLabel">
+                        <span class="RC-chooseBookieMobile__buttonFreeBet">
+                                                            Bet £10, Get £30 In Free Bet Multiples                                                    </span>
+                    </button>
+                    <div class="RC-chooseBookieMobile__account">
+                        <a href="/my-bookmakers"
+                        class="RC-chooseBookieMobile__accountBtn
+                                       RC-chooseBookieMobile__accountBtn--logIn
+                                       ui-btn
+                                       js-RC-chooseBookieMobile__accountBtn--logIn">
+                            Log in
+                        </a>
+                        <a href="https://media.betfair.com/redirect.aspx?pid=17679550&lpid=149&bid=1644"
+                           target="_blank"
+                           class="RC-chooseBookieMobile__accountBtn
+                                  RC-chooseBookieMobile__accountBtn--register
+                                  ui-btn
+                                  js-RC-chooseBookieMobile__accountBtn--register"
+                            rel="noreferrer nofollow sponsored"
+                            bookmaker-name="Betfair"
+                        >
+                            Register
+                        </a>
+                    </div>
+                </div>
+            </div>
+                    <div class="RC-chooseBookieMobile__bookmaker
+                        js-RC-chooseBookieMobile__bookmaker"
+                 data-feed="PPWR"
+                 data-position="6"
+                 data-bookmaker-name="paddypower"
+                 data-test-selector="RC-chooseBookieMobile__bookmaker--paddypower">
+                <div class="RC-chooseBookieMobile__topSection
+                            RC-chooseBookieMobile__topSection--paddypower">
+                    <button class="RC-chooseBookieMobile__button
+                                   js-RC-chooseBookieMobile__button"
+                            data-test-selector="RC-chooseBookieMobile__button--paddypower"
+                            rel="noreferrer nofollow sponsored">
+                        <img src="https://www.rp-assets.com/rp1-cards/assets/10.78.3/img/svg/logo-text-paddyPower.svg"
+                             class="RC-chooseBookieMobile__buttonLabel">
+                        <span class="RC-chooseBookieMobile__buttonFreeBet">
+                                                            Get £30 In Free Bets When You Bet £5                                                    </span>
+                    </button>
+                    <div class="RC-chooseBookieMobile__account">
+                        <a href="/my-bookmakers"
+                        class="RC-chooseBookieMobile__accountBtn
+                                       RC-chooseBookieMobile__accountBtn--logIn
+                                       ui-btn
+                                       js-RC-chooseBookieMobile__accountBtn--logIn">
+                            Log in
+                        </a>
+                        <a href="https://media.paddypower.com/redirect.aspx?pid=17679276&lpid=57&bid=1529"
+                           target="_blank"
+                           class="RC-chooseBookieMobile__accountBtn
+                                  RC-chooseBookieMobile__accountBtn--register
+                                  ui-btn
+                                  js-RC-chooseBookieMobile__accountBtn--register"
+                            rel="noreferrer nofollow sponsored"
+                            bookmaker-name="Paddy Power"
+                        >
+                            Register
+                        </a>
+                    </div>
+                </div>
+            </div>
+                    <div class="RC-chooseBookieMobile__bookmaker
+                        js-RC-chooseBookieMobile__bookmaker"
+                 data-feed="SKYBET_FLUTTER"
+                 data-position="7"
+                 data-bookmaker-name="skybet"
+                 data-test-selector="RC-chooseBookieMobile__bookmaker--skybet">
+                <div class="RC-chooseBookieMobile__topSection
+                            RC-chooseBookieMobile__topSection--skybet">
+                    <button class="RC-chooseBookieMobile__button
+                                   js-RC-chooseBookieMobile__button"
+                            data-test-selector="RC-chooseBookieMobile__button--skybet"
+                            rel="noreferrer nofollow sponsored">
+                        <img src="https://www.rp-assets.com/rp1-cards/assets/10.78.3/img/svg/logo-white-text-skyBet.svg"
+                             class="RC-chooseBookieMobile__buttonLabel">
+                        <span class="RC-chooseBookieMobile__buttonFreeBet">
+                                                            Get £30 In Free Bets When You Place Any Bet                                                    </span>
+                    </button>
+                    <div class="RC-chooseBookieMobile__account">
+                        <a href="/my-bookmakers"
+                        class="RC-chooseBookieMobile__accountBtn
+                                       RC-chooseBookieMobile__accountBtn--logIn
+                                       ui-btn
+                                       js-RC-chooseBookieMobile__accountBtn--logIn">
+                            Log in
+                        </a>
+                        <a href="https://ads.skybet.com/redirect.aspx?pid=17678503&lpid=25&bid=1490"
+                           target="_blank"
+                           class="RC-chooseBookieMobile__accountBtn
+                                  RC-chooseBookieMobile__accountBtn--register
+                                  ui-btn
+                                  js-RC-chooseBookieMobile__accountBtn--register"
+                            rel="noreferrer nofollow sponsored"
+                            bookmaker-name="SkyBet"
+                        >
+                            Register
+                        </a>
+                    </div>
+                </div>
+            </div>
+            </div>
+    <div class="RC-chooseBookieMobile__footer">
+        <span class="RC-chooseBookieMobile__link js-RC-chooseBookieMobile__link"
+              data-test-selector="RC-chooseBookieMobile__link">
+            Skip to cards
+        </span>
+    </div>
+</div>
+    <div class="RC-chooseBookieMobileExperiment
+            js-RC-chooseBookieMobileExperiment"
+     data-test-selector="RC-chooseBookieMobile">
+     <div class="RC-chooseBookieMobileExperiment__closeButton">
+        <svg class="ui-icon ui-icon_sizeMedium">
+            <use xlink:href="img/icons.svg#icon-cross"/>
+        </svg>
+     </div>
+    <div class="RC-chooseBookieMobileExperiment__header"
+         data-test-selector="RC-chooseBookieMobile__header">Choose which bookmaker&apos;s prices you see</div>
+    <div class="RC-chooseBookieMobileExperiment__body">
+        <div class="RC-chooseBookieMobileExperiment__message">
+            To change prices, click a logo. To bet, sign in to an account, or register to claim an offer.
+        </div>
+        <div class="RC-chooseBookieMobileExperiment__bookmakerContainer">
+                    <div class="RC-chooseBookieMobileExperiment__bookmaker
+                        js-RC-chooseBookieMobileExperiment__bookmaker"
+                 data-feed="PPWR"
+                 data-position="1"
+                 data-bookmaker-name="paddypower"
+                 data-test-selector="RC-chooseBookieMobile__bookmaker--paddypower">
+                 <div class="RC-chooseBookieMobileExperiment__radioButton"></div>
+                <div class="RC-chooseBookieMobileExperiment__topSection
+                            RC-chooseBookieMobileExperiment__topSection--paddypower">
+                    <button class="ui-btn
+                                   RC-chooseBookieMobileExperiment__button
+                                   js-RC-chooseBookieMobileExperiment__button"
+                            data-test-selector="RC-chooseBookieMobile__button--paddypower">
+                        <img src="https://www.rp-assets.com/rp1-cards/assets/10.78.3/img/svg/logo-text-paddyPower.svg"
+                             class="RC-chooseBookieMobileExperiment__buttonLabel">
+                    </button>
+                    <div class="RC-chooseBookieMobileExperiment__account">
+                        <div class="RC-chooseBookieMobileExperiment__accountContent">
+                            <a href="https://media.paddypower.com/redirect.aspx?pid=17679276&lpid=57&bid=1529"
+                            target="_blank"
+                            class="RC-chooseBookieMobileExperiment__accountBtn
+                                    RC-chooseBookieMobileExperiment__accountBtn--register
+                                    ui-btn
+                                    js-RC-chooseBookieMobileExperiment__accountBtn--register">
+                                Register
+                            </a>
+                            <button class="RC-chooseBookieMobileExperiment__accountBtn
+                                        RC-chooseBookieMobileExperiment__accountBtn--logIn
+                                        ui-btn
+                                        js-RC-chooseBookieMobileExperiment__accountBtn--logIn">
+                                Sign in
+                            </button>
+                            <div class="RC-chooseBookieMobileExperiment__accountBalance">
+                                <div class="RC-chooseBookieMobileExperiment__accountBalanceLabel">Balance:</div>
+                                <div class="RC-chooseBookieMobileExperiment__accountBalanceValue"></div>
+                            </div>
+                            <button class="RC-chooseBookieMobileExperiment__accountBtn
+                                        RC-chooseBookieMobileExperiment__accountBtn--logOut
+                                        ui-btn
+                                        js-RC-chooseBookieMobileExperiment__accountBtn--logOut">
+                                Sign out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                    <div class="RC-chooseBookieMobileExperiment__bookmaker
+                        js-RC-chooseBookieMobileExperiment__bookmaker"
+                 data-feed="LADB"
+                 data-position="2"
+                 data-bookmaker-name="ladbrokes"
+                 data-test-selector="RC-chooseBookieMobile__bookmaker--ladbrokes">
+                 <div class="RC-chooseBookieMobileExperiment__radioButton"></div>
+                <div class="RC-chooseBookieMobileExperiment__topSection
+                            RC-chooseBookieMobileExperiment__topSection--ladbrokes">
+                    <button class="ui-btn
+                                   RC-chooseBookieMobileExperiment__button
+                                   js-RC-chooseBookieMobileExperiment__button"
+                            data-test-selector="RC-chooseBookieMobile__button--ladbrokes">
+                        <img src="https://www.rp-assets.com/rp1-cards/assets/10.78.3/img/svg/logo-text-ladbrokes.svg"
+                             class="RC-chooseBookieMobileExperiment__buttonLabel">
+                    </button>
+                    <div class="RC-chooseBookieMobileExperiment__account">
+                        <div class="RC-chooseBookieMobileExperiment__accountContent">
+                            <a href="https://mediaserver.entainpartners.com/renderBanner.do?zoneId=2097495"
+                            target="_blank"
+                            class="RC-chooseBookieMobileExperiment__accountBtn
+                                    RC-chooseBookieMobileExperiment__accountBtn--register
+                                    ui-btn
+                                    js-RC-chooseBookieMobileExperiment__accountBtn--register">
+                                Register
+                            </a>
+                            <button class="RC-chooseBookieMobileExperiment__accountBtn
+                                        RC-chooseBookieMobileExperiment__accountBtn--logIn
+                                        ui-btn
+                                        js-RC-chooseBookieMobileExperiment__accountBtn--logIn">
+                                Sign in
+                            </button>
+                            <div class="RC-chooseBookieMobileExperiment__accountBalance">
+                                <div class="RC-chooseBookieMobileExperiment__accountBalanceLabel">Balance:</div>
+                                <div class="RC-chooseBookieMobileExperiment__accountBalanceValue"></div>
+                            </div>
+                            <button class="RC-chooseBookieMobileExperiment__accountBtn
+                                        RC-chooseBookieMobileExperiment__accountBtn--logOut
+                                        ui-btn
+                                        js-RC-chooseBookieMobileExperiment__accountBtn--logOut">
+                                Sign out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                    <div class="RC-chooseBookieMobileExperiment__bookmaker
+                        js-RC-chooseBookieMobileExperiment__bookmaker"
+                 data-feed="SKYBET_FLUTTER"
+                 data-position="3"
+                 data-bookmaker-name="skybet"
+                 data-test-selector="RC-chooseBookieMobile__bookmaker--skybet">
+                 <div class="RC-chooseBookieMobileExperiment__radioButton"></div>
+                <div class="RC-chooseBookieMobileExperiment__topSection
+                            RC-chooseBookieMobileExperiment__topSection--skybet">
+                    <button class="ui-btn
+                                   RC-chooseBookieMobileExperiment__button
+                                   js-RC-chooseBookieMobileExperiment__button"
+                            data-test-selector="RC-chooseBookieMobile__button--skybet">
+                        <img src="https://www.rp-assets.com/rp1-cards/assets/10.78.3/img/svg/logo-text-skyBet.svg"
+                             class="RC-chooseBookieMobileExperiment__buttonLabel">
+                    </button>
+                    <div class="RC-chooseBookieMobileExperiment__account">
+                        <div class="RC-chooseBookieMobileExperiment__accountContent">
+                            <a href="https://ads.skybet.com/redirect.aspx?pid=17678503&lpid=25&bid=1490"
+                            target="_blank"
+                            class="RC-chooseBookieMobileExperiment__accountBtn
+                                    RC-chooseBookieMobileExperiment__accountBtn--register
+                                    ui-btn
+                                    js-RC-chooseBookieMobileExperiment__accountBtn--register">
+                                Register
+                            </a>
+                            <button class="RC-chooseBookieMobileExperiment__accountBtn
+                                        RC-chooseBookieMobileExperiment__accountBtn--logIn
+                                        ui-btn
+                                        js-RC-chooseBookieMobileExperiment__accountBtn--logIn">
+                                Sign in
+                            </button>
+                            <div class="RC-chooseBookieMobileExperiment__accountBalance">
+                                <div class="RC-chooseBookieMobileExperiment__accountBalanceLabel">Balance:</div>
+                                <div class="RC-chooseBookieMobileExperiment__accountBalanceValue"></div>
+                            </div>
+                            <button class="RC-chooseBookieMobileExperiment__accountBtn
+                                        RC-chooseBookieMobileExperiment__accountBtn--logOut
+                                        ui-btn
+                                        js-RC-chooseBookieMobileExperiment__accountBtn--logOut">
+                                Sign out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                    <div class="RC-chooseBookieMobileExperiment__bookmaker
+                        js-RC-chooseBookieMobileExperiment__bookmaker"
+                 data-feed="CORAL"
+                 data-position="4"
+                 data-bookmaker-name="coral"
+                 data-test-selector="RC-chooseBookieMobile__bookmaker--coral">
+                 <div class="RC-chooseBookieMobileExperiment__radioButton"></div>
+                <div class="RC-chooseBookieMobileExperiment__topSection
+                            RC-chooseBookieMobileExperiment__topSection--coral">
+                    <button class="ui-btn
+                                   RC-chooseBookieMobileExperiment__button
+                                   js-RC-chooseBookieMobileExperiment__button"
+                            data-test-selector="RC-chooseBookieMobile__button--coral">
+                        <img src="https://www.rp-assets.com/rp1-cards/assets/10.78.3/img/svg/logo-text-coral.svg"
+                             class="RC-chooseBookieMobileExperiment__buttonLabel">
+                    </button>
+                    <div class="RC-chooseBookieMobileExperiment__account">
+                        <div class="RC-chooseBookieMobileExperiment__accountContent">
+                            <a href="https://mediaserver.entainpartners.com/renderBanner.do?zoneId=2097506"
+                            target="_blank"
+                            class="RC-chooseBookieMobileExperiment__accountBtn
+                                    RC-chooseBookieMobileExperiment__accountBtn--register
+                                    ui-btn
+                                    js-RC-chooseBookieMobileExperiment__accountBtn--register">
+                                Register
+                            </a>
+                            <button class="RC-chooseBookieMobileExperiment__accountBtn
+                                        RC-chooseBookieMobileExperiment__accountBtn--logIn
+                                        ui-btn
+                                        js-RC-chooseBookieMobileExperiment__accountBtn--logIn">
+                                Sign in
+                            </button>
+                            <div class="RC-chooseBookieMobileExperiment__accountBalance">
+                                <div class="RC-chooseBookieMobileExperiment__accountBalanceLabel">Balance:</div>
+                                <div class="RC-chooseBookieMobileExperiment__accountBalanceValue"></div>
+                            </div>
+                            <button class="RC-chooseBookieMobileExperiment__accountBtn
+                                        RC-chooseBookieMobileExperiment__accountBtn--logOut
+                                        ui-btn
+                                        js-RC-chooseBookieMobileExperiment__accountBtn--logOut">
+                                Sign out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                    <div class="RC-chooseBookieMobileExperiment__bookmaker
+                        js-RC-chooseBookieMobileExperiment__bookmaker"
+                 data-feed="WH_OXI"
+                 data-position="5"
+                 data-bookmaker-name="williamHill"
+                 data-test-selector="RC-chooseBookieMobile__bookmaker--williamHill">
+                 <div class="RC-chooseBookieMobileExperiment__radioButton"></div>
+                <div class="RC-chooseBookieMobileExperiment__topSection
+                            RC-chooseBookieMobileExperiment__topSection--williamHill">
+                    <button class="ui-btn
+                                   RC-chooseBookieMobileExperiment__button
+                                   js-RC-chooseBookieMobileExperiment__button"
+                            data-test-selector="RC-chooseBookieMobile__button--williamHill">
+                        <img src="https://www.rp-assets.com/rp1-cards/assets/10.78.3/img/svg/logo-text-williamHill.svg"
+                             class="RC-chooseBookieMobileExperiment__buttonLabel">
+                    </button>
+                    <div class="RC-chooseBookieMobileExperiment__account">
+                        <div class="RC-chooseBookieMobileExperiment__accountContent">
+                            <a href="https://campaigns.williamhill.com/C.ashx?btag=a_209578b_1455c_&affid=1504384&siteid=209578&adid=1455&c="
+                            target="_blank"
+                            class="RC-chooseBookieMobileExperiment__accountBtn
+                                    RC-chooseBookieMobileExperiment__accountBtn--register
+                                    ui-btn
+                                    js-RC-chooseBookieMobileExperiment__accountBtn--register">
+                                Register
+                            </a>
+                            <button class="RC-chooseBookieMobileExperiment__accountBtn
+                                        RC-chooseBookieMobileExperiment__accountBtn--logIn
+                                        ui-btn
+                                        js-RC-chooseBookieMobileExperiment__accountBtn--logIn">
+                                Sign in
+                            </button>
+                            <div class="RC-chooseBookieMobileExperiment__accountBalance">
+                                <div class="RC-chooseBookieMobileExperiment__accountBalanceLabel">Balance:</div>
+                                <div class="RC-chooseBookieMobileExperiment__accountBalanceValue"></div>
+                            </div>
+                            <button class="RC-chooseBookieMobileExperiment__accountBtn
+                                        RC-chooseBookieMobileExperiment__accountBtn--logOut
+                                        ui-btn
+                                        js-RC-chooseBookieMobileExperiment__accountBtn--logOut">
+                                Sign out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                    <div class="RC-chooseBookieMobileExperiment__bookmaker
+                        js-RC-chooseBookieMobileExperiment__bookmaker"
+                 data-feed="BET365"
+                 data-position="6"
+                 data-bookmaker-name="bet365"
+                 data-test-selector="RC-chooseBookieMobile__bookmaker--bet365">
+                 <div class="RC-chooseBookieMobileExperiment__radioButton"></div>
+                <div class="RC-chooseBookieMobileExperiment__topSection
+                            RC-chooseBookieMobileExperiment__topSection--bet365">
+                    <button class="ui-btn
+                                   RC-chooseBookieMobileExperiment__button
+                                   js-RC-chooseBookieMobileExperiment__button"
+                            data-test-selector="RC-chooseBookieMobile__button--bet365">
+                        <img src="https://www.rp-assets.com/rp1-cards/assets/10.78.3/img/svg/logo-text-bet365.svg"
+                             class="RC-chooseBookieMobileExperiment__buttonLabel">
+                    </button>
+                    <div class="RC-chooseBookieMobileExperiment__account">
+                        <div class="RC-chooseBookieMobileExperiment__accountContent">
+                            <a href="https://www.bet365.com/olp/open-account?affiliate=365_03388506"
+                            target="_blank"
+                            class="RC-chooseBookieMobileExperiment__accountBtn
+                                    RC-chooseBookieMobileExperiment__accountBtn--register
+                                    ui-btn
+                                    js-RC-chooseBookieMobileExperiment__accountBtn--register">
+                                Register
+                            </a>
+                            <button class="RC-chooseBookieMobileExperiment__accountBtn
+                                        RC-chooseBookieMobileExperiment__accountBtn--logIn
+                                        ui-btn
+                                        js-RC-chooseBookieMobileExperiment__accountBtn--logIn">
+                                Sign in
+                            </button>
+                            <div class="RC-chooseBookieMobileExperiment__accountBalance">
+                                <div class="RC-chooseBookieMobileExperiment__accountBalanceLabel">Balance:</div>
+                                <div class="RC-chooseBookieMobileExperiment__accountBalanceValue"></div>
+                            </div>
+                            <button class="RC-chooseBookieMobileExperiment__accountBtn
+                                        RC-chooseBookieMobileExperiment__accountBtn--logOut
+                                        ui-btn
+                                        js-RC-chooseBookieMobileExperiment__accountBtn--logOut">
+                                Sign out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                    <div class="RC-chooseBookieMobileExperiment__bookmaker
+                        js-RC-chooseBookieMobileExperiment__bookmaker"
+                 data-feed="BETFAIR"
+                 data-position="7"
+                 data-bookmaker-name="betfair"
+                 data-test-selector="RC-chooseBookieMobile__bookmaker--betfair">
+                 <div class="RC-chooseBookieMobileExperiment__radioButton"></div>
+                <div class="RC-chooseBookieMobileExperiment__topSection
+                            RC-chooseBookieMobileExperiment__topSection--betfair">
+                    <button class="ui-btn
+                                   RC-chooseBookieMobileExperiment__button
+                                   js-RC-chooseBookieMobileExperiment__button"
+                            data-test-selector="RC-chooseBookieMobile__button--betfair">
+                        <img src="https://www.rp-assets.com/rp1-cards/assets/10.78.3/img/svg/logo-text-betfair.svg"
+                             class="RC-chooseBookieMobileExperiment__buttonLabel">
+                    </button>
+                    <div class="RC-chooseBookieMobileExperiment__account">
+                        <div class="RC-chooseBookieMobileExperiment__accountContent">
+                            <a href="https://media.betfair.com/redirect.aspx?pid=17679550&lpid=149&bid=1644"
+                            target="_blank"
+                            class="RC-chooseBookieMobileExperiment__accountBtn
+                                    RC-chooseBookieMobileExperiment__accountBtn--register
+                                    ui-btn
+                                    js-RC-chooseBookieMobileExperiment__accountBtn--register">
+                                Register
+                            </a>
+                            <button class="RC-chooseBookieMobileExperiment__accountBtn
+                                        RC-chooseBookieMobileExperiment__accountBtn--logIn
+                                        ui-btn
+                                        js-RC-chooseBookieMobileExperiment__accountBtn--logIn">
+                                Sign in
+                            </button>
+                            <div class="RC-chooseBookieMobileExperiment__accountBalance">
+                                <div class="RC-chooseBookieMobileExperiment__accountBalanceLabel">Balance:</div>
+                                <div class="RC-chooseBookieMobileExperiment__accountBalanceValue"></div>
+                            </div>
+                            <button class="RC-chooseBookieMobileExperiment__accountBtn
+                                        RC-chooseBookieMobileExperiment__accountBtn--logOut
+                                        ui-btn
+                                        js-RC-chooseBookieMobileExperiment__accountBtn--logOut">
+                                Sign out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                </div>
+        <div class="RC-chooseBookieMobileExperiment__footer">
+            <span class=" ui-btn ui-btn_primary ui-btn_XL RC-chooseBookieMobileExperiment__link js-RC-chooseBookieMobileExperiment__link"
+                data-test-selector="RC-chooseBookieMobile__link">
+                See these prices
+            </span>
+        </div>
+    </div>
+
+</div>
+
+    <div class="RC-cardMandatoryLoginContainer RC-cardMandatoryLoginContainer_topdown" hidden>
+        <div class="RC-mandatoryLogIn RC-theme">
+    <div class="RC-mandatoryLogIn__content">
+        <div class="RC-mandatoryLogIn__image RC-theme__image"></div>
+        <div class="RC-mandatoryLogIn__info">
+            <span class="RC-mandatoryLogIn__logo"></span>
+            <span class="RC-mandatoryLogIn__line RC-mandatoryLogIn__title">
+                Please register or sign in
+                to continue.
+            </span>
+            <span class="RC-mandatoryLogIn__line">
+                Don’t worry, registration is quick, easy and free.
+            </span>
+            <span class="RC-mandatoryLogIn__name"></span>
+        </div>
+        <div class="RC-mandatoryLogIn__formBlock">
+            <div class="RC-mandatoryLogIn__formWrapper">
+                <div class="RC-mandatoryLogIn__form"></div>
+            </div>
+            <div class="RC-mandatoryLogIn__close">
+                <svg class="ui-icon ui-icon_size2XL RC-mandatoryLogIn__closeIcon">
+                    <use xlink:href="img/icons.svg#icon-cross"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+
+    <script>var assetsDomain = '//' + document.domain;</script>
+    <script src="https://www.rp-assets.com/rp1-cards/assets/10.78.3/vendor.min.js"></script>
+    <script src="https://www.rp-assets.com/rp1-cards/assets/10.78.3/app.min.js"></script>
+        <script>
+        window._betSlipAssetsUrl_ = 'https://www.rp-assets.com/betslip-ui/';
+    </script>
+    <script src="https://www.rp-assets.com/betslip-ui/betslipProvider.js?time=1756217400"></script>
+        <div id="consent_blackbar"></div>
+</body>
+</html>
