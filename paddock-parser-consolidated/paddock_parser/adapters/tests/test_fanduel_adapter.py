@@ -129,7 +129,5 @@ class TestFanDuelAdapter(unittest.TestCase):
         self.assertEqual(runner1.name.value, "Speedy")
         self.assertEqual(runner1.number.value, 1)
 
-
-
 if __name__ == "__main__":
     unittest.main()

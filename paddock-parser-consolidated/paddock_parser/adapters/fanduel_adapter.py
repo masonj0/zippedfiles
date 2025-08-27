@@ -131,6 +131,7 @@ class FanDuelAdapter(BaseAdapterV3):
                 race_key = canonical_race_key(
                     track_key, interim_race["post_time"].strftime("%H%M")
 
+
                 )
 
                 raw_doc = RawRaceDocument(
