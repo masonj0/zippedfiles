@@ -39,6 +39,7 @@ from typing import Any, Dict, List, Optional, Protocol, Type
 from urllib.parse import urlparse
 
 import nest_asyncio
+
 # Third-party imports - sorted alphabetically
 try:
     import certifi
@@ -46,16 +47,21 @@ try:
     from jinja2 import Environment, FileSystemLoader, select_autoescape
 except ImportError as e:
     print(f"FATAL: Missing required dependency: {e.name}", file=sys.stderr)
-    print("Please install requirements: pip install nest_asyncio httpx beautifulsoup4 curl_cffi jinja2 tqdm pytz certifi", file=sys.stderr)
+    print(
+        "Please install requirements: pip install nest_asyncio httpx beautifulsoup4 curl_cffi jinja2 tqdm pytz certifi",
+        file=sys.stderr,
+    )
     sys.exit(1)
 
 nest_asyncio.apply()
+
+
 # =============================================================================
 # --- CONFIGURATION LOADER ---
 # =============================================================================
-def load_config(path: str = 'config_settings.json') -> Dict[str, Any]:
+def load_config(path: str = "config_settings.json") -> Dict[str, Any]:
     try:
-        with open(path, 'r', encoding='utf-8') as f:
+        with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     except FileNotFoundError:
         logging.error(f"Configuration file '{path}' not found. Using empty config.")
@@ -63,6 +69,7 @@ def load_config(path: str = 'config_settings.json') -> Dict[str, Any]:
     except json.JSONDecodeError as e:
         logging.critical(f"FATAL: Could not parse config file '{path}': {e}.")
         sys.exit(1)
+
 
 _config = load_config()
 FINGERPRINTS = _config.get("FINGERPRINTS", [{"User-Agent": "Mozilla/5.0"}])
@@ -75,11 +82,13 @@ BIZ_HOURS = _config.get("BIZ_HOURS", {})
 # =============================================================================
 ADAPTERS: List[Type["SourceAdapter"]] = []
 
+
 @dataclass
 class FieldConfidence:
     value: Any
     confidence: float
     source: str
+
 
 @dataclass
 class RunnerDoc:
@@ -91,6 +100,7 @@ class RunnerDoc:
     trainer: Optional[FieldConfidence] = None
     extras: Dict[str, FieldConfidence] = field(default_factory=dict)
 
+
 @dataclass
 class RawRaceDocument:
     source_id: str
@@ -100,6 +110,7 @@ class RawRaceDocument:
     start_time_iso: str
     runners: List[RunnerDoc]
     extras: Dict[str, FieldConfidence] = field(default_factory=dict)
+
 
 @dataclass
 class NormalizedRunner:
@@ -113,6 +124,7 @@ class NormalizedRunner:
     confidence_scores: Dict[str, float] = field(default_factory=dict)
     raw_data: Dict[str, Any] = field(default_factory=dict)
 
+
 @dataclass
 class NormalizedRace:
     race_key: str
@@ -124,19 +136,24 @@ class NormalizedRace:
     source_ids: List[str] = field(default_factory=list)
     extras: Dict[str, Any] = field(default_factory=dict)
 
+
 @dataclass
 class ScoreResult:
     """Represents a race after scoring, ready for display."""
+
     race: NormalizedRace
     score: float
     reason: str
     best_value_score: Optional[float] = None
     best_value_reason: Optional[str] = None
 
+
 class SourceAdapter(Protocol):
     source_id: str
+
     def __init__(self, config: Dict[str, Any]): ...
     async def fetch(self) -> List[RawRaceDocument]: ...
+
 
 def register_adapter(cls: Type[SourceAdapter]) -> Type[SourceAdapter]:
     if not hasattr(cls, "source_id"):
@@ -146,6 +163,7 @@ def register_adapter(cls: Type[SourceAdapter]) -> Type[SourceAdapter]:
         ADAPTERS.append(cls)
     return cls
 
+
 # =============================================================================
 # --- NORMALIZER FUNCTIONS ---
 # =============================================================================
@@ -153,15 +171,18 @@ def canonical_track_key(name: str) -> str:
     if not name:
         return "unknown_track"
     name = name.lower().strip()
-    name = re.sub(r'[^a-z0-9\s-]', '', name)
-    return re.sub(r'[\s-]+', '_', name)
+    name = re.sub(r"[^a-z0-9\s-]", "", name)
+    return re.sub(r"[\s-]+", "_", name)
+
 
 def canonical_race_key(track_key: str, race_time: str) -> str:
     return f"{track_key}::r{re.sub(r'[^0-9]', '', race_time)}"
 
+
 def normalize_course_name(name: str) -> str:
     # Simplified for demo
     return name.lower().strip()
+
 
 def map_discipline(discipline_name: str) -> str:
     d_lower = discipline_name.lower()
@@ -171,18 +192,20 @@ def map_discipline(discipline_name: str) -> str:
         return "harness"
     return "thoroughbred"
 
+
 def parse_hhmm_any(time_text: str) -> Optional[str]:
     if not time_text:
         return None
-    match = re.search(r'(\d{1,2})[:.](\d{2})', str(time_text))
+    match = re.search(r"(\d{1,2})[:.](\d{2})", str(time_text))
     if not match:
         return None
     hour, minute = int(match.group(1)), int(match.group(2))
-    if 'pm' in str(time_text).lower() and hour != 12:
+    if "pm" in str(time_text).lower() and hour != 12:
         hour += 12
-    if 'am' in str(time_text).lower() and hour == 12:
+    if "am" in str(time_text).lower() and hour == 12:
         hour = 0
     return f"{hour:02d}:{minute:02d}"
+
 
 def convert_odds_to_decimal(odds_str: str) -> Optional[float]:
     if not isinstance(odds_str, str) or not odds_str.strip():
@@ -203,20 +226,42 @@ def convert_odds_to_decimal(odds_str: str) -> Optional[float]:
     except ValueError:
         return None
 
+
 def normalize_race_docs(doc: RawRaceDocument) -> NormalizedRace:
-    runners = [NormalizedRunner(runner_id=r.runner_id, name=r.name.value, saddle_cloth=r.number.value, odds_decimal=convert_odds_to_decimal(r.odds.value if r.odds else None), odds_fractional=r.odds.value if r.odds else None) for r in doc.runners]
-    return NormalizedRace(race_key=doc.race_key, track_key=doc.track_key, start_time_iso=doc.start_time_iso, runners=runners, source_ids=[doc.source_id], extras={k: v.value for k, v in doc.extras.items()})
+    runners = [
+        NormalizedRunner(
+            runner_id=r.runner_id,
+            name=r.name.value,
+            saddle_cloth=r.number.value,
+            odds_decimal=convert_odds_to_decimal(r.odds.value if r.odds else None),
+            odds_fractional=r.odds.value if r.odds else None,
+        )
+        for r in doc.runners
+    ]
+    return NormalizedRace(
+        race_key=doc.race_key,
+        track_key=doc.track_key,
+        start_time_iso=doc.start_time_iso,
+        runners=runners,
+        source_ids=[doc.source_id],
+        extras={k: v.value for k, v in doc.extras.items()},
+    )
+
 
 # =============================================================================
 # --- ADVANCED FETCHER ---
 # =============================================================================
 class FetchingError(Exception):
     pass
+
+
 class BlockingDetectedError(FetchingError):
     pass
 
+
 _shared_async_client: Optional[httpx.AsyncClient] = None
 _request_history: Dict[str, float] = {}
+
 
 def get_shared_async_client(fresh_session: bool = False) -> httpx.AsyncClient:
     global _shared_async_client
@@ -224,9 +269,12 @@ def get_shared_async_client(fresh_session: bool = False) -> httpx.AsyncClient:
         if _shared_async_client and not _shared_async_client.is_closed:
             asyncio.create_task(_shared_async_client.aclose())
         headers = random.choice(FINGERPRINTS).copy()
-        _shared_async_client = httpx.AsyncClient(follow_redirects=True, timeout=30.0, headers=headers, verify=certifi.where())
+        _shared_async_client = httpx.AsyncClient(
+            follow_redirects=True, timeout=30.0, headers=headers, verify=certifi.where()
+        )
         logging.info("Initialized new shared httpx client")
     return _shared_async_client
+
 
 async def resilient_get(url: str, config: dict, attempts: int = 3) -> httpx.Response:
     scraper_config = config.get("SCRAPER", {})
@@ -249,25 +297,30 @@ async def resilient_get(url: str, config: dict, attempts: int = 3) -> httpx.Resp
             response.raise_for_status()
             return response
         except Exception as e:
-            logging.warning(f"Fetch attempt {attempt+1} for {url} failed: {e}")
+            logging.warning(f"Fetch attempt {attempt + 1} for {url} failed: {e}")
             client = get_shared_async_client(fresh_session=True)
             await asyncio.sleep((attempt + 1) * 2)
     raise FetchingError(f"Failed to fetch {url} after {attempts} attempts.")
+
 
 # =============================================================================
 # --- ADAPTERS ---
 # =============================================================================
 class BaseV2Adapter:
     source_id: str = "base_adapter"
+
     def __init__(self, config: dict):
         self.config = config
         self.site_config = config.get("DATA_SOURCES_V2", {}).get(self.source_id)
+
     async def fetch(self) -> list[RawRaceDocument]:
         raise NotImplementedError
+
 
 @register_adapter
 class TimeformAdapter(BaseV2Adapter):
     source_id = "timeform"
+
     async def fetch(self) -> list[RawRaceDocument]:
         if not self.site_config or not self.site_config.get("enabled"):
             return []
@@ -275,9 +328,11 @@ class TimeformAdapter(BaseV2Adapter):
         # Simplified parsing for demo
         return []
 
+
 @register_adapter
 class SportingLifeAdapter(BaseV2Adapter):
     source_id = "sportinglife"
+
     async def fetch(self) -> list[RawRaceDocument]:
         if not self.site_config or not self.site_config.get("enabled"):
             return []
@@ -286,7 +341,9 @@ class SportingLifeAdapter(BaseV2Adapter):
         # Simplified parsing for demo
         return []
 
+
 # ... Other placeholder adapters ...
+
 
 # =============================================================================
 # --- ANALYSIS & MAIN LOGIC ---
@@ -296,11 +353,14 @@ class V2Scorer:
     Analyzes a NormalizedRace to produce a score based on various signals.
     Weights are now loaded from the configuration file for easy tuning.
     """
+
     def __init__(self, config: Dict):
         # --- Main Scorer Weights ---
         default_weights = {
-            "FIELD_SIZE": 0.25, "FAVORITE_ODDS": 0.35,
-            "ODDS_SPREAD": 0.10, "VALUE_VS_SP": 0.30,
+            "FIELD_SIZE": 0.25,
+            "FAVORITE_ODDS": 0.35,
+            "ODDS_SPREAD": 0.10,
+            "VALUE_VS_SP": 0.30,
         }
         scorer_weights = config.get("SCORER_WEIGHTS", default_weights)
         for key, value in default_weights.items():
@@ -309,14 +369,15 @@ class V2Scorer:
                 logging.warning(f"Missing '{key}' in SCORER_WEIGHTS, using default: {value}")
 
         total_weight = sum(scorer_weights.values())
-        self.weights = {k: v / total_weight for k, v in scorer_weights.items()} if total_weight else default_weights
+        self.weights = (
+            {k: v / total_weight for k, v in scorer_weights.items()}
+            if total_weight
+            else default_weights
+        )
         logging.info(f"V2Scorer initialized with main weights: {self.weights}")
 
         # --- Best Value Scorer Weights ---
-        default_value_weights = {
-            "VALUE_ODDS_WEIGHT": 0.6,
-            "VALUE_COMPETITIVENESS_WEIGHT": 0.4
-        }
+        default_value_weights = {"VALUE_ODDS_WEIGHT": 0.6, "VALUE_COMPETITIVENESS_WEIGHT": 0.4}
         value_weights = config.get("BEST_VALUE_WEIGHTS", default_value_weights)
         for key, value in default_value_weights.items():
             if key not in value_weights:
@@ -324,9 +385,12 @@ class V2Scorer:
                 logging.warning(f"Missing '{key}' in BEST_VALUE_WEIGHTS, using default: {value}")
 
         total_value_weight = sum(value_weights.values())
-        self.value_weights = {k: v / total_value_weight for k, v in value_weights.items()} if total_value_weight else default_value_weights
+        self.value_weights = (
+            {k: v / total_value_weight for k, v in value_weights.items()}
+            if total_value_weight
+            else default_value_weights
+        )
         logging.info(f"V2Scorer initialized with value weights: {self.value_weights}")
-
 
     def _get_field_size_score(self, field_size: int) -> float:
         if 5 <= field_size <= 7:
@@ -352,7 +416,9 @@ class V2Scorer:
             return 50.0
         return 30.0
 
-    def _get_odds_spread_score(self, fav_odds: Optional[float], sec_fav_odds: Optional[float]) -> float:
+    def _get_odds_spread_score(
+        self, fav_odds: Optional[float], sec_fav_odds: Optional[float]
+    ) -> float:
         if fav_odds is None or sec_fav_odds is None:
             return 20.0
         spread = sec_fav_odds - fav_odds
@@ -382,7 +448,9 @@ class V2Scorer:
             return 50.0, ratio
         return 40.0, ratio
 
-    def _get_best_value_score(self, runners_with_odds: list) -> tuple[Optional[float], Optional[str]]:
+    def _get_best_value_score(
+        self, runners_with_odds: list
+    ) -> tuple[Optional[float], Optional[str]]:
         """
         Calculates a 'Best Value' score by identifying a horse (3rd favorite)
         that has a good combination of high odds and competitiveness.
@@ -409,7 +477,7 @@ class V2Scorer:
         elif value_horse_odds >= 15.0:
             value_odds_score = 20.0
         else:
-            value_odds_score = 0.0 # Odds < 3.0 is not a value bet
+            value_odds_score = 0.0  # Odds < 3.0 is not a value bet
 
         # 2. Score based on competitiveness vs favorite
         spread = value_horse_odds - fav_odds
@@ -421,9 +489,8 @@ class V2Scorer:
             competitiveness_score = 30.0
 
         # 3. Calculate final weighted score
-        final_value_score = (
-            (value_odds_score * self.value_weights["VALUE_ODDS_WEIGHT"]) +
-            (competitiveness_score * self.value_weights["VALUE_COMPETITIVENESS_WEIGHT"])
+        final_value_score = (value_odds_score * self.value_weights["VALUE_ODDS_WEIGHT"]) + (
+            competitiveness_score * self.value_weights["VALUE_COMPETITIVENESS_WEIGHT"]
         )
 
         reason = f"Value Pick: {value_horse.name} ({value_horse_odds:.2f})"
@@ -432,8 +499,7 @@ class V2Scorer:
     def score_race(self, race: NormalizedRace) -> ScoreResult:
         """Calculates a score for a single normalized race."""
         runners_with_odds = sorted(
-            [r for r in race.runners if r.odds_decimal is not None],
-            key=lambda r: r.odds_decimal
+            [r for r in race.runners if r.odds_decimal is not None], key=lambda r: r.odds_decimal
         )
 
         if len(runners_with_odds) < 2:
@@ -452,10 +518,10 @@ class V2Scorer:
         fav_ratio_score, fav_ratio = self._get_fav_vs_field_ratio_score(runners_with_odds)
 
         final_score = (
-            (field_size_score * self.weights["FIELD_SIZE"]) +
-            (fav_odds_score * self.weights["FAVORITE_ODDS"]) +
-            (spread_score * self.weights["ODDS_SPREAD"]) +
-            (fav_ratio_score * self.weights["VALUE_VS_SP"])
+            (field_size_score * self.weights["FIELD_SIZE"])
+            + (fav_odds_score * self.weights["FAVORITE_ODDS"])
+            + (spread_score * self.weights["ODDS_SPREAD"])
+            + (fav_ratio_score * self.weights["VALUE_VS_SP"])
         )
         reason = (
             f"Field: {field_size} ({field_size_score:.0f}), "
@@ -472,12 +538,14 @@ class V2Scorer:
             score=round(final_score, 2),
             reason=reason,
             best_value_score=best_value_score,
-            best_value_reason=best_value_reason
+            best_value_reason=best_value_reason,
         )
+
 
 def score_races(races: List[NormalizedRace], config: Dict) -> List[ScoreResult]:
     scorer = V2Scorer(config)
     return sorted([scorer.score_race(race) for race in races], key=lambda r: r.score, reverse=True)
+
 
 def generate_paddock_reports(scored_results: List[ScoreResult], config: Dict):
     """
@@ -490,7 +558,7 @@ def generate_paddock_reports(scored_results: List[ScoreResult], config: Dict):
     # JSON Report
     json_path = output_dir / f"paddock_report_v2_{today_str}.json"
     try:
-        with open(json_path, 'w', encoding='utf-8') as f:
+        with open(json_path, "w", encoding="utf-8") as f:
             json.dump([asdict(res) for res in scored_results], f, indent=2)
         logging.info(f"V2 JSON report saved to {json_path}")
     except Exception as e:
@@ -499,22 +567,36 @@ def generate_paddock_reports(scored_results: List[ScoreResult], config: Dict):
     # HTML Report
     html_path = output_dir / f"paddock_report_v2_{today_str}.html"
     try:
-        env = Environment(loader=FileSystemLoader('.'), autoescape=select_autoescape())
+        env = Environment(loader=FileSystemLoader("."), autoescape=select_autoescape())
         template = env.get_template(config["TEMPLATE_PADDOCK"])
         html_output = template.render(races=scored_results, config=config, report_date=today_str)
-        html_path.write_text(html_output, encoding='utf-8')
+        html_path.write_text(html_output, encoding="utf-8")
         logging.info(f"V2 HTML report saved to {html_path}")
     except Exception as e:
         logging.error(f"Failed to generate V2 HTML report: {e}")
 
+
 async def run_unified_pipeline(config: Dict, args: Optional[argparse.Namespace]):
     logging.info("--- Starting Unified Analysis Pipeline ---")
-    enabled_adapters = [adapter(config) for adapter in ADAPTERS if adapter(config).site_config and adapter(config).site_config.get("enabled")]
-    adapter_results = await asyncio.gather(*(adapter.fetch() for adapter in enabled_adapters), return_exceptions=True)
+    enabled_adapters = [
+        adapter(config)
+        for adapter in ADAPTERS
+        if adapter(config).site_config and adapter(config).site_config.get("enabled")
+    ]
+    adapter_results = await asyncio.gather(
+        *(adapter.fetch() for adapter in enabled_adapters), return_exceptions=True
+    )
     raw_docs = [doc for res in adapter_results if isinstance(res, list) for doc in res]
 
-    races_by_key = {key: list(group) for key, group in groupby(sorted(raw_docs, key=attrgetter("race_key")), key=attrgetter("race_key"))}
-    normalized_races = [normalize_race_docs(docs[0]) for docs in races_by_key.values()] # Simplified merge
+    races_by_key = {
+        key: list(group)
+        for key, group in groupby(
+            sorted(raw_docs, key=attrgetter("race_key")), key=attrgetter("race_key")
+        )
+    }
+    normalized_races = [
+        normalize_race_docs(docs[0]) for docs in races_by_key.values()
+    ]  # Simplified merge
 
     scored_results = score_races(normalized_races, config)
 
@@ -528,7 +610,10 @@ async def run_unified_pipeline(config: Dict, args: Optional[argparse.Namespace])
         print(f"  Start Time: {result.race.start_time_iso}")
         print(f"  Sources: {', '.join(result.race.source_ids)}")
         print(f"  Runners ({len(result.race.runners)}):")
-        sorted_runners = sorted(result.race.runners, key=lambda r: int(r.saddle_cloth) if r.saddle_cloth.isdigit() else 999)
+        sorted_runners = sorted(
+            result.race.runners,
+            key=lambda r: int(r.saddle_cloth) if r.saddle_cloth.isdigit() else 999,
+        )
         for runner in sorted_runners:
             odds = f"{runner.odds_decimal:.2f}" if runner.odds_decimal else "N/A"
             print(f"    - {runner.saddle_cloth}. {runner.name} ({odds})")
@@ -536,6 +621,7 @@ async def run_unified_pipeline(config: Dict, args: Optional[argparse.Namespace])
     # Also generate the reports
     generate_paddock_reports(scored_results, config)
     print("✅ Unified analysis pipeline complete.")
+
 
 # =============================================================================
 # --- EXECUTION GUARD ---
@@ -547,10 +633,12 @@ if __name__ == "__main__":
         sys.exit("Could not load configuration. Exiting.")
 
     parser = argparse.ArgumentParser(description="Paddock Parser Toolkit - Portable Demo")
-    parser.add_argument('command', nargs='?', default='analyze', help="The command to run (default: analyze)")
+    parser.add_argument(
+        "command", nargs="?", default="analyze", help="The command to run (default: analyze)"
+    )
     args = parser.parse_args()
 
-    if args.command == 'analyze':
+    if args.command == "analyze":
         asyncio.run(run_unified_pipeline(main_config, args))
     else:
         print(f"Unknown command: {args.command}")
