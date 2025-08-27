@@ -31,3 +31,4 @@ feedparser>=6.0.10
 dnspython>=2.6.1
 orjson>=3.10.7
 betfair-api-ng
+ruff
