@@ -11,20 +11,25 @@ from analysis import V2Scorer, NormalizedRace, ScoreResult
 # These mock objects simulate the necessary attributes of the real data classes
 # for testing purposes without needing the full normalization pipeline.
 
+
 @dataclass
 class MockRunner:
     """A simplified runner object for testing."""
+
     odds_decimal: float
+
 
 @dataclass
 class MockRace:
     """A simplified race object for testing."""
+
     runners: List[MockRunner]
+
 
 # --- Test Cases ---
 
-class TestV2Scorer(unittest.TestCase):
 
+class TestV2Scorer(unittest.TestCase):
     def setUp(self):
         """Set up a V2Scorer instance before each test."""
         # The config is not used by the scoring methods themselves, so an empty dict is fine.
@@ -80,36 +85,36 @@ class TestV2Scorer(unittest.TestCase):
         integrated correctly with the weights.
         """
         runners_data = [
-            {'name': 'Horse A', 'saddle_cloth': '1', 'odds_decimal': 3.5},
-            {'name': 'Horse B', 'saddle_cloth': '2', 'odds_decimal': 4.0},
-            {'name': 'Horse C', 'saddle_cloth': '3', 'odds_decimal': 5.0},
-            {'name': 'Horse D', 'saddle_cloth': '4', 'odds_decimal': 6.0},
+            {"name": "Horse A", "saddle_cloth": "1", "odds_decimal": 3.5},
+            {"name": "Horse B", "saddle_cloth": "2", "odds_decimal": 4.0},
+            {"name": "Horse C", "saddle_cloth": "3", "odds_decimal": 5.0},
+            {"name": "Horse D", "saddle_cloth": "4", "odds_decimal": 6.0},
         ]
 
         # Use a more robust mock that can be created dynamically
-        runners = [type('NormalizedRunner', (object,), r)() for r in runners_data]
+        runners = [type("NormalizedRunner", (object,), r)() for r in runners_data]
 
         race = NormalizedRace(
             race_key="test_track::r1430",
             track_key="test_track",
             start_time_iso="2025-01-01T14:30:00Z",
-            runners=runners
+            runners=runners,
         )
 
         # Expected scores for each component
         field_size_score = 60.0  # 4 runners
-        fav_odds_score = 80.0    # 3.5 odds
-        spread_score = 50.0      # 0.5 spread
-        fav_ratio_score = 90.0   # From the open_race test
+        fav_odds_score = 80.0  # 3.5 odds
+        spread_score = 50.0  # 0.5 spread
+        fav_ratio_score = 90.0  # From the open_race test
 
         # Calculate expected final score using the default weights from V2Scorer
         weights = self.scorer.weights
         expected_final_score = (
-            (field_size_score * weights["FIELD_SIZE"]) +
-            (fav_odds_score * weights["FAVORITE_ODDS"]) +
-            (spread_score * weights["ODDS_SPREAD"]) +
-            (fav_ratio_score * weights["VALUE_VS_SP"])
-        ) # (60*0.25)+(80*0.35)+(50*0.10)+(90*0.30) = 15+28+5+27 = 75.0
+            (field_size_score * weights["FIELD_SIZE"])
+            + (fav_odds_score * weights["FAVORITE_ODDS"])
+            + (spread_score * weights["ODDS_SPREAD"])
+            + (fav_ratio_score * weights["VALUE_VS_SP"])
+        )  # (60*0.25)+(80*0.35)+(50*0.10)+(90*0.30) = 15+28+5+27 = 75.0
 
         result = self.scorer.score_race(race)
         self.assertIsInstance(result, ScoreResult)
@@ -119,5 +124,5 @@ class TestV2Scorer(unittest.TestCase):
         self.assertIn("FavRatio: 0.76(90)", result.reason)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main(verbosity=2)

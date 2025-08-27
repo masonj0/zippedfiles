@@ -7,6 +7,7 @@ import re
 from normalizer import NormalizedRace, NormalizedRunner
 from adapters.base_v3 import BaseAdapterV3
 
+
 class BetfairDataScientistAdapter(BaseAdapterV3):
     """
     Adapter for fetching and parsing data from the Betfair Data Scientists API.
@@ -53,16 +54,18 @@ class BetfairDataScientistAdapter(BaseAdapterV3):
     def _normalize_df(self, df: pd.DataFrame) -> list[NormalizedRace]:
         """Transforms the DataFrame into a list of NormalizedRace objects."""
 
-        df = df.rename(columns={
-            "meetings.races.bfExchangeMarketId": "market_id",
-            "meetings.races.runners.bfExchangeSelectionId": "selection_id",
-            "meetings.races.runners.ratedPrice": "rated_price",
-            "meetings.races.raceName": "race_name",
-            "meetings.name": "meeting_name",
-            "meetings.races.raceNumber": "race_number",
-            "meetings.races.runners.runnerName": "runner_name",
-            "meetings.races.runners.clothNumber": "saddle_cloth"
-        })
+        df = df.rename(
+            columns={
+                "meetings.races.bfExchangeMarketId": "market_id",
+                "meetings.races.runners.bfExchangeSelectionId": "selection_id",
+                "meetings.races.runners.ratedPrice": "rated_price",
+                "meetings.races.raceName": "race_name",
+                "meetings.name": "meeting_name",
+                "meetings.races.raceNumber": "race_number",
+                "meetings.races.runners.runnerName": "runner_name",
+                "meetings.races.runners.clothNumber": "saddle_cloth",
+            }
+        )
 
         required = ["market_id", "selection_id", "rated_price", "runner_name"]
         if not all(col in df.columns for col in required):
@@ -76,18 +79,18 @@ class BetfairDataScientistAdapter(BaseAdapterV3):
             runners = []
             for _, row in group.iterrows():
                 runner = NormalizedRunner(
-                    runner_id=str(row.get('selection_id')),
-                    name=str(row.get('runner_name')),
-                    saddle_cloth=str(row.get('saddle_cloth', '')),
-                    odds_decimal=float(row.get('rated_price', 0.0))
+                    runner_id=str(row.get("selection_id")),
+                    name=str(row.get("runner_name")),
+                    saddle_cloth=str(row.get("saddle_cloth", "")),
+                    odds_decimal=float(row.get("rated_price", 0.0)),
                 )
                 runners.append(runner)
 
             race = NormalizedRace(
                 race_key=str(market_id),
-                track_key=normalize_course_name(str(race_info.get('meeting_name', ''))),
+                track_key=normalize_course_name(str(race_info.get("meeting_name", ""))),
                 start_time_iso=datetime.now().isoformat(),
-                race_name=str(race_info.get('race_name', '')),
+                race_name=str(race_info.get("race_name", "")),
                 runners=runners,
                 source_ids=[self.get_name()],
             )
@@ -101,18 +104,19 @@ class BetfairDataScientistAdapter(BaseAdapterV3):
         return f"{self.url}{todays_date}&presenter=RatingsPresenter&csv=true"
 
     @classmethod
-    def create_from_config(cls, config: dict) -> 'BetfairDataScientistAdapter':
+    def create_from_config(cls, config: dict) -> "BetfairDataScientistAdapter":
         return cls(
             model_name=config.get("model_name"),
             url=config.get("url"),
             enabled=config.get("enabled", True),
-            priority=config.get("priority", 100)
+            priority=config.get("priority", 100),
         )
+
 
 def normalize_course_name(name: str) -> str:
     if not name:
         return ""
     name = name.lower().strip()
-    name = re.sub(r'[^a-z0-9\s-]', '', name)
-    name = re.sub(r'[\s-]+', '_', name)
+    name = re.sub(r"[^a-z0-9\s-]", "", name)
+    name = re.sub(r"[\s-]+", "_", name)
     return name
